@@ -1,0 +1,298 @@
+---
+import { url } from '../lib/url';
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import { categories } from '../data/categories';
+import { municipios } from '../data/site';
+---
+
+<Layout title="Vender" description="Publica gratis y véndele a todo Puerto Rico.">
+  <div class="container sell-page">
+    <h1 class="page-title">Vende en Plaza 787</h1>
+    <p class="page-sub">Publicar es gratis. Sube fotos claras y una buena descripción.</p>
+
+    <form class="panel sell" data-sell-form>
+      <fieldset class="field photos">
+        <legend>Fotos <small>(hasta 3)</small></legend>
+        <div class="photos__row" data-photos>
+          <label class="photos__add">
+            <input type="file" accept="image/*" multiple data-photo-input />
+            <Icon name="camera" size={30} />
+            <span>Agregar fotos</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="field">
+        <label for="s-title">Título</label>
+        <input id="s-title" name="title" class="input" maxlength="80" placeholder="Ej. Nevera 18 pies en buen estado" required />
+      </div>
+
+      <div class="grid2">
+        <div class="field">
+          <label for="s-cat">Categoría</label>
+          <select id="s-cat" name="category" class="select" required>
+            <option value="">Selecciona…</option>
+            {categories.map((c) => <option value={c.slug}>{c.emoji} {c.name}</option>)}
+          </select>
+        </div>
+        <div class="field">
+          <label for="s-price">Precio (USD)</label>
+          <input id="s-price" name="price" class="input" type="number" min="1" step="0.01" inputmode="decimal" placeholder="0.00" required />
+        </div>
+        <fieldset class="field cond">
+          <legend>Condición</legend>
+          <div class="cond__row">
+            <label class="chip chip--toggle"><input type="radio" name="condition" value="nuevo" checked /> Nuevo</label>
+            <label class="chip chip--toggle"><input type="radio" name="condition" value="usado" /> Usado</label>
+          </div>
+        </fieldset>
+        <div class="field">
+          <label for="s-town">Municipio</label>
+          <select id="s-town" name="town" class="select" required>
+            <option value="">Selecciona…</option>
+            {municipios.map((m) => <option value={m}>{m}</option>)}
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="s-desc">Descripción</label>
+        <textarea id="s-desc" name="description" class="textarea" maxlength="1000" placeholder="Cuenta el estado, medidas, qué incluye…" required></textarea>
+      </div>
+
+      <label class="chip chip--toggle ship">
+        <input type="checkbox" name="freeShipping" value="1" />
+        <Icon name="truck" size={18} /> Ofrezco envío gratis
+      </label>
+
+      <button type="submit" class="btn btn--primary btn--block">Publicar</button>
+    </form>
+
+    <div class="panel done" data-sell-done hidden>
+      <div class="empty__emoji">🎉</div>
+      <h2>¡Tu publicación está lista!</h2>
+      <p>La verás en <strong>Mi cuenta → Mis publicaciones</strong>.</p>
+      <div class="done__actions">
+        <a href={url('/cuenta')} class="btn btn--primary">Ver mis publicaciones</a>
+        <button type="button" class="btn btn--soft" data-sell-again>Publicar otra</button>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .sell,
+  .done {
+    max-width: 760px;
+  }
+
+  .grid2 {
+    display: grid;
+    gap: 0 16px;
+  }
+
+  @media (min-width: 720px) {
+    .grid2 {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0 0 14px;
+  }
+
+  legend small {
+    font-weight: 500;
+    color: var(--tinta-3);
+  }
+
+  .photos__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .photos__add,
+  .photos__row :global(.thumb) {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .photos__add {
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 4px;
+    border: 2px dashed var(--azul);
+    background: var(--azul-100);
+    color: var(--azul-700);
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .photos__add:has(input:focus-visible) {
+    outline: 3px solid var(--azul);
+    outline-offset: 2px;
+  }
+
+  .photos__add input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .photos__row :global(.thumb img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .photos__row :global(.thumb button) {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 26px;
+    height: 26px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .cond__row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .ship {
+    margin-bottom: 18px;
+  }
+
+  .done {
+    text-align: center;
+  }
+
+  .done h2 {
+    margin: 10px 0 6px;
+  }
+
+  .done__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 16px;
+  }
+</style>
+
+<script>
+  import { listings, uid } from '../scripts/store';
+  import { toast } from '../scripts/ui';
+
+  const MAX_PHOTOS = 3;
+  const form = document.querySelector<HTMLFormElement>('[data-sell-form]')!;
+  const done = document.querySelector<HTMLElement>('[data-sell-done]')!;
+  const row = document.querySelector<HTMLElement>('[data-photos]')!;
+  const input = document.querySelector<HTMLInputElement>('[data-photo-input]')!;
+  const addLabel = input.closest('label')!;
+  let photos: string[] = [];
+
+  /** Reduce la foto para que quepa en el almacenamiento del navegador. */
+  function shrink(file: File, max = 640): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, max / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(url);
+        resolve(canvas.toDataURL('image/jpeg', 0.72));
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error('imagen inválida'));
+      };
+      img.src = url;
+    });
+  }
+
+  function renderPhotos() {
+    row.querySelectorAll('.thumb').forEach((t) => t.remove());
+    photos.forEach((src, i) => {
+      const div = document.createElement('div');
+      div.className = 'thumb';
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = `Foto ${i + 1}`;
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.textContent = '×';
+      del.setAttribute('aria-label', `Quitar foto ${i + 1}`);
+      del.addEventListener('click', () => {
+        photos.splice(i, 1);
+        renderPhotos();
+      });
+      div.append(img, del);
+      row.insertBefore(div, addLabel);
+    });
+    addLabel.hidden = photos.length >= MAX_PHOTOS;
+  }
+
+  input.addEventListener('change', async () => {
+    const files = Array.from(input.files ?? []).slice(0, MAX_PHOTOS - photos.length);
+    for (const file of files) {
+      try {
+        photos.push(await shrink(file));
+      } catch {
+        toast('No pudimos leer una de las fotos');
+      }
+    }
+    input.value = '';
+    renderPhotos();
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const ok = listings.add({
+      id: uid(),
+      date: new Date().toISOString(),
+      title: String(data.get('title')).trim(),
+      price: Number(data.get('price')),
+      category: String(data.get('category')),
+      condition: String(data.get('condition')),
+      town: String(data.get('town')),
+      description: String(data.get('description')).trim(),
+      freeShipping: data.get('freeShipping') === '1',
+      photos,
+    });
+    if (!ok) {
+      toast('No hay espacio: prueba con menos fotos');
+      return;
+    }
+    form.hidden = true;
+    done.hidden = false;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  document.querySelector('[data-sell-again]')!.addEventListener('click', () => {
+    form.reset();
+    photos = [];
+    renderPhotos();
+    done.hidden = true;
+    form.hidden = false;
+  });
+</script>

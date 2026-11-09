@@ -1,0 +1,129 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CategoryRow from '../../components/CategoryRow.astro';
+import ProductGrid from '../../components/ProductGrid.astro';
+import Icon from '../../components/Icon.astro';
+import { categories, type Category } from '../../data/categories';
+import { products } from '../../data/products';
+
+export function getStaticPaths() {
+  return categories.map((category) => ({ params: { slug: category.slug }, props: { category } }));
+}
+
+interface Props {
+  category: Category;
+}
+const { category } = Astro.props;
+const items = products.filter((p) => p.category === category.slug);
+---
+
+<Layout title={category.name} description={`${category.name} en Plaza 787. ${category.blurb}`}>
+  <div class="container">
+    <header class:list={['banner', `bg-${category.color}`]}>
+      <span class="banner__emoji" aria-hidden="true">{category.emoji}</span>
+      <div>
+        <h1>{category.name}</h1>
+        <p>{category.blurb}</p>
+      </div>
+    </header>
+  </div>
+
+  <CategoryRow active={category.slug} />
+
+  <div class="container">
+    <form class="bar" data-filters>
+      <p class="count" data-results-count>{items.length} resultados</p>
+      <label class="chip chip--toggle">
+        <input type="checkbox" name="envio" value="1" />
+        <Icon name="truck" size={18} /> Envío gratis
+      </label>
+      <label class="sort">
+        <span class="sr-only">Ordenar por</span>
+        <select name="orden" class="select">
+          <option value="">Más relevantes</option>
+          <option value="menor">Menor precio</option>
+          <option value="mayor">Mayor precio</option>
+          <option value="vendidos">Más vendidos</option>
+        </select>
+      </label>
+    </form>
+
+    <ProductGrid products={items} filterable id="results" />
+
+    <div class="empty" data-results-empty hidden>
+      <div class="empty__emoji">{category.emoji}</div>
+      <h2>No hay productos con esos filtros</h2>
+      <p>Prueba quitando “Envío gratis”.</p>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .banner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 12px;
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    color: var(--blanco);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .bg-azul { background: var(--azul); }
+  .bg-rojito { background: var(--rojito); }
+  .bg-amarillo { background: var(--amarillo); color: var(--tinta); }
+  .bg-verde { background: var(--verde); }
+
+  .banner h1 {
+    font-size: clamp(1.6rem, 6vw, 2.3rem);
+  }
+
+  .banner p {
+    margin: 4px 0 0;
+    font-weight: 600;
+  }
+
+  .banner__emoji {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--blanco);
+    font-size: 2.3rem;
+  }
+
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 18px 0 22px;
+  }
+
+  .count {
+    margin: 0 auto 0 0;
+    font-weight: 700;
+    color: var(--tinta-2);
+  }
+
+  .sort .select {
+    min-height: 40px;
+    padding-block: 6px;
+    border-radius: 999px;
+    font-weight: 700;
+  }
+</style>
+
+<script>
+  import { initFilters } from '../../scripts/filter';
+
+  initFilters({
+    form: document.querySelector<HTMLFormElement>('[data-filters]')!,
+    grid: document.getElementById('results')!,
+    count: document.querySelector('[data-results-count]'),
+    empty: document.querySelector('[data-results-empty]'),
+  });
+</script>

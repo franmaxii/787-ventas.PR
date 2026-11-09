@@ -1,0 +1,92 @@
+---
+import { url } from '../lib/url';
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Mensajes">
+  <div class="container msgs-page">
+    <h1 class="page-title">Mensajes</h1>
+    <p class="page-sub">Tus preguntas a los vendedores.</p>
+
+    <ul class="msgs" data-msgs></ul>
+
+    <div class="empty" data-msgs-empty hidden>
+      <div class="empty__emoji">💬</div>
+      <h2>No tienes mensajes</h2>
+      <p>Pregúntale al vendedor desde la página de cualquier producto.</p>
+      <a href={url('/')} class="btn btn--primary">Ver productos</a>
+    </div>
+  </div>
+</Layout>
+
+<style is:global>
+  .msgs-page .msgs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+
+  .msgs-page .msg {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 12px;
+    align-items: start;
+    padding: 14px;
+    border-radius: var(--radius-lg);
+    background: var(--blanco);
+    box-shadow: var(--shadow-sm);
+    color: var(--tinta);
+    text-decoration: none;
+  }
+
+  .msgs-page .msg__avatar {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--azul);
+    color: var(--blanco);
+    font-size: 1.4rem;
+  }
+
+  .msgs-page .msg__title {
+    display: block;
+    font-weight: 800;
+  }
+
+  .msgs-page .msg__text {
+    display: block;
+    margin: 4px 0;
+  }
+
+  .msgs-page .msg small {
+    color: var(--tinta-3);
+  }
+</style>
+
+<script>
+  import { questions } from '../scripts/store';
+  import { base } from '../lib/url';
+  import { esc, formatDate } from '../scripts/ui';
+
+  const all = questions.all();
+  document.querySelector<HTMLElement>('[data-msgs-empty]')!.hidden = all.length > 0;
+  document.querySelector<HTMLUListElement>('[data-msgs]')!.innerHTML = all
+    .map(
+      (q) => `
+    <li>
+      <a class="msg" href="${base}/producto/${esc(q.productId)}#preguntas">
+        <span class="msg__avatar" aria-hidden="true">✉️</span>
+        <span>
+          <span class="msg__title">${esc(q.productTitle)}</span>
+          <span class="msg__text">${esc(q.text)}</span>
+          <small>${formatDate(q.date)} · Esperando respuesta</small>
+        </span>
+      </a>
+    </li>`,
+    )
+    .join('');
+</script>

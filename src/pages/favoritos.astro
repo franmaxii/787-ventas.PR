@@ -1,0 +1,53 @@
+---
+import { url } from '../lib/url';
+import Layout from '../layouts/Layout.astro';
+import ProductGrid from '../components/ProductGrid.astro';
+import { products } from '../data/products';
+---
+
+<Layout title="Favoritos">
+  <div class="container">
+    <h1 class="page-title">Favoritos</h1>
+    <p class="page-sub" data-fav-count></p>
+
+    <!-- Se renderiza todo el catálogo y el navegador muestra solo lo guardado. -->
+    <div data-fav-grid hidden>
+      <ProductGrid products={products} filterable id="fav-grid" />
+    </div>
+
+    <div class="empty" data-fav-empty hidden>
+      <div class="empty__emoji">💚</div>
+      <h2>Todavía no tienes favoritos</h2>
+      <p>Toca el corazón en cualquier producto para guardarlo aquí.</p>
+      <a href={url('/')} class="btn btn--primary">Explorar productos</a>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { favs, onChange } from '../scripts/store';
+
+  const wrap = document.querySelector<HTMLElement>('[data-fav-grid]')!;
+  const grid = document.getElementById('fav-grid')!;
+  const empty = document.querySelector<HTMLElement>('[data-fav-empty]')!;
+  const count = document.querySelector<HTMLElement>('[data-fav-count]')!;
+  const cards = new Map(
+    Array.from(grid.querySelectorAll<HTMLElement>('[data-id]')).map((c) => [c.dataset.id!, c]),
+  );
+
+  function render() {
+    const ids = favs.ids().filter((id) => cards.has(id));
+    cards.forEach((card) => (card.hidden = true));
+    ids.forEach((id) => {
+      const card = cards.get(id)!;
+      card.hidden = false;
+      grid.appendChild(card);
+    });
+    wrap.hidden = ids.length === 0;
+    empty.hidden = ids.length > 0;
+    count.textContent = ids.length ? `${ids.length} ${ids.length === 1 ? 'producto guardado' : 'productos guardados'}` : '';
+  }
+
+  render();
+  onChange(render);
+</script>

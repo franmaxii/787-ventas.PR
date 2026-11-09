@@ -1,0 +1,90 @@
+---
+/* Íconos SVG en línea (estilo trazo 24x24). */
+const icons = {
+  menu: { d: 'M3.5 6h1M9 6h11.5M3.5 12h1M9 12h11.5M3.5 18h1M9 18h11.5', stroke: 3 },
+  cart: {
+    d: 'M2 3h2.2l2.6 12.2a2 2 0 0 0 2 1.6h9.4a2 2 0 0 0 2-1.5L21.8 7H5.3',
+    extra: '<circle cx="9" cy="20.5" r="1.6"/><circle cx="18" cy="20.5" r="1.6"/>',
+  },
+  search: { d: 'm21 21-4.3-4.3', extra: '<circle cx="11" cy="11" r="7.5"/>' },
+  x: { d: 'M18 6 6 18M6 6l12 12' },
+  play: { d: 'M7 4.5v15a1 1 0 0 0 1.5.86l12.4-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z', fill: true },
+  camera: {
+    d: 'M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z',
+    extra: '<circle cx="12" cy="13" r="3.2"/>',
+  },
+  chat: { d: 'M7.9 20A9 9 0 1 0 4 16.1L2 22z', fill: true },
+  user: { d: 'M3 21.5c0-4.6 4-8 9-8s9 3.4 9 8z', extra: '<circle cx="12" cy="7" r="4.6"/>', fill: true },
+  heart: {
+    d: 'M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z',
+  },
+  bag: { d: 'M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0' },
+  home: { d: 'm3 9.5 9-7 9 7V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM9 22V12h6v10' },
+  truck: {
+    d: 'M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2M15 18H9M19 18h2a1 1 0 0 0 1-1v-3.6a1 1 0 0 0-.2-.6l-3.5-4.4a1 1 0 0 0-.8-.4H14',
+    extra: '<circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>',
+  },
+  shield: {
+    d: 'M20 13c0 5-3.5 7.5-7.7 9a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1zM9 12l2 2 4-4',
+  },
+  pin: { d: 'M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z', extra: '<circle cx="12" cy="10" r="3"/>' },
+  plus: { d: 'M5 12h14M12 5v14' },
+  minus: { d: 'M5 12h14' },
+  trash: { d: 'M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' },
+  chevronRight: { d: 'm9 18 6-6-6-6' },
+  chevronLeft: { d: 'm15 18-6-6 6-6' },
+  check: { d: 'M20 6 9 17l-5-5' },
+  star: {
+    d: 'M12 2.5l2.95 6 6.55.95-4.75 4.62 1.12 6.53L12 17.5l-5.87 3.1 1.12-6.53L2.5 9.45l6.55-.95z',
+    fill: true,
+  },
+  filter: { d: 'M3 6h18M7 12h10M10 18h4' },
+  store: { d: 'M3 9l1.6-5h14.8L21 9M4 9v11h16V9M3 9h18M9 20v-6h6v6' },
+  bell: { d: 'M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0' },
+  tag: {
+    d: 'M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z',
+    extra: '<circle cx="7.5" cy="7.5" r="1.2"/>',
+  },
+  send: { d: 'M22 2 11 13M22 2l-7 20-4-9-9-4z' },
+  help: { d: 'M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01', extra: '<circle cx="12" cy="12" r="10"/>' },
+  image: {
+    d: 'm21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21',
+    extra: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/>',
+  },
+  card: { d: 'M2 10h20', extra: '<rect x="2" y="5" width="20" height="14" rx="2"/>' },
+  box: { d: 'M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7zM3.3 7 12 12l8.7-5M12 22V12' },
+} as const;
+
+export type IconName = keyof typeof icons;
+
+interface Props {
+  name: IconName;
+  size?: number | string;
+  class?: string;
+  label?: string;
+}
+
+const { name, size = 24, class: className, label } = Astro.props;
+const icon = icons[name] as { d: string; extra?: string; fill?: boolean; stroke?: number };
+const filled = icon.fill === true;
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 24 24"
+  width={size}
+  height={size}
+  fill={filled ? 'currentColor' : 'none'}
+  stroke={filled ? 'none' : 'currentColor'}
+  stroke-width={icon.stroke ?? 2}
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  class:list={['icon', className]}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  focusable="false"
+>
+  <path d={icon.d}></path>
+  {icon.extra && <Fragment set:html={icon.extra} />}
+</svg>

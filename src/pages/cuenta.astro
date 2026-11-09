@@ -1,0 +1,271 @@
+---
+import { url } from '../lib/url';
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+---
+
+<Layout title="Mi cuenta">
+  <div class="container account-page">
+    <section class="profile">
+      <div class="profile__avatar" aria-hidden="true"><Icon name="user" size={64} /></div>
+      <div>
+        <h1>¡Hola!</h1>
+        <p>Estás navegando como invitado.</p>
+      </div>
+      <button type="button" class="btn btn--white" data-login>Iniciar sesión</button>
+    </section>
+
+    <ul class="stats">
+      <li><a href={url('/compras')}><strong data-stat="orders">0</strong><span>Compras</span></a></li>
+      <li><a href={url('/favoritos')}><strong data-stat="favs">0</strong><span>Favoritos</span></a></li>
+      <li><a href="#publicaciones"><strong data-stat="listings">0</strong><span>Publicaciones</span></a></li>
+    </ul>
+
+    <nav class="links panel" aria-label="Opciones de la cuenta">
+      <a href={url('/compras')}><Icon name="bag" /> Mis compras <Icon name="chevronRight" size={18} /></a>
+      <a href={url('/favoritos')}><Icon name="heart" /> Favoritos <Icon name="chevronRight" size={18} /></a>
+      <a href={url('/mensajes')}><Icon name="chat" /> Mensajes <Icon name="chevronRight" size={18} /></a>
+      <a href={url('/vender')}><Icon name="camera" /> Vender <Icon name="chevronRight" size={18} /></a>
+      <a href={url('/carrito')}><Icon name="cart" /> Carrito <Icon name="chevronRight" size={18} /></a>
+    </nav>
+
+    <section class="section" id="publicaciones">
+      <div class="section__head">
+        <h2 class="section__title">Mis publicaciones</h2>
+        <a class="section__link" href={url('/vender')}>+ Nueva</a>
+      </div>
+      <ul class="mine" data-listings></ul>
+      <div class="empty" data-listings-empty hidden>
+        <div class="empty__emoji">📸</div>
+        <h2>No has publicado nada</h2>
+        <p>Toma unas fotos y empieza a vender hoy.</p>
+        <a href={url('/vender')} class="btn btn--primary">Vender ahora</a>
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<style is:global>
+  .account-page .profile {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    margin-top: 16px;
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    background: var(--azul);
+    color: var(--blanco);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .account-page .profile > div:nth-child(2) {
+    flex: 1;
+    min-width: 160px;
+  }
+
+  .account-page .profile h1 {
+    font-size: 1.8rem;
+  }
+
+  .account-page .profile p {
+    margin: 4px 0 0;
+    font-weight: 600;
+    opacity: 0.92;
+  }
+
+  .account-page .profile__avatar {
+    display: grid;
+    place-items: end center;
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: var(--blanco);
+    color: var(--verde);
+    overflow: hidden;
+  }
+
+  .account-page .stats {
+    list-style: none;
+    margin: 16px 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .account-page .stats a {
+    display: grid;
+    justify-items: center;
+    padding: 14px 6px;
+    border-radius: var(--radius);
+    background: var(--blanco);
+    color: var(--tinta);
+    text-decoration: none;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .account-page .stats strong {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--azul);
+  }
+
+  .account-page .stats span {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--tinta-2);
+  }
+
+  .account-page .links {
+    display: grid;
+    padding: 6px;
+  }
+
+  .account-page .links a {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 12px;
+    border-radius: 12px;
+    color: var(--tinta);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .account-page .links a + a {
+    border-top: 1px solid var(--linea);
+  }
+
+  .account-page .links a:hover {
+    background: var(--crema-200);
+  }
+
+  .account-page .links .icon:first-child {
+    color: var(--verde);
+  }
+
+  .account-page .mine {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+
+  .account-page .listing {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    gap: 14px;
+    align-items: center;
+    padding: 12px;
+    border-radius: var(--radius-lg);
+    background: var(--blanco);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .account-page .listing__img {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    background: var(--azul);
+    font-size: 2rem;
+    overflow: hidden;
+  }
+
+  .account-page .listing__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .account-page .listing strong {
+    display: block;
+    line-height: 1.2;
+  }
+
+  .account-page .listing small {
+    display: block;
+    color: var(--tinta-3);
+  }
+
+  .account-page .listing__price {
+    font-weight: 900;
+    font-size: 1.1rem;
+  }
+
+  .account-page .listing__status {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #dcefe1;
+    color: var(--verde-700);
+    font-size: 0.75rem;
+    font-weight: 800;
+  }
+
+  .account-page .listing__del {
+    border: 0;
+    background: none;
+    color: var(--rojito-700);
+    font-weight: 700;
+    padding: 8px;
+  }
+</style>
+
+<script>
+  import { getCategory } from '../data/categories';
+  import { formatMoney } from '../lib/format';
+  import { favs, listings, onChange, orders } from '../scripts/store';
+  import { esc, formatDate, toast } from '../scripts/ui';
+
+  const list = document.querySelector<HTMLUListElement>('[data-listings]')!;
+  const empty = document.querySelector<HTMLElement>('[data-listings-empty]')!;
+  const stat = (name: string, value: number) => {
+    document.querySelector(`[data-stat="${name}"]`)!.textContent = String(value);
+  };
+
+  function render() {
+    const mine = listings.all();
+    stat('orders', orders.all().length);
+    stat('favs', favs.ids().length);
+    stat('listings', mine.length);
+    empty.hidden = mine.length > 0;
+    list.innerHTML = mine
+      .map((l) => {
+        const cat = getCategory(l.category);
+        const img = l.photos[0] ? `<img src="${esc(l.photos[0])}" alt="" />` : esc(cat?.emoji ?? '📦');
+        return `
+        <li class="listing">
+          <span class="listing__img" aria-hidden="true">${img}</span>
+          <span>
+            <strong>${esc(l.title)}</strong>
+            <small>${esc(cat?.name ?? '')} · ${esc(l.town)} · ${formatDate(l.date)}</small>
+            <span class="listing__price">${formatMoney(l.price)}</span>
+            <span class="listing__status">Activa</span>
+          </span>
+          <button type="button" class="listing__del" data-del="${esc(l.id)}">Eliminar</button>
+        </li>`;
+      })
+      .join('');
+  }
+
+  list.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-del]');
+    if (!btn) return;
+    if (confirm('¿Eliminar esta publicación?')) {
+      listings.remove(btn.dataset.del!);
+      toast('Publicación eliminada');
+    }
+  });
+
+  document.querySelector('[data-login]')!.addEventListener('click', () => {
+    toast('🔐 El inicio de sesión llega pronto');
+  });
+
+  render();
+  onChange(render);
+</script>

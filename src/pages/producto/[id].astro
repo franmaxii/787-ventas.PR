@@ -1,0 +1,608 @@
+---
+import { url } from '../../lib/url';
+import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icon.astro';
+import Stars from '../../components/Stars.astro';
+import ProductImage from '../../components/ProductImage.astro';
+import ProductGrid from '../../components/ProductGrid.astro';
+import { getSeller, products, sampleReviews, type Product } from '../../data/products';
+import { getCategory } from '../../data/categories';
+import { discountPct, formatMoney, installmentsText } from '../../lib/format';
+
+export function getStaticPaths() {
+  return products.map((product) => ({ params: { id: product.id }, props: { product } }));
+}
+
+interface Props {
+  product: Product;
+}
+const { product: p } = Astro.props;
+const seller = getSeller(p.sellerId)!;
+const category = getCategory(p.category);
+const off = discountPct(p.price, p.originalPrice);
+const cuotas = installmentsText(p.price);
+const maxQty = Math.min(p.stock, 10);
+const index = products.indexOf(p);
+const reviews = [0, 1].map((i) => sampleReviews[(index + i) % sampleReviews.length]);
+const related = products.filter((x) => x.category === p.category && x.id !== p.id).slice(0, 4);
+---
+
+<Layout title={p.title} description={p.description}>
+  <div class="container">
+    <nav class="crumbs" aria-label="Ruta">
+      <a href={url('/')}>Inicio</a>
+      <Icon name="chevronRight" size={14} />
+      {category && <a href={url(`/categoria/${category.slug}`)}>{category.name}</a>}
+    </nav>
+
+    <div class="pdp">
+      <div class="pdp__media">
+        <ProductImage product={p} size="large" loading="eager" />
+        <button
+          type="button"
+          class="pdp__fav"
+          data-fav={p.id}
+          aria-pressed="false"
+          aria-label={`Guardar ${p.title} en favoritos`}
+        >
+          <Icon name="heart" size={24} />
+        </button>
+      </div>
+
+      <div class="pdp__info">
+        <p class="pdp__meta">
+          {p.condition === 'nuevo' ? 'Nuevo' : 'Usado'} · {p.sold.toLocaleString('es-PR')} vendidos
+        </p>
+        <h1 class="pdp__title">{p.title}</h1>
+        <a href="#opiniones" class="pdp__rating">
+          <strong>{p.rating.toFixed(1)}</strong>
+          <Stars rating={p.rating} />
+          <span>({p.reviews})</span>
+        </a>
+
+        <div class="pdp__price">
+          {off > 0 && p.originalPrice && <s>{formatMoney(p.originalPrice)}</s>}
+          <p>
+            <strong>{formatMoney(p.price)}</strong>
+            {off > 0 && <span class="tag-off">{off}% OFF</span>}
+          </p>
+          {cuotas && <p class="pdp__cuotas">{cuotas}</p>}
+        </div>
+
+        <div class="buybox panel">
+          <ul class="perks">
+            <li class:list={{ free: p.shipping === 0 }}>
+              <Icon name="truck" />
+              <span>
+                <strong>{p.shipping === 0 ? 'Envío gratis a toda la isla' : `Envío por ${formatMoney(p.shipping)}`}</strong>
+                <small>Llega en 2 a 4 días laborables</small>
+              </span>
+            </li>
+            {
+              p.pickup && (
+                <li>
+                  <Icon name="pin" />
+                  <span>
+                    <strong>Recógelo gratis en {seller.town}</strong>
+                    <small>Coordina con el vendedor</small>
+                  </span>
+                </li>
+              )
+            }
+          </ul>
+
+          <p class="stock">
+            {p.stock === 1 ? '¡Último disponible!' : <>Stock disponible <span>({p.stock} disponibles)</span></>}
+          </p>
+
+          {
+            maxQty > 1 && (
+              <div class="qty">
+                <label for="qty">Cantidad</label>
+                <select id="qty" class="select">
+                  {Array.from({ length: maxQty }, (_, i) => (
+                    <option value={i + 1}>
+                      {i + 1} {i === 0 ? 'unidad' : 'unidades'}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )
+          }
+
+          <div class="buybox__actions">
+            <button
+              type="button"
+              class="btn btn--primary btn--block"
+              data-add-to-cart={p.id}
+              data-buy-now
+              data-max={p.stock}
+              data-qty-from={maxQty > 1 ? '#qty' : undefined}
+            >
+              Comprar ahora
+            </button>
+            <button
+              type="button"
+              class="btn btn--soft btn--block"
+              data-add-to-cart={p.id}
+              data-max={p.stock}
+              data-qty-from={maxQty > 1 ? '#qty' : undefined}
+            >
+              <Icon name="cart" size={20} /> Agregar al carrito
+            </button>
+          </div>
+
+          <p class="protect">
+            <Icon name="shield" size={18} />
+            <span><strong>Compra protegida.</strong> Recibe el producto que esperabas o te devolvemos tu dinero.</span>
+          </p>
+        </div>
+
+        <div class="seller panel">
+          <div class="seller__avatar" aria-hidden="true">{seller.name.charAt(0)}</div>
+          <div>
+            <p class="seller__name">
+              {seller.name}
+              {seller.star && <span class="seller__badge">⭐ Vendedor Estrella</span>}
+            </p>
+            <p class="seller__meta">
+              <Icon name="pin" size={14} />
+              {seller.town} · {seller.sales.toLocaleString('es-PR')} ventas · desde {seller.since}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="section panel">
+      <h2 class="block-title">Características</h2>
+      <ul class="specs">
+        {p.details.map((d) => <li><Icon name="check" size={18} /> {d}</li>)}
+        <li><Icon name="check" size={18} /> Condición: {p.condition}</li>
+      </ul>
+      <h2 class="block-title">Descripción</h2>
+      <p class="desc">{p.description}</p>
+    </section>
+
+    <section class="section panel" id="preguntas">
+      <h2 class="block-title">Preguntas y respuestas</h2>
+      <form class="ask" data-ask-form data-product-id={p.id} data-product-title={p.title}>
+        <label for="ask" class="sr-only">Escribe tu pregunta</label>
+        <input id="ask" name="text" class="input" placeholder="Pregúntale al vendedor…" maxlength="300" required />
+        <button type="submit" class="btn btn--primary" aria-label="Enviar pregunta">
+          <Icon name="send" size={20} />
+        </button>
+      </form>
+      <ul class="qa" data-qa-list>
+        {
+          (p.questions ?? []).map((q) => (
+            <li>
+              <p class="qa__q">{q.q}</p>
+              {q.a && <p class="qa__a">↳ {q.a}</p>}
+            </li>
+          ))
+        }
+      </ul>
+      {!p.questions?.length && <p class="muted" data-qa-empty>Nadie ha preguntado todavía. ¡Sé el primero!</p>}
+    </section>
+
+    <section class="section panel" id="opiniones">
+      <h2 class="block-title">Opiniones del producto</h2>
+      <div class="score">
+        <strong>{p.rating.toFixed(1)}</strong>
+        <div>
+          <Stars rating={p.rating} size={22} />
+          <p class="muted">{p.reviews} opiniones</p>
+        </div>
+      </div>
+      <ul class="reviews">
+        {
+          reviews.map((r) => (
+            <li>
+              <Stars rating={r.stars} size={14} />
+              <p>{r.text}</p>
+              <small>
+                {r.name} · {r.town}
+              </small>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    {
+      related.length > 0 && (
+        <section class="section">
+          <div class="section__head">
+            <h2 class="section__title">También te puede gustar</h2>
+          </div>
+          <ProductGrid products={related} />
+        </section>
+      )
+    }
+  </div>
+</Layout>
+
+<style>
+  .crumbs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-block: 14px 10px;
+    font-size: 0.88rem;
+    font-weight: 700;
+  }
+
+  .crumbs a {
+    text-decoration: none;
+  }
+
+  .pdp {
+    display: grid;
+    gap: 20px;
+  }
+
+  @media (min-width: 860px) {
+    .pdp {
+      grid-template-columns: 1.1fr 1fr;
+      gap: 36px;
+      align-items: start;
+    }
+
+    .pdp__media {
+      position: sticky;
+      top: 16px;
+    }
+  }
+
+  .pdp__media {
+    position: relative;
+  }
+
+  .pdp__fav {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--blanco);
+    color: var(--rojito);
+    box-shadow: var(--shadow);
+  }
+
+  .pdp__fav[aria-pressed='true'] :global(.icon) {
+    fill: currentColor;
+  }
+
+  .pdp__meta {
+    margin: 0 0 4px;
+    color: var(--tinta-2);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .pdp__title {
+    font-size: clamp(1.5rem, 5.5vw, 2.1rem);
+  }
+
+  .pdp__rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    color: var(--tinta-2);
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+
+  .pdp__price {
+    margin: 16px 0;
+  }
+
+  .pdp__price s {
+    color: var(--tinta-3);
+  }
+
+  .pdp__price p {
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .pdp__price strong {
+    font-size: clamp(2rem, 9vw, 2.6rem);
+    font-weight: 900;
+    line-height: 1.1;
+  }
+
+  .pdp__price .tag-off {
+    font-size: 1.05rem;
+  }
+
+  .pdp__cuotas {
+    color: var(--verde-700);
+    font-weight: 700;
+  }
+
+  .buybox {
+    display: grid;
+    gap: 16px;
+  }
+
+  .perks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+
+  .perks li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    color: var(--tinta-2);
+  }
+
+  .perks li.free {
+    color: var(--verde-700);
+  }
+
+  .perks strong,
+  .perks small {
+    display: block;
+  }
+
+  .perks small {
+    color: var(--tinta-3);
+    font-size: 0.85rem;
+  }
+
+  .stock {
+    margin: 0;
+    font-weight: 800;
+  }
+
+  .stock span {
+    font-weight: 500;
+    color: var(--tinta-3);
+  }
+
+  .qty {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+  }
+
+  .qty .select {
+    width: auto;
+    min-height: 42px;
+  }
+
+  .buybox__actions {
+    display: grid;
+    gap: 10px;
+  }
+
+  .protect {
+    display: flex;
+    gap: 10px;
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--tinta-2);
+  }
+
+  .protect :global(.icon) {
+    flex: none;
+    color: var(--verde);
+  }
+
+  .seller {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 14px;
+  }
+
+  .seller__avatar {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--verde);
+    color: var(--blanco);
+    font-weight: 900;
+    font-size: 1.4rem;
+  }
+
+  .seller__name {
+    margin: 0;
+    font-weight: 900;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .seller__badge {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--amarillo);
+    font-size: 0.75rem;
+    font-weight: 800;
+  }
+
+  .seller__meta {
+    margin: 2px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--tinta-2);
+    font-size: 0.88rem;
+  }
+
+  .block-title {
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+  }
+
+  .block-title:not(:first-child) {
+    margin-top: 22px;
+  }
+
+  .specs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+
+  @media (min-width: 720px) {
+    .specs {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .specs li {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--crema-200);
+    font-weight: 600;
+  }
+
+  .specs :global(.icon) {
+    color: var(--verde);
+    flex: none;
+  }
+
+  .desc {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+
+  .ask {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .ask .btn {
+    padding: 0 16px;
+  }
+
+  .qa {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 14px;
+  }
+
+  .qa :global(.qa__q) {
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .qa :global(.qa__a) {
+    margin: 4px 0 0 4px;
+    color: var(--tinta-2);
+  }
+
+  .qa :global(.qa__pending) {
+    margin: 4px 0 0 4px;
+    color: var(--tinta-3);
+    font-style: italic;
+    font-size: 0.9rem;
+  }
+
+  .muted {
+    margin: 0;
+    color: var(--tinta-3);
+  }
+
+  .score {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .score > strong {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--azul);
+  }
+
+  .reviews {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+
+  .reviews li {
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--crema-200);
+  }
+
+  .reviews p {
+    margin: 6px 0 4px;
+  }
+
+  .reviews small {
+    color: var(--tinta-3);
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  import { questions } from '../../scripts/store';
+  import { esc, toast } from '../../scripts/ui';
+
+  const form = document.querySelector<HTMLFormElement>('[data-ask-form]');
+  const list = document.querySelector<HTMLUListElement>('[data-qa-list]');
+
+  function addPending(text: string) {
+    if (!list) return;
+    document.querySelector('[data-qa-empty]')?.remove();
+    const li = document.createElement('li');
+    li.innerHTML = `<p class="qa__q">${esc(text)}</p><p class="qa__pending">Esperando respuesta del vendedor…</p>`;
+    list.prepend(li);
+  }
+
+  if (form) {
+    const { productId = '', productTitle = '' } = form.dataset;
+    // preguntas que este usuario ya hizo
+    questions
+      .all()
+      .filter((q) => q.productId === productId)
+      .reverse()
+      .forEach((q) => addPending(q.text));
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = form.elements.namedItem('text') as HTMLInputElement;
+      const text = input.value.trim();
+      if (!text) return;
+      questions.add({ productId, productTitle, text, date: new Date().toISOString() });
+      addPending(text);
+      input.value = '';
+      toast('✉️ Pregunta enviada al vendedor');
+    });
+  }
+</script>

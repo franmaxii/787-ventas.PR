@@ -1,0 +1,108 @@
+---
+import Icon, { type IconName } from './Icon.astro';
+import { url } from '../lib/url';
+
+interface Props {
+  current?: string;
+}
+const { current = Astro.url.pathname } = Astro.props;
+
+const items: { href: string; label: string; icon: IconName; main?: boolean }[] = [
+  { href: '/vender', label: 'Vender', icon: 'camera' },
+  { href: '/mensajes', label: 'Mensajes', icon: 'chat' },
+  { href: '/cuenta', label: 'Mi cuenta', icon: 'user', main: true },
+  { href: '/favoritos', label: 'Favoritos', icon: 'heart' },
+  { href: '/compras', label: 'Mis compras', icon: 'bag' },
+];
+
+const isActive = (href: string) => current.replace(/\/$/, '') === url(href);
+---
+
+<nav class="bottom-nav" aria-label="Navegación rápida">
+  <ul>
+    {
+      items.map((item) => (
+        <li class:list={{ main: item.main }}>
+          <a
+            href={url(item.href)}
+            class:list={['dot', { 'dot--main': item.main, 'is-active': isActive(item.href) }]}
+            aria-label={item.label}
+            title={item.label}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+          >
+            <Icon name={item.icon} size={item.main ? 54 : 28} />
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .bottom-nav {
+    position: fixed;
+    left: 50%;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    width: min(440px, calc(100% - 20px));
+    z-index: 40;
+    pointer-events: none;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr auto 1fr 1fr;
+    align-items: end;
+    justify-items: center;
+  }
+
+  .dot {
+    pointer-events: auto;
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    margin-bottom: 4px;
+    border-radius: 50%;
+    background: var(--blanco);
+    color: var(--verde);
+    box-shadow: var(--shadow);
+    transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .dot:hover {
+    transform: translateY(-3px);
+  }
+
+  .dot--main {
+    width: 92px;
+    height: 92px;
+    margin-inline: 4px;
+    overflow: hidden;
+    align-items: end;
+  }
+
+  .dot--main :global(.icon) {
+    margin-bottom: 12px;
+  }
+
+  .dot.is-active {
+    background: var(--verde);
+    color: var(--blanco);
+  }
+
+  .dot--main.is-active {
+    background: var(--blanco);
+    color: var(--verde);
+    box-shadow: 0 0 0 4px var(--azul), var(--shadow);
+  }
+
+  @media (min-width: 900px) {
+    .bottom-nav {
+      bottom: 16px;
+    }
+  }
+</style>

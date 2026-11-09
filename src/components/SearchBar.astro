@@ -1,0 +1,108 @@
+---
+import { url } from '../lib/url';
+import Icon from './Icon.astro';
+
+interface Props {
+  value?: string;
+  autofocus?: boolean;
+}
+const { value = '', autofocus = false } = Astro.props;
+---
+
+<form class="search" action={url('/buscar')} method="get" role="search" data-search-form>
+  <label for="q" class="sr-only">Buscar productos</label>
+  <span class="search__icon"><Icon name="search" size={30} /></span>
+  <input
+    id="q"
+    class="search__input"
+    type="search"
+    name="q"
+    value={value}
+    placeholder="Buscar en Plaza 787…"
+    autocomplete="off"
+    enterkeyhint="search"
+    autofocus={autofocus}
+  />
+  <button type="button" class="search__clear" data-search-clear aria-label="Borrar búsqueda">
+    <Icon name="x" size={18} />
+  </button>
+</form>
+
+<style>
+  .search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: var(--max);
+    margin-inline: auto;
+    padding: 8px var(--gutter);
+    background: var(--crema-200);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.9);
+  }
+
+  .search__icon {
+    display: grid;
+    color: #b9b2a5;
+  }
+
+  .search__input {
+    flex: 1;
+    min-width: 0;
+    height: 46px;
+    padding: 0 4px;
+    border: 0;
+    background: transparent;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  .search__input::placeholder {
+    color: #a69d8c;
+    font-weight: 500;
+  }
+
+  .search__input:focus {
+    outline: none;
+  }
+
+  .search:focus-within {
+    border-bottom-color: var(--azul);
+  }
+
+  /* ocultamos la X nativa del navegador */
+  .search__input::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .search__clear {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    flex: none;
+    border: 0;
+    border-radius: 50%;
+    background: #444;
+    color: var(--blanco);
+    transition: opacity 0.15s ease;
+  }
+
+  .search__input:placeholder-shown ~ .search__clear {
+    opacity: 0;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('[data-search-form]').forEach((form) => {
+    const input = form.querySelector<HTMLInputElement>('input[name="q"]');
+    form.querySelector('[data-search-clear]')?.addEventListener('click', () => {
+      if (!input) return;
+      input.value = '';
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.focus();
+    });
+  });
+</script>

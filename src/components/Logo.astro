@@ -1,0 +1,103 @@
+---
+import { url } from '../lib/url';
+import { site } from '../data/site';
+
+const top = [
+  { ch: 'P', c: '#f25c05', r: -8 },
+  { ch: 'L', c: '#2e3fce', r: 4 },
+  { ch: 'a', c: '#d9409a', r: -5 },
+  { ch: 'Z', c: '#2f6b1a', r: 6 },
+  { ch: 'a', c: '#f25c05', r: -4 },
+];
+const bottom = [
+  { ch: '7', c: '#2e3fce', r: -4 },
+  { ch: '8', c: '#d9409a', r: 3 },
+  { ch: '7', c: '#2f6b1a', r: -3 },
+];
+const star = 'M12 1l2.8 7 7.2.6-5.5 4.7 1.8 7.2L12 16.6l-6.3 3.9 1.8-7.2L2 8.6l7.2-.6z';
+const sparkle = 'M12 0c1 8 4 11 12 12-8 1-11 4-12 12-1-8-4-11-12-12 8-1 11-4 12-12z';
+---
+
+<a href={url('/')} class="logo" aria-label={`${site.name}, ir al inicio`}>
+  {
+    site.logo ? (
+      <img src={url(site.logo)} alt={site.name} class="logo__img" />
+    ) : (
+      <span class="logo__art" aria-hidden="true">
+        <span class="row row--top">
+          {top.map((l) => <span class="ch" style={`--c:${l.c};--r:${l.r}deg`}>{l.ch}</span>)}
+        </span>
+        <span class="row row--bottom">
+          {bottom.map((l) => <span class="ch" style={`--c:${l.c};--r:${l.r}deg`}>{l.ch}</span>)}
+        </span>
+        <svg class="deco d1" viewBox="0 0 24 24"><path d="M4 3c6 1 10 6 9 14-5-2-9-7-9-14z" fill="#2f6b1a" /></svg>
+        <svg class="deco d2" viewBox="0 0 24 24"><path d={star} fill="#f2896b" /></svg>
+        <svg class="deco d3" viewBox="0 0 24 24"><path d={sparkle} fill="#4f8f2f" /></svg>
+        <svg class="deco d4" viewBox="0 0 24 24"><path d={star} fill="#b3362b" /></svg>
+        <svg class="deco d5" viewBox="0 0 24 24"><path d={sparkle} fill="#4f8f2f" /></svg>
+        <svg class="deco d6" viewBox="0 0 24 24"><path d="M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6-8 11-8 11z" fill="#f2896b" /></svg>
+      </span>
+    )
+  }
+</a>
+
+<style>
+  .logo {
+    display: inline-block;
+    text-decoration: none;
+    line-height: 1;
+  }
+
+  .logo__img {
+    height: 74px;
+    width: auto;
+  }
+
+  .logo__art {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2px 22px;
+    font-family: var(--font-logo);
+  }
+
+  .row {
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .row--top {
+    font-size: 2.05rem;
+    letter-spacing: -0.02em;
+    margin-bottom: -4px;
+  }
+
+  .row--bottom {
+    font-size: 2.55rem;
+  }
+
+  .ch {
+    display: inline-block;
+    color: var(--c);
+    transform: rotate(var(--r));
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+    transition: transform 0.25s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+
+  .logo:hover .ch {
+    transform: rotate(calc(var(--r) * -1)) translateY(-2px);
+  }
+
+  .deco {
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .d1 { width: 14px; left: 4px; top: 22px; transform: rotate(-30deg); }
+  .d2 { width: 15px; left: 0; top: 42px; }
+  .d3 { width: 13px; left: 15px; top: 52px; }
+  .d4 { width: 16px; right: 2px; top: 22px; transform: rotate(18deg); }
+  .d5 { width: 13px; right: 6px; top: 50px; }
+  .d6 { width: 11px; right: 6px; top: 4px; transform: rotate(20deg); }
+</style>

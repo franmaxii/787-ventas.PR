@@ -1,0 +1,188 @@
+---
+import { url } from '../lib/url';
+import type { Product } from '../data/products';
+import { getSeller } from '../data/products';
+import { discountPct, formatMoney, shippingText } from '../lib/format';
+import Icon from './Icon.astro';
+import ProductImage from './ProductImage.astro';
+
+interface Props {
+  product: Product;
+  /** Atributos de datos para filtrar en el cliente (búsqueda). */
+  filterable?: boolean;
+}
+const { product: p, filterable = false } = Astro.props;
+const off = discountPct(p.price, p.originalPrice);
+const seller = getSeller(p.sellerId);
+
+const data = filterable
+  ? {
+      'data-id': p.id,
+      'data-title': `${p.title} ${p.description} ${p.details.join(' ')}`.toLowerCase(),
+      'data-category': p.category,
+      'data-price': String(p.price),
+      'data-condition': p.condition,
+      'data-free': String(p.shipping === 0),
+      'data-off': String(off),
+      'data-town': seller?.town ?? '',
+      'data-sold': String(p.sold),
+    }
+  : {};
+---
+
+<article class="card" {...data}>
+  <div class="card__media">
+    <ProductImage product={p} />
+    {off > 0 && <span class="card__badge">-{off}%</span>}
+  </div>
+  <!-- fuera de .card__media: su transform en hover dejaría el botón debajo del enlace -->
+  <button
+    type="button"
+    class="card__fav"
+    data-fav={p.id}
+    aria-pressed="false"
+    aria-label={`Guardar ${p.title} en favoritos`}
+  >
+    <Icon name="heart" size={20} />
+  </button>
+
+  <h3 class="card__title">
+    <a href={url(`/producto/${p.id}`)}>{p.title}</a>
+  </h3>
+
+  <p class="card__price">
+    {p.originalPrice && off > 0 && <s>{formatMoney(p.originalPrice)}</s>}
+    <strong>{formatMoney(p.price)}</strong>
+  </p>
+  <p class:list={['card__ship', { free: p.shipping === 0 }]}>
+    {shippingText(p.shipping)}
+  </p>
+  <p class="card__desc">{p.description}</p>
+</article>
+
+<style>
+  .card {
+    position: relative;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .card__media {
+    position: relative;
+    margin-bottom: 6px;
+    transition: transform 0.2s ease;
+  }
+
+  .card:hover .card__media {
+    transform: translateY(-3px);
+  }
+
+  .card:hover :global(.pimg__emoji) {
+    transform: scale(1.1) rotate(-4deg);
+  }
+
+  .card__badge {
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: var(--blanco);
+    color: var(--verde-700);
+    font-weight: 900;
+    font-size: 0.8rem;
+  }
+
+  .card__fav {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--blanco);
+    color: var(--rojito);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s ease;
+  }
+
+  .card__fav:active {
+    transform: scale(0.88);
+  }
+
+  .card__fav[aria-pressed='true'] :global(.icon) {
+    fill: currentColor;
+  }
+
+  .card__title {
+    font-size: clamp(1rem, 3.6vw, 1.2rem);
+    font-weight: 900;
+    line-height: 1.15;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card__title a {
+    color: var(--tinta);
+    text-decoration: none;
+  }
+
+  /* toda la tarjeta es clickeable */
+  .card__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .card__price {
+    margin: 2px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .card__price strong {
+    font-size: 1.25rem;
+    font-weight: 900;
+  }
+
+  .card__price s {
+    color: var(--tinta-3);
+    font-size: 0.85rem;
+  }
+
+  .card__ship {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--tinta-2);
+  }
+
+  .card__ship.free {
+    color: var(--verde-700);
+  }
+
+  .card__desc {
+    margin: 0;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--tinta-2);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

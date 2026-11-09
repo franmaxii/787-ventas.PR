@@ -1,0 +1,196 @@
+---
+import { url } from '../lib/url';
+import Layout from '../layouts/Layout.astro';
+import SearchBar from '../components/SearchBar.astro';
+import ProductGrid from '../components/ProductGrid.astro';
+import Icon from '../components/Icon.astro';
+import { products, sellers } from '../data/products';
+import { categories } from '../data/categories';
+
+const towns = [...new Set(sellers.map((s) => s.town))].sort((a, b) => a.localeCompare(b, 'es'));
+---
+
+<Layout title="Buscar" description="Busca productos en Plaza 787.">
+  <SearchBar />
+
+  <div class="container">
+    <div class="results-head">
+      <div>
+        <h1 class="page-title" data-results-title>Todos los productos</h1>
+        <p class="page-sub" data-results-count>{products.length} resultados</p>
+      </div>
+    </div>
+
+    <form class="filters" data-filters>
+      <div class="filters__bar">
+        <button type="button" class="chip" aria-expanded="false" aria-controls="filters-panel" data-filters-toggle>
+          <Icon name="filter" size={18} /> Filtros
+        </button>
+
+        <label class="chip chip--toggle">
+          <input type="checkbox" name="envio" value="1" />
+          <Icon name="truck" size={18} /> Envío gratis
+        </label>
+        <label class="chip chip--toggle">
+          <input type="checkbox" name="ofertas" value="1" />
+          <Icon name="tag" size={18} /> Ofertas
+        </label>
+
+        <label class="sort">
+          <span class="sr-only">Ordenar por</span>
+          <select name="orden" class="select">
+            <option value="">Más relevantes</option>
+            <option value="menor">Menor precio</option>
+            <option value="mayor">Mayor precio</option>
+            <option value="vendidos">Más vendidos</option>
+          </select>
+        </label>
+      </div>
+      <div class="filters__panel panel" id="filters-panel" hidden>
+        <div class="filters__grid">
+          <div class="field">
+            <label for="f-cat">Categoría</label>
+            <select id="f-cat" name="categoria" class="select">
+              <option value="">Todas</option>
+              {categories.map((c) => <option value={c.slug}>{c.name}</option>)}
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-cond">Condición</label>
+            <select id="f-cond" name="condicion" class="select">
+              <option value="">Nuevo y usado</option>
+              <option value="nuevo">Nuevo</option>
+              <option value="usado">Usado</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-town">Ubicación</label>
+            <select id="f-town" name="municipio" class="select">
+              <option value="">Toda la isla</option>
+              {towns.map((t) => <option value={t}>{t}</option>)}
+            </select>
+          </div>
+          <fieldset class="field price">
+            <legend>Precio (USD)</legend>
+            <div class="price__row">
+              <input name="min" type="number" min="0" inputmode="numeric" class="input" placeholder="Mínimo" aria-label="Precio mínimo" />
+              <span aria-hidden="true">–</span>
+              <input name="max" type="number" min="0" inputmode="numeric" class="input" placeholder="Máximo" aria-label="Precio máximo" />
+            </div>
+          </fieldset>
+        </div>
+        <button type="reset" class="btn btn--soft">Limpiar filtros</button>
+      </div>
+    </form>
+
+    <ProductGrid products={products} filterable id="results" />
+
+    <div class="empty" data-results-empty hidden>
+      <div class="empty__emoji">🔍</div>
+      <h2>No encontramos publicaciones</h2>
+      <p>Revisa la ortografía o usa palabras más generales.</p>
+      <a href={url('/buscar')} class="btn btn--primary">Ver todos los productos</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .results-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+  }
+
+  .filters {
+    margin-bottom: 22px;
+  }
+
+  .filters__bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  [data-filters-toggle][aria-expanded='true'] {
+    border-color: var(--azul);
+    background: var(--azul-100);
+    color: var(--azul-700);
+  }
+
+  .filters__panel {
+    margin-top: 12px;
+  }
+
+  .filters__grid {
+    display: grid;
+    gap: 0 16px;
+  }
+
+  @media (min-width: 720px) {
+    .filters__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .price {
+    border: 0;
+    padding: 0;
+    margin: 0 0 14px;
+  }
+
+  .price__row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .sort {
+    margin-left: auto;
+  }
+
+  .sort .select {
+    min-height: 40px;
+    padding-block: 6px;
+    border-radius: 999px;
+    font-weight: 700;
+  }
+</style>
+
+<script>
+  import { initFilters } from '../scripts/filter';
+  import { categories } from '../data/categories';
+
+  const form = document.querySelector<HTMLFormElement>('[data-filters]')!;
+  const title = document.querySelector<HTMLElement>('[data-results-title]')!;
+  const toggle = document.querySelector<HTMLButtonElement>('[data-filters-toggle]')!;
+  const panel = document.getElementById('filters-panel')!;
+
+  toggle.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') !== 'true';
+    toggle.setAttribute('aria-expanded', String(open));
+    panel.hidden = !open;
+  });
+
+  form.addEventListener('filters:applied', (e) => {
+    const s = (e as CustomEvent).detail as { q: string; categoria: string; ofertas: boolean };
+    const cat = categories.find((c) => c.slug === s.categoria);
+    title.textContent = s.q
+      ? `“${s.q}”`
+      : s.ofertas
+        ? 'Ofertas'
+        : cat
+          ? cat.name
+          : 'Todos los productos';
+    document.title = `${title.textContent} | Plaza 787`;
+  });
+
+  initFilters({
+    form,
+    grid: document.getElementById('results')!,
+    queryInput: document.querySelector<HTMLInputElement>('#q'),
+    count: document.querySelector('[data-results-count]'),
+    empty: document.querySelector('[data-results-empty]'),
+    syncUrl: true,
+  });
+</script>

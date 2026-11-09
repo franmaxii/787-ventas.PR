@@ -1,0 +1,238 @@
+---
+import { url } from '../lib/url';
+import Icon from './Icon.astro';
+import Logo from './Logo.astro';
+import { categories } from '../data/categories';
+import { site } from '../data/site';
+---
+
+<header class="header">
+  <div class="header__inner container">
+    <button class="icon-btn" type="button" data-menu-open aria-label="Abrir menú" aria-controls="menu">
+      <Icon name="menu" size={40} />
+    </button>
+
+    <Logo />
+
+    <a href={url('/carrito')} class="icon-btn cart" aria-label="Carrito">
+      <Icon name="cart" size={42} />
+      <span class="cart__badge" data-cart-count data-empty="true" aria-hidden="true">+</span>
+      <span class="sr-only" data-cart-count-sr>vacío</span>
+    </a>
+  </div>
+</header>
+
+<dialog id="menu" class="drawer" aria-label="Menú principal">
+  <div class="drawer__head">
+    <p class="drawer__hello">¡Hola! 👋<br /><span>Bienvenido a {site.name}</span></p>
+    <button type="button" class="drawer__close" data-menu-close aria-label="Cerrar menú">
+      <Icon name="x" size={22} />
+    </button>
+  </div>
+
+  <nav class="drawer__nav">
+    <a href={url('/')}><Icon name="home" /> Inicio</a>
+    <a href={url('/buscar?ofertas=1')}><Icon name="tag" /> Ofertas</a>
+    <a href={url('/vender')}><Icon name="camera" /> Vender</a>
+    <a href={url('/compras')}><Icon name="bag" /> Mis compras</a>
+    <a href={url('/favoritos')}><Icon name="heart" /> Favoritos</a>
+    <a href={url('/mensajes')}><Icon name="chat" /> Mensajes</a>
+    <a href={url('/cuenta')}><Icon name="user" /> Mi cuenta</a>
+  </nav>
+
+  <p class="drawer__label">Categorías</p>
+  <nav class="drawer__cats">
+    {
+      categories.map((c) => (
+        <a href={url(`/categoria/${c.slug}`)}>
+          <span class="drawer__emoji">{c.emoji}</span>
+          {c.name}
+        </a>
+      ))
+    }
+  </nav>
+</dialog>
+
+<style>
+  .header {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: 10px 8px;
+  }
+
+  .icon-btn {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--blanco);
+    border-radius: 16px;
+    /* blanco sobre crema, con sombra para que se lea bien */
+    filter: drop-shadow(0 1px 1.5px rgba(74, 56, 22, 0.35));
+  }
+
+  .icon-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+  }
+
+  .cart__badge {
+    position: absolute;
+    top: 2px;
+    right: -2px;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 5px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--blanco);
+    color: var(--rojito);
+    font-weight: 900;
+    font-size: 0.85rem;
+    line-height: 1;
+  }
+
+  .cart__badge[data-empty='true'] {
+    color: var(--crema);
+    font-size: 1.3rem;
+  }
+
+  .cart__badge.bump {
+    animation: bump 0.4s ease;
+  }
+
+  @keyframes bump {
+    40% {
+      transform: scale(1.35);
+    }
+  }
+
+  /* ---------- Menú lateral ---------- */
+  .drawer {
+    position: fixed;
+    inset: 0 auto 0 0;
+    margin: 0;
+    width: min(320px, 86vw);
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    padding: 0;
+    border: 0;
+    background: var(--crema);
+    color: var(--tinta);
+    overflow-y: auto;
+    box-shadow: var(--shadow);
+  }
+
+  .drawer[open] {
+    animation: slide-in 0.25s ease-out;
+  }
+
+  .drawer::backdrop {
+    background: rgba(29, 27, 23, 0.45);
+  }
+
+  @keyframes slide-in {
+    from {
+      transform: translateX(-100%);
+    }
+  }
+
+  .drawer__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: calc(20px + env(safe-area-inset-top)) 18px 18px;
+    background: var(--azul);
+    color: var(--blanco);
+  }
+
+  .drawer__hello {
+    margin: 0;
+    font-weight: 900;
+    font-size: 1.35rem;
+    line-height: 1.2;
+  }
+
+  .drawer__hello span {
+    font-weight: 600;
+    font-size: 0.95rem;
+    opacity: 0.9;
+  }
+
+  .drawer__close {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--blanco);
+  }
+
+  .drawer__nav,
+  .drawer__cats {
+    display: grid;
+    padding: 8px;
+  }
+
+  .drawer__nav a,
+  .drawer__cats a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 12px;
+    border-radius: 12px;
+    color: var(--tinta);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .drawer__nav a :global(.icon) {
+    color: var(--verde);
+  }
+
+  .drawer__nav a:hover,
+  .drawer__cats a:hover {
+    background: rgba(255, 255, 255, 0.55);
+  }
+
+  .drawer__label {
+    margin: 8px 20px 0;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--tinta-3);
+  }
+
+  .drawer__emoji {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--blanco);
+    font-size: 1.05rem;
+  }
+</style>
+
+<script>
+  const menu = document.getElementById('menu') as HTMLDialogElement | null;
+  document.querySelector('[data-menu-open]')?.addEventListener('click', () => menu?.showModal());
+  menu?.querySelector('[data-menu-close]')?.addEventListener('click', () => menu.close());
+  // Cerrar al tocar fuera del panel
+  menu?.addEventListener('click', (e) => {
+    if (e.target === menu && e.clientX > menu.getBoundingClientRect().right) menu.close();
+  });
+</script>

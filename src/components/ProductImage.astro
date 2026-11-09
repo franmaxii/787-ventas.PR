@@ -1,0 +1,69 @@
+---
+import type { Product } from '../data/products';
+import { url } from '../lib/url';
+
+interface Props {
+  product: Pick<Product, 'title' | 'emoji' | 'color' | 'image'>;
+  size?: 'card' | 'large' | 'thumb';
+  loading?: 'lazy' | 'eager';
+}
+const { product, size = 'card', loading = 'lazy' } = Astro.props;
+---
+
+<div class:list={['pimg', `pimg--${size}`, `bg-${product.color}`]}>
+  {
+    product.image ? (
+      <img src={url(product.image)} alt={size === 'large' ? product.title : ''} loading={loading} decoding="async" />
+    ) : (
+      <span class="pimg__emoji" aria-hidden="true">
+        {product.emoji}
+      </span>
+    )
+  }
+</div>
+
+<style>
+  .pimg {
+    position: relative;
+    aspect-ratio: 1;
+    width: 100%;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: var(--azul);
+  }
+
+  .pimg--large {
+    border-radius: var(--radius-lg);
+  }
+
+  .pimg--thumb {
+    border-radius: 12px;
+  }
+
+  .bg-azul { background: var(--azul); }
+  .bg-rojito { background: var(--rojito); }
+  .bg-amarillo { background: var(--amarillo); }
+  .bg-verde { background: var(--verde); }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .pimg__emoji {
+    font-size: clamp(3rem, 16vw, 5rem);
+    line-height: 1;
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.18));
+    transition: transform 0.3s cubic-bezier(0.3, 1.5, 0.5, 1);
+  }
+
+  .pimg--large .pimg__emoji {
+    font-size: clamp(6rem, 35vw, 11rem);
+  }
+
+  .pimg--thumb .pimg__emoji {
+    font-size: 2rem;
+  }
+</style>

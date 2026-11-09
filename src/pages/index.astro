@@ -1,0 +1,141 @@
+---
+import { url } from '../lib/url';
+import Layout from '../layouts/Layout.astro';
+import HeroVideo from '../components/HeroVideo.astro';
+import SearchBar from '../components/SearchBar.astro';
+import CategoryRow from '../components/CategoryRow.astro';
+import ProductGrid from '../components/ProductGrid.astro';
+import Icon from '../components/Icon.astro';
+import { products } from '../data/products';
+import { discountPct } from '../lib/format';
+
+const featured = products.filter((p) => p.featured);
+const deals = products
+  .filter((p) => discountPct(p.price, p.originalPrice) > 0)
+  .sort((a, b) => discountPct(b.price, b.originalPrice) - discountPct(a.price, a.originalPrice));
+const local = products.filter((p) => p.category === 'hecho-en-pr' || p.category === 'sabores');
+---
+
+<Layout>
+  <HeroVideo />
+  <SearchBar />
+  <CategoryRow />
+
+  <div class="container">
+    <section class="section">
+      <div class="section__head">
+        <h2 class="section__title">Recomendados para ti</h2>
+        <a class="section__link" href={url('/buscar')}>Ver todo</a>
+      </div>
+      <ProductGrid products={featured} />
+    </section>
+
+    <section class="section">
+      <div class="section__head">
+        <h2 class="section__title">🔥 Ofertas del día</h2>
+        <a class="section__link" href={url('/buscar?ofertas=1')}>Ver ofertas</a>
+      </div>
+      <ProductGrid products={deals} scroller />
+    </section>
+
+    <section class="sell-cta">
+      <div>
+        <h2>¿Tienes algo que vender?</h2>
+        <p>Publica gratis en minutos y véndele a toda la isla.</p>
+      </div>
+      <a href={url('/vender')} class="btn btn--white">
+        <Icon name="camera" size={20} /> Vender ahora
+      </a>
+    </section>
+
+    <section class="section">
+      <div class="section__head">
+        <h2 class="section__title">Hecho en Puerto Rico</h2>
+        <a class="section__link" href={url('/categoria/hecho-en-pr')}>Ver más</a>
+      </div>
+      <ProductGrid products={local} />
+    </section>
+
+    <ul class="trust">
+      <li>
+        <span class="trust__icon"><Icon name="shield" /></span>
+        <strong>Compra protegida</strong>
+        <span>Si no llega, te devolvemos el dinero.</span>
+      </li>
+      <li>
+        <span class="trust__icon"><Icon name="card" /></span>
+        <strong>Paga como quieras</strong>
+        <span>ATH Móvil, tarjeta o en efectivo al recoger.</span>
+      </li>
+      <li>
+        <span class="trust__icon"><Icon name="truck" /></span>
+        <strong>Envíos en toda la isla</strong>
+        <span>De Aguadilla a Fajardo, Vieques y Culebra.</span>
+      </li>
+    </ul>
+  </div>
+</Layout>
+
+<style>
+  .sell-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-block: 36px;
+    padding: 22px;
+    border-radius: var(--radius-lg);
+    background: var(--amarillo);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .sell-cta h2 {
+    font-size: 1.4rem;
+  }
+
+  .sell-cta p {
+    margin: 4px 0 0;
+    font-weight: 600;
+  }
+
+  .trust {
+    list-style: none;
+    margin: 40px 0 20px;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+
+  @media (min-width: 720px) {
+    .trust {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .trust li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 14px;
+    align-items: center;
+    padding: 16px;
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.6);
+  }
+
+  .trust__icon {
+    grid-row: span 2;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--verde);
+    color: var(--blanco);
+  }
+
+  .trust span:last-child {
+    font-size: 0.9rem;
+    color: var(--tinta-2);
+  }
+</style>

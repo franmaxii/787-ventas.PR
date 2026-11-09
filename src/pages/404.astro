@@ -1,0 +1,17 @@
+---
+import { url } from '../lib/url';
+import Layout from '../layouts/Layout.astro';
+import SearchBar from '../components/SearchBar.astro';
+---
+
+<Layout title="Página no encontrada">
+  <div class="container">
+    <div class="empty">
+      <div class="empty__emoji">🐸</div>
+      <h1 class="page-title">¡Ay bendito! No encontramos esta página</h1>
+      <p>Puede que el enlace esté roto o que la publicación ya no exista.</p>
+      <a href={url('/')} class="btn btn--primary">Volver al inicio</a>
+    </div>
+  </div>
+  <SearchBar />
+</Layout>
