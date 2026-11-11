@@ -6,31 +6,37 @@ interface Props {
   current?: string;
 }
 const { current = Astro.url.pathname } = Astro.props;
+const path = current.replace(/\/$/, '') || '/';
+const isActive = (href: string) => path === (url(href).replace(/\/$/, '') || '/');
+
+// En el perfil, el botón central lleva al inicio (como en el diseño del perfil).
+const onProfile = isActive('/cuenta') || path.startsWith(url('/vendedor/'));
+const center = onProfile
+  ? { href: '/', label: 'Inicio', icon: 'home' as IconName }
+  : { href: '/cuenta', label: 'Mi perfil', icon: 'user' as IconName };
 
 const items: { href: string; label: string; icon: IconName; main?: boolean }[] = [
   { href: '/vender', label: 'Vender', icon: 'camera' },
   { href: '/mensajes', label: 'Mensajes', icon: 'chat' },
-  { href: '/cuenta', label: 'Mi cuenta', icon: 'user', main: true },
+  { ...center, main: true },
   { href: '/favoritos', label: 'Favoritos', icon: 'heart' },
   { href: '/compras', label: 'Mis compras', icon: 'bag' },
 ];
-
-const isActive = (href: string) => current.replace(/\/$/, '') === url(href);
 ---
 
 <nav class="bottom-nav" aria-label="Navegación rápida">
   <ul>
     {
       items.map((item) => (
-        <li class:list={{ main: item.main }}>
+        <li>
           <a
             href={url(item.href)}
-            class:list={['dot', { 'dot--main': item.main, 'is-active': isActive(item.href) }]}
+            class:list={['dot', { 'dot--main': item.main, 'is-active': !item.main && isActive(item.href) }]}
             aria-label={item.label}
             title={item.label}
             aria-current={isActive(item.href) ? 'page' : undefined}
           >
-            <Icon name={item.icon} size={item.main ? 54 : 28} />
+            <Icon name={item.icon} solid size={item.main ? 50 : 26} />
           </a>
         </li>
       ))
@@ -61,25 +67,45 @@ const isActive = (href: string) => current.replace(/\/$/, '') === url(href);
 
   .dot {
     pointer-events: auto;
+    position: relative;
     display: grid;
     place-items: center;
     width: 58px;
     height: 58px;
     margin-bottom: 4px;
     border-radius: 50%;
-    background: var(--blanco);
-    color: var(--verde);
-    box-shadow: var(--shadow);
-    transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+    color: var(--accent);
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.5));
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 1), inset 0 -2px 6px rgba(255, 255, 255, 0.35),
+      0 10px 24px -8px rgba(74, 56, 22, 0.4);
+    transition: transform 0.25s var(--ease-spring), background 0.2s ease, color 0.2s ease;
+  }
+
+  /* brillo especular del vidrio */
+  .dot::before {
+    content: '';
+    position: absolute;
+    inset: 3px 8px auto;
+    height: 40%;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0));
+    pointer-events: none;
   }
 
   .dot:hover {
-    transform: translateY(-3px);
+    transform: translateY(-3px) scale(1.04);
+  }
+
+  .dot:active {
+    transform: scale(0.92);
   }
 
   .dot--main {
-    width: 92px;
-    height: 92px;
+    width: 90px;
+    height: 90px;
     margin-inline: 4px;
     overflow: hidden;
     align-items: end;
@@ -90,14 +116,17 @@ const isActive = (href: string) => current.replace(/\/$/, '') === url(href);
   }
 
   .dot.is-active {
-    background: var(--verde);
     color: var(--blanco);
+    background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 80%, white), var(--accent));
+    border-color: rgba(255, 255, 255, 0.5);
   }
 
-  .dot--main.is-active {
-    background: var(--blanco);
-    color: var(--verde);
-    box-shadow: 0 0 0 4px var(--azul), var(--shadow);
+  .dot.is-active::before {
+    opacity: 0.45;
+  }
+
+  .dot--main[aria-current='page'] {
+    box-shadow: 0 0 0 3px var(--accent), inset 0 1px 0 rgba(255, 255, 255, 1), 0 10px 24px -8px rgba(74, 56, 22, 0.4);
   }
 
   @media (min-width: 900px) {

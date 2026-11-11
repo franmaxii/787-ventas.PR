@@ -5,7 +5,7 @@ import Icon from '../../components/Icon.astro';
 import Stars from '../../components/Stars.astro';
 import ProductImage from '../../components/ProductImage.astro';
 import ProductGrid from '../../components/ProductGrid.astro';
-import { getSeller, products, sampleReviews, type Product } from '../../data/products';
+import { activeProducts, getSeller, products, sampleReviews, statusOf, type Product } from '../../data/products';
 import { getCategory } from '../../data/categories';
 import { discountPct, formatMoney, installmentsText } from '../../lib/format';
 
@@ -24,7 +24,9 @@ const cuotas = installmentsText(p.price);
 const maxQty = Math.min(p.stock, 10);
 const index = products.indexOf(p);
 const reviews = [0, 1].map((i) => sampleReviews[(index + i) % sampleReviews.length]);
-const related = products.filter((x) => x.category === p.category && x.id !== p.id).slice(0, 4);
+const related = activeProducts.filter((x) => x.category === p.category && x.id !== p.id).slice(0, 4);
+const status = statusOf(p);
+const isActive = status === 'activo';
 ---
 
 <Layout title={p.title} description={p.description}>
@@ -41,6 +43,7 @@ const related = products.filter((x) => x.category === p.category && x.id !== p.i
         <button
           type="button"
           class="pdp__fav"
+          hidden={!isActive}
           data-fav={p.id}
           aria-pressed="false"
           aria-label={`Guardar ${p.title} en favoritos`}
@@ -54,11 +57,15 @@ const related = products.filter((x) => x.category === p.category && x.id !== p.i
           {p.condition === 'nuevo' ? 'Nuevo' : 'Usado'} · {p.sold.toLocaleString('es-PR')} vendidos
         </p>
         <h1 class="pdp__title">{p.title}</h1>
-        <a href="#opiniones" class="pdp__rating">
-          <strong>{p.rating.toFixed(1)}</strong>
-          <Stars rating={p.rating} />
-          <span>({p.reviews})</span>
-        </a>
+        {
+          p.reviews > 0 && (
+            <a href="#opiniones" class="pdp__rating">
+              <strong>{p.rating.toFixed(1)}</strong>
+              <Stars rating={p.rating} />
+              <span>({p.reviews})</span>
+            </a>
+          )
+        }
 
         <div class="pdp__price">
           {off > 0 && p.originalPrice && <s>{formatMoney(p.originalPrice)}</s>}
@@ -69,7 +76,19 @@ const related = products.filter((x) => x.category === p.category && x.id !== p.i
           {cuotas && <p class="pdp__cuotas">{cuotas}</p>}
         </div>
 
-        <div class="buybox panel">
+        {
+          !isActive && (
+            <div class="ended panel">
+              <Icon name="archive" size={26} />
+              <div>
+                <strong>{status === 'vendido' ? 'Este artículo ya se vendió' : 'Esta publicación expiró'}</strong>
+                <p>Mira otras publicaciones de {seller.name}.</p>
+              </div>
+            </div>
+          )
+        }
+
+        <div class="buybox panel" hidden={!isActive}>
           <ul class="perks">
             <li class:list={{ free: p.shipping === 0 }}>
               <Icon name="truck" />
@@ -138,19 +157,24 @@ const related = products.filter((x) => x.category === p.category && x.id !== p.i
           </p>
         </div>
 
-        <div class="seller panel">
-          <div class="seller__avatar" aria-hidden="true">{seller.name.charAt(0)}</div>
-          <div>
-            <p class="seller__name">
-              {seller.name}
-              {seller.star && <span class="seller__badge">⭐ Vendedor Estrella</span>}
-            </p>
-            <p class="seller__meta">
-              <Icon name="pin" size={14} />
-              {seller.town} · {seller.sales.toLocaleString('es-PR')} ventas · desde {seller.since}
-            </p>
-          </div>
-        </div>
+        <a href={url(`/vendedor/${seller.id}`)} class="seller panel">
+          <span class="seller__avatar" aria-hidden="true"><Icon name="user" solid size={40} /></span>
+          <span class="seller__body">
+            <span class="seller__name">
+              {seller.username}
+              {seller.star && <Icon name="verified" solid size={18} label="Vendedor verificado" class="seller__check" />}
+            </span>
+            <span class="seller__meta">
+              <Icon name="home" solid size={14} />
+              {seller.town} · {seller.sales.toLocaleString('es-PR')} ventas
+            </span>
+            <span class="seller__rating">
+              <Stars rating={seller.rating} size={14} tone="naranja" />
+              {seller.rating.toFixed(1)}
+            </span>
+          </span>
+          <span class="seller__cta">Ver perfil <Icon name="chevronRight" size={16} /></span>
+        </a>
       </div>
     </div>
 
@@ -265,13 +289,16 @@ const related = products.filter((x) => x.category === p.category && x.id !== p.i
     right: 14px;
     display: grid;
     place-items: center;
+    z-index: 2;
     width: 52px;
     height: 52px;
-    border: 0;
+    border: 1px solid rgba(255, 255, 255, 0.85);
     border-radius: 50%;
-    background: var(--blanco);
     color: var(--rojito);
-    box-shadow: var(--shadow);
+    background: rgba(255, 255, 255, 0.78);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.35);
   }
 
   .pdp__fav[aria-pressed='true'] :global(.icon) {
@@ -408,45 +435,85 @@ const related = products.filter((x) => x.category === p.category && x.id !== p.i
     align-items: center;
     gap: 14px;
     margin-top: 14px;
+    color: var(--tinta);
+    text-decoration: none;
+    transition: transform 0.25s var(--ease-spring);
+  }
+
+  .seller:hover {
+    transform: translateY(-2px);
   }
 
   .seller__avatar {
     display: grid;
-    place-items: center;
+    place-items: end center;
     flex: none;
-    width: 52px;
-    height: 52px;
+    width: 56px;
+    height: 56px;
+    overflow: hidden;
     border-radius: 50%;
-    background: var(--verde);
-    color: var(--blanco);
-    font-weight: 900;
-    font-size: 1.4rem;
+    color: var(--rojito);
+    background: var(--blanco);
+    box-shadow: 0 6px 16px -6px rgba(74, 56, 22, 0.45);
+  }
+
+  .seller__body {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
   }
 
   .seller__name {
-    margin: 0;
-    font-weight: 900;
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
     gap: 6px;
-    align-items: center;
-  }
-
-  .seller__badge {
-    padding: 2px 8px;
-    border-radius: 999px;
-    background: var(--amarillo);
-    font-size: 0.75rem;
     font-weight: 800;
+    letter-spacing: 0.02em;
   }
 
-  .seller__meta {
-    margin: 2px 0 0;
+  .seller__name :global(.seller__check) {
+    color: var(--azul);
+  }
+
+  .seller__meta,
+  .seller__rating {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
     color: var(--tinta-2);
-    font-size: 0.88rem;
+    font-size: 0.85rem;
+  }
+
+  .seller__meta :global(.icon) {
+    color: var(--rojito);
+  }
+
+  .seller__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    flex: none;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--azul-700);
+  }
+
+  .ended {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    color: var(--rojito-700);
+  }
+
+  .ended strong {
+    color: var(--tinta);
+  }
+
+  .ended p {
+    margin: 2px 0 0;
+    color: var(--tinta-2);
+    font-size: 0.9rem;
   }
 
   .block-title {
@@ -478,7 +545,7 @@ const related = products.filter((x) => x.category === p.category && x.id !== p.i
     align-items: center;
     padding: 10px 12px;
     border-radius: 10px;
-    background: var(--crema-200);
+    background: rgba(255, 255, 255, 0.55);
     font-weight: 600;
   }
 
@@ -557,7 +624,7 @@ const related = products.filter((x) => x.category === p.category && x.id !== p.i
   .reviews li {
     padding: 12px 14px;
     border-radius: 12px;
-    background: var(--crema-200);
+    background: rgba(255, 255, 255, 0.55);
   }
 
   .reviews p {
@@ -602,7 +669,7 @@ const related = products.filter((x) => x.category === p.category && x.id !== p.i
       questions.add({ productId, productTitle, text, date: new Date().toISOString() });
       addPending(text);
       input.value = '';
-      toast('✉️ Pregunta enviada al vendedor');
+      toast('Pregunta enviada al vendedor');
     });
   }
 </script>

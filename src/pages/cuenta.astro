@@ -2,268 +2,729 @@
 import { url } from '../lib/url';
 import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icon.astro';
+import ProfileHeader from '../components/ProfileHeader.astro';
+import SearchBar from '../components/SearchBar.astro';
+import { municipios } from '../data/site';
 ---
 
-<Layout title="Mi cuenta">
-  <div class="container account-page">
-    <section class="profile">
-      <div class="profile__avatar" aria-hidden="true"><Icon name="user" size={64} /></div>
-      <div>
-        <h1>¡Hola!</h1>
-        <p>Estás navegando como invitado.</p>
+<Layout title="Mi perfil" accent="rojito">
+  <div class="container me">
+    <!-- Sin perfil todavía -->
+    <section class="guest panel" data-guest hidden>
+      <span class="empty__icon"><Icon name="user" solid size={44} /></span>
+      <h1>Crea tu perfil verificado</h1>
+      <p>Para vender, seguir vendedores y dejar reviews necesitas un perfil.</p>
+      <div class="guest__cols">
+        <div>
+          <p class="eyebrow">Se ve en tu perfil</p>
+          <ul>
+            <li><Icon name="camera" size={18} /> Foto</li>
+            <li><Icon name="user" size={18} /> Nombre de usuario</li>
+            <li><Icon name="home" size={18} /> Pueblo</li>
+            <li><Icon name="users" size={18} /> Seguidores (opcional)</li>
+          </ul>
+        </div>
+        <div>
+          <p class="eyebrow">Privado, nunca se muestra</p>
+          <ul>
+            <li><Icon name="lock" size={18} /> Nombre de pila</li>
+            <li><Icon name="lock" size={18} /> Teléfono</li>
+            <li><Icon name="lock" size={18} /> Fecha de nacimiento</li>
+            <li><Icon name="lock" size={18} /> Email</li>
+          </ul>
+        </div>
       </div>
-      <button type="button" class="btn btn--white" data-login>Iniciar sesión</button>
+      <p class="hint"><Icon name="id" size={16} /> Te pedimos tu ID una sola vez para verificarte. No se guarda.</p>
+      <a href={url('/registro')} class="btn btn--red">Crear perfil</a>
     </section>
 
-    <ul class="stats">
-      <li><a href={url('/compras')}><strong data-stat="orders">0</strong><span>Compras</span></a></li>
-      <li><a href={url('/favoritos')}><strong data-stat="favs">0</strong><span>Favoritos</span></a></li>
-      <li><a href="#publicaciones"><strong data-stat="listings">0</strong><span>Publicaciones</span></a></li>
-    </ul>
+    <!-- Con perfil -->
+    <div data-owner hidden>
+      <ProfileHeader mode="own" />
 
-    <nav class="links panel" aria-label="Opciones de la cuenta">
-      <a href={url('/compras')}><Icon name="bag" /> Mis compras <Icon name="chevronRight" size={18} /></a>
-      <a href={url('/favoritos')}><Icon name="heart" /> Favoritos <Icon name="chevronRight" size={18} /></a>
-      <a href={url('/mensajes')}><Icon name="chat" /> Mensajes <Icon name="chevronRight" size={18} /></a>
-      <a href={url('/vender')}><Icon name="camera" /> Vender <Icon name="chevronRight" size={18} /></a>
-      <a href={url('/carrito')}><Icon name="cart" /> Carrito <Icon name="chevronRight" size={18} /></a>
-    </nav>
+      <div class="tabs glass" role="tablist" aria-label="Secciones del perfil" data-tabs>
+        <button type="button" role="tab" id="t-info" aria-controls="tab-info" aria-selected="false">
+          <Icon name="lock" size={16} stroke={2.2} /> Mi info
+        </button>
+        <button type="button" role="tab" id="t-pubs" aria-controls="tab-pubs" aria-selected="true">Mis publi…</button>
+        <button type="button" role="tab" id="t-reviews" aria-controls="tab-reviews" aria-selected="false">Reviews</button>
+      </div>
 
-    <section class="section" id="publicaciones">
-      <div class="section__head">
-        <h2 class="section__title">Mis publicaciones</h2>
-        <a class="section__link" href={url('/vender')}>+ Nueva</a>
-      </div>
-      <ul class="mine" data-listings></ul>
-      <div class="empty" data-listings-empty hidden>
-        <div class="empty__emoji">📸</div>
-        <h2>No has publicado nada</h2>
-        <p>Toma unas fotos y empieza a vender hoy.</p>
-        <a href={url('/vender')} class="btn btn--primary">Vender ahora</a>
-      </div>
-    </section>
+      <!-- Historial de publicaciones -->
+      <section id="tab-pubs" role="tabpanel" aria-labelledby="t-pubs">
+        <SearchBar id="pq" action={false} placeholder="Buscar en mis publicaciones" />
+        <div class="filter-chips" data-status-chips>
+          <button type="button" class="chip" data-status="" aria-pressed="true">Todas <span class="count"></span></button>
+          <button type="button" class="chip" data-status="activo" aria-pressed="false">Activos <span class="count"></span></button>
+          <button type="button" class="chip" data-status="vendido" aria-pressed="false">Vendidos <span class="count"></span></button>
+          <button type="button" class="chip" data-status="expirado" aria-pressed="false">Expirados <span class="count"></span></button>
+        </div>
+        <div class="ltiles" data-ltiles></div>
+        <div class="empty" data-ltiles-empty hidden>
+          <span class="empty__icon"><Icon name="camera" size={40} /></span>
+          <h2 data-empty-title>No has publicado nada</h2>
+          <p>Toma unas fotos y empieza a vender hoy.</p>
+          <a href={url('/vender')} class="btn btn--primary">Vender ahora</a>
+        </div>
+      </section>
+
+      <!-- Reviews -->
+      <section id="tab-reviews" role="tabpanel" aria-labelledby="t-reviews" hidden>
+        <div class="empty">
+          <span class="empty__icon"><Icon name="star" size={40} /></span>
+          <h2>Aún no tienes reviews</h2>
+          <p>Cuando completes ventas, tus compradores podrán calificarte aquí.</p>
+        </div>
+      </section>
+
+      <!-- Información personal (privada) y ajustes -->
+      <section id="tab-info" role="tabpanel" aria-labelledby="t-info" hidden>
+        <div class="panel private">
+          <div class="private__head">
+            <div>
+              <h2>Información personal</h2>
+              <p class="hint"><Icon name="eyeOff" size={15} /> Solo tú la ves. No aparece en tu perfil público.</p>
+            </div>
+            <button type="button" class="btn btn--soft private__reveal" data-reveal aria-pressed="false">
+              <Icon name="eye" size={18} /> <span data-reveal-label>Mostrar</span>
+            </button>
+          </div>
+          <dl class="private__list">
+            <div><dt><Icon name="user" size={18} /> Nombre de pila</dt><dd data-private="firstName"></dd></div>
+            <div><dt><Icon name="phone" size={18} /> Teléfono</dt><dd data-private="phone"></dd></div>
+            <div><dt><Icon name="cake" size={18} /> Fecha de nacimiento</dt><dd data-private="birthDate"></dd></div>
+            <div><dt><Icon name="mail" size={18} /> Email</dt><dd data-private="email"></dd></div>
+          </dl>
+          <button type="button" class="btn btn--soft btn--block" data-edit-private>
+            <Icon name="pencil" size={18} /> Editar información
+          </button>
+        </div>
+
+        <div class="panel verify">
+          <span class="verify__icon"><Icon name="verified" solid size={30} /></span>
+          <div>
+            <strong>Identidad verificada</strong>
+            <p class="hint" data-verified-at></p>
+            <p class="hint">Tu ID se usó solo para verificarte y no quedó registrada en tu perfil.</p>
+          </div>
+        </div>
+
+        <div class="panel settings">
+          <h2>Ajustes</h2>
+          <label class="switch">
+            <input type="checkbox" data-show-followers />
+            <span class="switch__track" aria-hidden="true"></span>
+            Mostrar mis seguidores en el perfil
+          </label>
+          <nav class="settings__links" aria-label="Accesos">
+            <a href={url('/compras')}><Icon name="bag" /> Mis compras <Icon name="chevronRight" size={18} /></a>
+            <a href={url('/favoritos')}><Icon name="heart" /> Favoritos <Icon name="chevronRight" size={18} /></a>
+            <a href={url('/mensajes')}><Icon name="chat" /> Mensajes <Icon name="chevronRight" size={18} /></a>
+          </nav>
+          <button type="button" class="logout" data-logout><Icon name="logout" size={18} /> Cerrar sesión en este dispositivo</button>
+        </div>
+      </section>
+    </div>
   </div>
+
+  <!-- Editar perfil público -->
+  <dialog class="sheet" data-dialog="edit" aria-labelledby="edit-title">
+    <form method="dialog" data-edit-form>
+      <h2 id="edit-title">Editar perfil</h2>
+      <label class="photo-pick">
+        <span class="photo-pick__circle" data-edit-photo><Icon name="user" solid size={56} /></span>
+        <span class="photo-pick__btn"><Icon name="camera" size={18} /> Cambiar foto</span>
+        <input type="file" accept="image/*" data-edit-photo-input />
+      </label>
+      <div class="field">
+        <label for="e-user">Nombre de usuario</label>
+        <input id="e-user" name="username" class="input" required minlength="3" maxlength="20" pattern="[A-Za-z0-9_]+" />
+      </div>
+      <div class="field">
+        <label for="e-town">Pueblo</label>
+        <select id="e-town" name="town" class="select" required>
+          {municipios.map((m) => <option value={m}>{m}</option>)}
+        </select>
+      </div>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--soft" data-close>Cancelar</button>
+        <button type="submit" class="btn btn--primary" value="save">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Editar información privada -->
+  <dialog class="sheet" data-dialog="private" aria-labelledby="priv-title">
+    <form method="dialog" data-private-form>
+      <h2 id="priv-title">Información personal</h2>
+      <p class="hint"><Icon name="lock" size={15} /> Privada. No se muestra en tu perfil.</p>
+      <div class="field"><label for="p-first">Nombre de pila</label><input id="p-first" name="firstName" class="input" required /></div>
+      <div class="field"><label for="p-phone">Teléfono</label><input id="p-phone" name="phone" type="tel" class="input" required /></div>
+      <div class="field"><label for="p-birth">Fecha de nacimiento</label><input id="p-birth" name="birthDate" type="date" class="input" required /></div>
+      <div class="field"><label for="p-email">Email</label><input id="p-email" name="email" type="email" class="input" required /></div>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--soft" data-close>Cancelar</button>
+        <button type="submit" class="btn btn--primary" value="save">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Acciones sobre una publicación -->
+  <dialog class="sheet" data-dialog="listing" aria-labelledby="l-title">
+    <div class="sheet__body">
+      <h2 id="l-title" data-l-title></h2>
+      <p class="hint" data-l-meta></p>
+      <div class="sheet__list">
+        <button type="button" class="btn btn--green btn--block" data-l-action="sold"><Icon name="checkCircle" size={20} /> Marcar como vendido</button>
+        <button type="button" class="btn btn--primary btn--block" data-l-action="renew"><Icon name="refresh" size={20} /> Volver a publicar</button>
+        <button type="button" class="btn btn--soft btn--block danger" data-l-action="delete"><Icon name="trash" size={20} /> Eliminar</button>
+        <button type="button" class="btn btn--white btn--block" data-close>Cancelar</button>
+      </div>
+    </div>
+  </dialog>
 </Layout>
 
 <style is:global>
-  .account-page .profile {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 16px;
+  .me .guest {
     margin-top: 16px;
-    padding: 20px;
-    border-radius: var(--radius-lg);
-    background: var(--azul);
-    color: var(--blanco);
-    box-shadow: var(--shadow-sm);
+    text-align: center;
   }
 
-  .account-page .profile > div:nth-child(2) {
-    flex: 1;
-    min-width: 160px;
-  }
-
-  .account-page .profile h1 {
-    font-size: 1.8rem;
-  }
-
-  .account-page .profile p {
-    margin: 4px 0 0;
-    font-weight: 600;
-    opacity: 0.92;
-  }
-
-  .account-page .profile__avatar {
-    display: grid;
-    place-items: end center;
-    width: 84px;
-    height: 84px;
-    border-radius: 50%;
-    background: var(--blanco);
-    color: var(--verde);
-    overflow: hidden;
-  }
-
-  .account-page .stats {
-    list-style: none;
-    margin: 16px 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-  }
-
-  .account-page .stats a {
-    display: grid;
-    justify-items: center;
-    padding: 14px 6px;
-    border-radius: var(--radius);
-    background: var(--blanco);
-    color: var(--tinta);
-    text-decoration: none;
-    box-shadow: var(--shadow-sm);
-  }
-
-  .account-page .stats strong {
+  .me .guest h1 {
+    margin: 14px 0 6px;
     font-size: 1.6rem;
-    font-weight: 900;
-    color: var(--azul);
   }
 
-  .account-page .stats span {
-    font-size: 0.85rem;
-    font-weight: 700;
+  .me .guest > p {
     color: var(--tinta-2);
   }
 
-  .account-page .links {
+  .me .guest__cols {
     display: grid;
-    padding: 6px;
+    gap: 12px;
+    margin: 18px 0;
+    text-align: left;
   }
 
-  .account-page .links a {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 12px;
-    border-radius: 12px;
-    color: var(--tinta);
-    font-weight: 700;
-    text-decoration: none;
+  @media (min-width: 560px) {
+    .me .guest__cols {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
-  .account-page .links a + a {
-    border-top: 1px solid var(--linea);
+  .me .guest__cols > div {
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.55);
   }
 
-  .account-page .links a:hover {
-    background: var(--crema-200);
-  }
-
-  .account-page .links .icon:first-child {
-    color: var(--verde);
-  }
-
-  .account-page .mine {
+  .me .guest__cols ul {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
+    gap: 8px;
+    font-weight: 600;
+  }
+
+  .me .guest__cols li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .me .guest__cols .icon {
+    color: var(--rojito);
+  }
+
+  .me .guest .hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .me .private {
+    margin-top: 16px;
+  }
+
+  .me .private__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     gap: 12px;
   }
 
-  .account-page .listing {
-    display: grid;
-    grid-template-columns: 80px 1fr auto;
-    gap: 14px;
+  .me .private h2,
+  .me .settings h2 {
+    font-size: 1.2rem;
+  }
+
+  .me .private .hint {
+    display: flex;
     align-items: center;
-    padding: 12px;
-    border-radius: var(--radius-lg);
-    background: var(--blanco);
-    box-shadow: var(--shadow-sm);
+    gap: 6px;
+    margin-top: 4px;
   }
 
-  .account-page .listing__img {
+  .me .private__reveal {
+    min-height: 40px;
+    padding: 0 14px;
+    font-size: 0.88rem;
+  }
+
+  .me .private__list {
+    margin: 16px 0;
     display: grid;
-    place-items: center;
-    aspect-ratio: 1;
-    border-radius: 12px;
-    background: var(--azul);
-    font-size: 2rem;
-    overflow: hidden;
+    gap: 2px;
   }
 
-  .account-page .listing__img img {
+  .me .private__list > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 4px;
+    border-bottom: 1px solid var(--linea);
+  }
+
+  .me .private__list dt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--tinta-2);
+    font-size: 0.92rem;
+  }
+
+  .me .private__list dt .icon {
+    color: var(--azul);
+  }
+
+  .me .private__list dd {
+    margin: 0;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+
+  .me .verify {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-top: 12px;
+  }
+
+  .me .verify__icon {
+    color: var(--azul);
+  }
+
+  .me .verify p {
+    margin: 2px 0 0;
+  }
+
+  .me .settings {
+    margin-top: 12px;
+  }
+
+  .me .settings h2 {
+    margin-bottom: 14px;
+  }
+
+  .me .settings__links {
+    display: grid;
+    margin: 14px 0 6px;
+  }
+
+  .me .settings__links a {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 4px;
+    color: var(--tinta);
+    font-weight: 600;
+    text-decoration: none;
+    border-top: 1px solid var(--linea);
+  }
+
+  .me .settings__links .icon:first-child {
+    color: var(--azul);
+  }
+
+  .me .logout {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 8px 0;
+    border: 0;
+    background: none;
+    color: var(--rojito-700);
+    font-weight: 700;
+  }
+
+  /* Tarjeta "más" para publicar desde el perfil */
+  .me .ltile .tile img.is-photo {
+    padding: 0;
+  }
+
+  /* ---------- Hojas (diálogos) de vidrio ---------- */
+  .sheet {
+    width: min(480px, calc(100% - 24px));
+    max-height: calc(100dvh - 40px);
+    margin: auto auto 12px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 28px;
+    color: var(--tinta);
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.9), rgba(247, 236, 217, 0.8));
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    backdrop-filter: blur(30px) saturate(180%);
+    box-shadow: 0 30px 70px -20px rgba(0, 0, 0, 0.5);
+  }
+
+  @media (min-width: 720px) {
+    .sheet {
+      margin: auto;
+    }
+  }
+
+  .sheet[open] {
+    animation: sheet-in 0.35s var(--ease-spring);
+  }
+
+  @keyframes sheet-in {
+    from {
+      transform: translateY(40px);
+      opacity: 0;
+    }
+  }
+
+  .sheet::backdrop {
+    background: rgba(28, 26, 22, 0.3);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+  }
+
+  .sheet form,
+  .sheet__body {
+    padding: 22px;
+  }
+
+  .sheet h2 {
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+  }
+
+  .sheet .hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .sheet__actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .sheet__list {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .sheet .danger {
+    color: var(--rojito-700);
+  }
+
+  .photo-pick {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    margin: 6px 0 16px;
+    cursor: pointer;
+  }
+
+  .photo-pick input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+
+  .photo-pick:has(input:focus-visible) .photo-pick__circle {
+    outline: 3px solid var(--azul);
+    outline-offset: 3px;
+  }
+
+  .photo-pick__circle {
+    display: grid;
+    place-items: end center;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    overflow: hidden;
+    color: var(--rojito);
+    background: var(--blanco);
+    box-shadow: 0 10px 24px -10px rgba(74, 56, 22, 0.5);
+  }
+
+  .photo-pick__circle img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  .account-page .listing strong {
-    display: block;
-    line-height: 1.2;
-  }
-
-  .account-page .listing small {
-    display: block;
-    color: var(--tinta-3);
-  }
-
-  .account-page .listing__price {
-    font-weight: 900;
-    font-size: 1.1rem;
-  }
-
-  .account-page .listing__status {
-    display: inline-block;
-    margin-top: 4px;
-    padding: 2px 8px;
-    border-radius: 999px;
-    background: #dcefe1;
-    color: var(--verde-700);
-    font-size: 0.75rem;
-    font-weight: 800;
-  }
-
-  .account-page .listing__del {
-    border: 0;
-    background: none;
-    color: var(--rojito-700);
+  .photo-pick__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85rem;
     font-weight: 700;
-    padding: 8px;
+    color: var(--azul-700);
   }
 </style>
 
 <script>
   import { getCategory } from '../data/categories';
   import { formatMoney } from '../lib/format';
-  import { favs, listings, onChange, orders } from '../scripts/store';
+  import { url } from '../lib/url';
+  import { listingActions, listings, listingState, onChange, profile, type Listing } from '../scripts/store';
+  import { initTabs } from '../scripts/tabs';
+  import { initListingFilter } from '../scripts/listing-filter';
+  import { shrinkImage } from '../scripts/image';
   import { esc, formatDate, toast } from '../scripts/ui';
 
-  const list = document.querySelector<HTMLUListElement>('[data-listings]')!;
-  const empty = document.querySelector<HTMLElement>('[data-listings-empty]')!;
-  const stat = (name: string, value: number) => {
-    document.querySelector(`[data-stat="${name}"]`)!.textContent = String(value);
+  const $ = <T extends HTMLElement = HTMLElement>(sel: string) => document.querySelector<T>(sel)!;
+  const guest = $('[data-guest]');
+  const owner = $('[data-owner]');
+  const grid = $('[data-ltiles]');
+  const label = { activo: 'Activo', vendido: 'Vendido', expirado: 'Expirado' } as const;
+
+  const tabs = initTabs($('[data-tabs]'));
+  const filter = initListingFilter({
+    grid,
+    chips: $('[data-status-chips]'),
+    input: document.querySelector<HTMLInputElement>('#pq'),
+    empty: $('[data-ltiles-empty]'),
+  });
+
+  // ---------- Máscaras de la información privada ----------
+  let revealed = false;
+  const mask = {
+    firstName: (v: string) => (v ? v[0] + '•'.repeat(Math.max(3, v.length - 1)) : '—'),
+    phone: (v: string) => {
+      const d = v.replace(/\D/g, '');
+      return d ? `(•••) •••-••${d.slice(-2)}` : '—';
+    },
+    birthDate: (v: string) => (v ? '••/••/••••' : '—'),
+    email: (v: string) => {
+      const [user, domain] = v.split('@');
+      return user && domain ? `${user[0]}•••@${domain}` : '—';
+    },
+  };
+  const pretty = {
+    firstName: (v: string) => v,
+    phone: (v: string) => v,
+    birthDate: (v: string) => (v ? new Date(v + 'T12:00:00').toLocaleDateString('es-PR', { day: 'numeric', month: 'long', year: 'numeric' }) : '—'),
+    email: (v: string) => v,
   };
 
   function render() {
+    const p = profile.get();
+    guest.hidden = !!p;
+    owner.hidden = !p;
+    if (!p) return;
+
+    // Encabezado público
+    $('[data-ph-username]').textContent = p.public.username;
+    $('[data-ph-town]').textContent = `${p.public.town}, PR`;
+    $('[data-ph-followers]').textContent = '0';
+    $('[data-ph-followers-row]').hidden = !p.public.showFollowers;
+    $('[data-ph-verified]').hidden = !p.verifiedAt;
+    const avatar = $('[data-ph-avatar]');
+    if (p.public.photo) {
+      const img = document.createElement('img');
+      img.src = p.public.photo;
+      img.alt = '';
+      avatar.replaceChildren(img);
+    }
+
+    // Información privada (enmascarada por defecto)
+    document.querySelectorAll<HTMLElement>('[data-private]').forEach((dd) => {
+      const key = dd.dataset.private as keyof typeof mask;
+      const value = p.private[key] ?? '';
+      dd.textContent = revealed ? pretty[key](value) || '—' : mask[key](value);
+    });
+    $('[data-verified-at]').textContent = p.verifiedAt ? `Verificada el ${formatDate(p.verifiedAt)}` : 'Pendiente';
+    $<HTMLInputElement>('[data-show-followers]').checked = p.public.showFollowers;
+
+    // Historial de publicaciones
     const mine = listings.all();
-    stat('orders', orders.all().length);
-    stat('favs', favs.ids().length);
-    stat('listings', mine.length);
-    empty.hidden = mine.length > 0;
-    list.innerHTML = mine
+    grid.innerHTML = mine
       .map((l) => {
+        const st = listingState(l);
         const cat = getCategory(l.category);
-        const img = l.photos[0] ? `<img src="${esc(l.photos[0])}" alt="" />` : esc(cat?.emoji ?? '📦');
+        const photo = l.photos[0];
+        const img = photo
+          ? `<img src="${esc(photo)}" alt="" class="is-photo" />`
+          : `<img src="${esc(url(cat?.image ?? ''))}" alt="" />`;
         return `
-        <li class="listing">
-          <span class="listing__img" aria-hidden="true">${img}</span>
-          <span>
-            <strong>${esc(l.title)}</strong>
-            <small>${esc(cat?.name ?? '')} · ${esc(l.town)} · ${formatDate(l.date)}</small>
-            <span class="listing__price">${formatMoney(l.price)}</span>
-            <span class="listing__status">Activa</span>
+        <button type="button" class="ltile is-${st}" data-status="${st}" data-title="${esc(l.title + ' ' + l.description)}" data-listing="${esc(l.id)}">
+          <span class="ltile__media">
+            <span class="tile tile--${esc(cat?.color ?? 'azul')}" style="aspect-ratio:1;border-radius:20px">${img}</span>
+            ${st !== 'activo' ? `<span class="status status--${st}">${label[st]}</span>` : ''}
+            <span class="ltile__price">${formatMoney(l.price)}</span>
           </span>
-          <button type="button" class="listing__del" data-del="${esc(l.id)}">Eliminar</button>
-        </li>`;
+          <span class="ltile__title">${esc(l.title)}</span>
+        </button>`;
       })
       .join('');
+    filter.apply();
   }
 
-  list.addEventListener('click', (e) => {
-    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-del]');
-    if (!btn) return;
-    if (confirm('¿Eliminar esta publicación?')) {
-      listings.remove(btn.dataset.del!);
-      toast('Publicación eliminada');
+  // ---------- Encabezado: lápiz y engranaje ----------
+  const editDialog = $<HTMLDialogElement>('[data-dialog="edit"]');
+  const editForm = $<HTMLFormElement>('[data-edit-form]');
+  const editPhoto = $('[data-edit-photo]');
+  let newPhoto: string | undefined;
+
+  $('[data-ph-edit]').addEventListener('click', () => {
+    const p = profile.get();
+    if (!p) return;
+    newPhoto = undefined;
+    (editForm.elements.namedItem('username') as HTMLInputElement).value = p.public.username;
+    (editForm.elements.namedItem('town') as HTMLSelectElement).value = p.public.town;
+    if (p.public.photo) {
+      const img = document.createElement('img');
+      img.src = p.public.photo;
+      img.alt = '';
+      editPhoto.replaceChildren(img);
+    }
+    editDialog.showModal();
+  });
+
+  $<HTMLInputElement>('[data-edit-photo-input]').addEventListener('change', async (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    try {
+      newPhoto = await shrinkImage(file, 320);
+      const img = document.createElement('img');
+      img.src = newPhoto;
+      img.alt = '';
+      editPhoto.replaceChildren(img);
+    } catch {
+      toast('No pudimos leer esa foto');
     }
   });
 
-  document.querySelector('[data-login]')!.addEventListener('click', () => {
-    toast('🔐 El inicio de sesión llega pronto');
+  editForm.addEventListener('submit', (e) => {
+    const data = new FormData(editForm);
+    const username = String(data.get('username')).trim();
+    if (!/^[A-Za-z0-9_]{3,20}$/.test(username)) {
+      e.preventDefault();
+      toast('Usuario: de 3 a 20 letras, números o _');
+      return;
+    }
+    const ok = profile.updatePublic({
+      username: username.toUpperCase(),
+      town: String(data.get('town')),
+      ...(newPhoto ? { photo: newPhoto } : {}),
+    });
+    toast(ok ? 'Perfil actualizado' : 'No se pudo guardar el perfil');
+  });
+
+  $('[data-ph-settings]').addEventListener('click', () => {
+    tabs.open('tab-info');
+    $('#tab-info').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  // ---------- Información privada ----------
+  const revealBtn = $('[data-reveal]');
+  revealBtn.addEventListener('click', () => {
+    revealed = !revealed;
+    revealBtn.setAttribute('aria-pressed', String(revealed));
+    $('[data-reveal-label]').textContent = revealed ? 'Ocultar' : 'Mostrar';
+    render();
+  });
+
+  const privDialog = $<HTMLDialogElement>('[data-dialog="private"]');
+  const privForm = $<HTMLFormElement>('[data-private-form]');
+  $('[data-edit-private]').addEventListener('click', () => {
+    const p = profile.get();
+    if (!p) return;
+    for (const [k, v] of Object.entries(p.private)) {
+      const el = privForm.elements.namedItem(k) as HTMLInputElement | null;
+      if (el) el.value = v;
+    }
+    privDialog.showModal();
+  });
+  privForm.addEventListener('submit', () => {
+    const d = new FormData(privForm);
+    profile.updatePrivate({
+      firstName: String(d.get('firstName')).trim(),
+      phone: String(d.get('phone')).trim(),
+      birthDate: String(d.get('birthDate')),
+      email: String(d.get('email')).trim(),
+    });
+    toast('Información guardada');
+  });
+
+  $<HTMLInputElement>('[data-show-followers]').addEventListener('change', (e) => {
+    profile.updatePublic({ showFollowers: (e.target as HTMLInputElement).checked });
+  });
+
+  $('[data-logout]').addEventListener('click', () => {
+    if (confirm('¿Cerrar sesión? Se borrará tu perfil de este dispositivo.')) {
+      profile.remove();
+      toast('Sesión cerrada');
+    }
+  });
+
+  // ---------- Acciones sobre una publicación ----------
+  const lDialog = $<HTMLDialogElement>('[data-dialog="listing"]');
+  let current: Listing | undefined;
+
+  grid.addEventListener('click', (e) => {
+    const tile = (e.target as HTMLElement).closest<HTMLElement>('[data-listing]');
+    if (!tile) return;
+    current = listings.all().find((l) => l.id === tile.dataset.listing);
+    if (!current) return;
+    const st = listingState(current);
+    $('[data-l-title]').textContent = current.title;
+    $('[data-l-meta]').textContent = `${label[st]} · ${formatMoney(current.price)} · publicado el ${formatDate(current.date)}`;
+    $('[data-l-action="sold"]').hidden = st !== 'activo';
+    $('[data-l-action="renew"]').hidden = st === 'activo';
+    lDialog.showModal();
+  });
+
+  lDialog.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-l-action]');
+    if (!btn || !current) return;
+    const action = btn.dataset.lAction;
+    if (action === 'sold') {
+      listingActions.markSold(current.id);
+      toast('Marcada como vendida');
+    } else if (action === 'renew') {
+      listingActions.renew(current.id);
+      toast('Publicada otra vez por 30 días');
+    } else if (action === 'delete') {
+      if (!confirm('¿Eliminar esta publicación?')) return;
+      listings.remove(current.id);
+      toast('Publicación eliminada');
+    }
+    lDialog.close();
+  });
+
+  document.querySelectorAll<HTMLDialogElement>('dialog.sheet').forEach((d) => {
+    d.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => d.close()));
+    d.addEventListener('click', (e) => {
+      if (e.target === d) d.close();
+    });
   });
 
   render();

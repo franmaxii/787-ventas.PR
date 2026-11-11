@@ -3,13 +3,16 @@ import { url } from '../lib/url';
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import BottomNav from '../components/BottomNav.astro';
+import Footer from '../components/Footer.astro';
 import { site } from '../data/site';
 
 interface Props {
   title?: string;
   description?: string;
+  /** Color de acento de la sección (el perfil usa rojito, como en el diseño). */
+  accent?: 'verde' | 'rojito' | 'azul';
 }
-const { title, description = site.description } = Astro.props;
+const { title, description = site.description, accent = 'verde' } = Astro.props;
 const fullTitle = title ? `${title} | ${site.name}` : `${site.name} — ${site.tagline}`;
 ---
 
@@ -29,16 +32,17 @@ const fullTitle = title ? `${title} | ${site.name}` : `${site.name} — ${site.t
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400..900&family=Chewy&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&family=Chewy&display=swap"
     />
     <title>{fullTitle}</title>
   </head>
-  <body>
+  <body style={`--accent: var(--${accent})`}>
     <a class="skip" href="#contenido">Saltar al contenido</a>
     <Header />
     <main id="contenido">
       <slot />
     </main>
+    <Footer />
     <BottomNav />
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
   </body>
@@ -54,7 +58,7 @@ const fullTitle = title ? `${title} | ${site.name}` : `${site.name} — ${site.t
     border-radius: 999px;
     background: var(--azul);
     color: var(--blanco);
-    font-weight: 800;
+    font-weight: 700;
   }
 
   .skip:focus {
@@ -64,25 +68,28 @@ const fullTitle = title ? `${title} | ${site.name}` : `${site.name} — ${site.t
   .toast {
     position: fixed;
     left: 50%;
-    bottom: calc(var(--bottom-nav-h) + 28px + env(safe-area-inset-bottom));
+    bottom: calc(var(--bottom-nav-h) + 24px + env(safe-area-inset-bottom));
     z-index: 60;
     max-width: calc(100% - 32px);
-    padding: 12px 18px;
+    padding: 12px 20px;
     border-radius: 999px;
-    background: var(--tinta);
     color: var(--blanco);
-    font-weight: 700;
+    font-weight: 600;
     font-size: 0.95rem;
-    box-shadow: var(--shadow);
-    transform: translate(-50%, 20px);
+    background: rgba(28, 26, 22, 0.78);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 12px 30px -8px rgba(0, 0, 0, 0.45);
+    transform: translate(-50%, 16px) scale(0.96);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition: opacity 0.2s ease, transform 0.25s var(--ease-spring);
   }
 
   .toast.is-visible {
     opacity: 1;
-    transform: translate(-50%, 0);
+    transform: translate(-50%, 0) scale(1);
   }
 </style>
 

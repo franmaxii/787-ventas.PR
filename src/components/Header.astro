@@ -6,16 +6,16 @@ import { categories } from '../data/categories';
 import { site } from '../data/site';
 ---
 
-<header class="header">
+<header class="header" data-header>
   <div class="header__inner container">
-    <button class="icon-btn" type="button" data-menu-open aria-label="Abrir menú" aria-controls="menu">
-      <Icon name="menu" size={40} />
+    <button class="icon-btn glass-strong" type="button" data-menu-open aria-label="Abrir menú" aria-controls="menu">
+      <Icon name="menu" size={28} stroke={2.2} />
     </button>
 
     <Logo />
 
-    <a href={url('/carrito')} class="icon-btn cart" aria-label="Carrito">
-      <Icon name="cart" size={42} />
+    <a href={url('/carrito')} class="icon-btn glass-strong cart" aria-label="Carrito">
+      <Icon name="cart" size={28} stroke={1.9} />
       <span class="cart__badge" data-cart-count data-empty="true" aria-hidden="true">+</span>
       <span class="sr-only" data-cart-count-sr>vacío</span>
     </a>
@@ -24,38 +24,59 @@ import { site } from '../data/site';
 
 <dialog id="menu" class="drawer" aria-label="Menú principal">
   <div class="drawer__head">
-    <p class="drawer__hello">¡Hola! 👋<br /><span>Bienvenido a {site.name}</span></p>
+    <a href={url('/cuenta')} class="drawer__me">
+      <span class="drawer__avatar" data-profile-avatar><Icon name="user" solid size={26} /></span>
+      <span>
+        <strong data-profile-greeting>¡Hola!</strong>
+        <small data-profile-sub>Crea tu perfil para vender</small>
+      </span>
+    </a>
     <button type="button" class="drawer__close" data-menu-close aria-label="Cerrar menú">
-      <Icon name="x" size={22} />
+      <Icon name="x" size={20} stroke={2.2} />
     </button>
   </div>
 
-  <nav class="drawer__nav">
+  <nav class="drawer__nav" aria-label="Secciones">
     <a href={url('/')}><Icon name="home" /> Inicio</a>
     <a href={url('/buscar?ofertas=1')}><Icon name="tag" /> Ofertas</a>
     <a href={url('/vender')}><Icon name="camera" /> Vender</a>
     <a href={url('/compras')}><Icon name="bag" /> Mis compras</a>
     <a href={url('/favoritos')}><Icon name="heart" /> Favoritos</a>
     <a href={url('/mensajes')}><Icon name="chat" /> Mensajes</a>
-    <a href={url('/cuenta')}><Icon name="user" /> Mi cuenta</a>
+    <a href={url('/cuenta')}><Icon name="user" /> Mi perfil</a>
   </nav>
 
   <p class="drawer__label">Categorías</p>
-  <nav class="drawer__cats">
+  <nav class="drawer__cats" aria-label="Categorías">
     {
       categories.map((c) => (
         <a href={url(`/categoria/${c.slug}`)}>
-          <span class="drawer__emoji">{c.emoji}</span>
+          <span class:list={['drawer__thumb', 'tile', `tile--${c.color}`]}>
+            <img src={url(c.image)} alt="" loading="lazy" />
+          </span>
           {c.name}
         </a>
       ))
     }
   </nav>
+  <p class="drawer__foot">{site.name} · {site.tagline}</p>
 </dialog>
 
 <style>
   .header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
     padding-top: env(safe-area-inset-top);
+    transition: background-color 0.25s ease, box-shadow 0.25s ease, backdrop-filter 0.25s ease;
+  }
+
+  /* al hacer scroll la barra se vuelve vidrio */
+  .header.is-scrolled {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.38));
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.7), 0 8px 24px -14px rgba(74, 56, 22, 0.4);
   }
 
   .header__inner {
@@ -69,76 +90,87 @@ import { site } from '../data/site';
     position: relative;
     display: grid;
     place-items: center;
-    width: 56px;
-    height: 56px;
+    width: 52px;
+    height: 52px;
     padding: 0;
-    border: 0;
-    background: none;
-    color: var(--blanco);
-    border-radius: 16px;
-    /* blanco sobre crema, con sombra para que se lea bien */
-    filter: drop-shadow(0 1px 1.5px rgba(74, 56, 22, 0.35));
+    border-radius: 50%;
+    color: var(--tinta);
+    transition: transform 0.2s var(--ease-spring);
   }
 
   .icon-btn:hover {
-    background: rgba(255, 255, 255, 0.18);
+    transform: scale(1.06);
+  }
+
+  .icon-btn:active {
+    transform: scale(0.94);
   }
 
   .cart__badge {
     position: absolute;
-    top: 2px;
-    right: -2px;
-    min-width: 24px;
-    height: 24px;
-    padding: 0 5px;
+    top: -3px;
+    right: -3px;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
     display: grid;
     place-items: center;
     border-radius: 999px;
-    background: var(--blanco);
-    color: var(--rojito);
-    font-weight: 900;
-    font-size: 0.85rem;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    background: linear-gradient(180deg, #ff6c61, var(--rojito));
+    color: var(--blanco);
+    font-weight: 800;
+    font-size: 0.75rem;
     line-height: 1;
+    box-shadow: 0 4px 10px -2px rgba(246, 78, 67, 0.6);
   }
 
   .cart__badge[data-empty='true'] {
-    color: var(--crema);
-    font-size: 1.3rem;
+    background: var(--blanco);
+    color: var(--crema-300);
+    font-size: 1.05rem;
+    box-shadow: 0 2px 6px rgba(74, 56, 22, 0.2);
   }
 
   .cart__badge.bump {
-    animation: bump 0.4s ease;
+    animation: bump 0.45s var(--ease-spring);
   }
 
   @keyframes bump {
     40% {
-      transform: scale(1.35);
+      transform: scale(1.4);
     }
   }
 
-  /* ---------- Menú lateral ---------- */
+  /* ---------- Menú lateral de vidrio ---------- */
   .drawer {
     position: fixed;
     inset: 0 auto 0 0;
     margin: 0;
-    width: min(320px, 86vw);
+    width: min(330px, 86vw);
     max-width: none;
     height: 100dvh;
     max-height: none;
     padding: 0;
     border: 0;
-    background: var(--crema);
+    border-right: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 0 28px 28px 0;
     color: var(--tinta);
     overflow-y: auto;
-    box-shadow: var(--shadow);
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.78), rgba(247, 236, 217, 0.62));
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    backdrop-filter: blur(30px) saturate(180%);
+    box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.35);
   }
 
   .drawer[open] {
-    animation: slide-in 0.25s ease-out;
+    animation: slide-in 0.35s var(--ease-spring);
   }
 
   .drawer::backdrop {
-    background: rgba(29, 27, 23, 0.45);
+    background: rgba(28, 26, 22, 0.28);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
   }
 
   @keyframes slide-in {
@@ -150,40 +182,71 @@ import { site } from '../data/site';
   .drawer__head {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    padding: calc(20px + env(safe-area-inset-top)) 18px 18px;
-    background: var(--azul);
-    color: var(--blanco);
+    align-items: center;
+    gap: 10px;
+    padding: calc(22px + env(safe-area-inset-top)) 16px 16px 18px;
   }
 
-  .drawer__hello {
-    margin: 0;
-    font-weight: 900;
-    font-size: 1.35rem;
-    line-height: 1.2;
+  .drawer__me {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    color: inherit;
+    text-decoration: none;
   }
 
-  .drawer__hello span {
-    font-weight: 600;
-    font-size: 0.95rem;
-    opacity: 0.9;
+  .drawer__me strong,
+  .drawer__me small {
+    display: block;
+  }
+
+  .drawer__me strong {
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+  }
+
+  .drawer__me small {
+    color: var(--tinta-3);
+    font-size: 0.85rem;
+  }
+
+  .drawer__avatar {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    overflow: hidden;
+    color: var(--rojito);
+    background: var(--blanco);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04), 0 4px 12px -4px rgba(74, 56, 22, 0.3);
+  }
+
+  .drawer__avatar :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .drawer__close {
     display: grid;
     place-items: center;
-    width: 40px;
-    height: 40px;
-    border: 0;
+    flex: none;
+    width: 38px;
+    height: 38px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    color: var(--blanco);
+    background: rgba(255, 255, 255, 0.6);
+    color: var(--tinta-2);
   }
 
   .drawer__nav,
   .drawer__cats {
     display: grid;
-    padding: 8px;
+    gap: 2px;
+    padding: 4px 10px;
   }
 
   .drawer__nav a,
@@ -191,39 +254,46 @@ import { site } from '../data/site';
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 12px 12px;
-    border-radius: 12px;
+    padding: 11px 12px;
+    border-radius: 14px;
     color: var(--tinta);
-    font-weight: 700;
+    font-weight: 600;
     text-decoration: none;
   }
 
   .drawer__nav a :global(.icon) {
-    color: var(--verde);
+    color: var(--azul);
   }
 
   .drawer__nav a:hover,
   .drawer__cats a:hover {
-    background: rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.7);
   }
 
   .drawer__label {
-    margin: 8px 20px 0;
-    font-size: 0.8rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
+    margin: 14px 22px 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
     color: var(--tinta-3);
   }
 
-  .drawer__emoji {
-    display: grid;
-    place-items: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--blanco);
-    font-size: 1.05rem;
+  .drawer__thumb {
+    width: 34px;
+    height: 34px;
+    flex: none;
+    border-radius: 10px;
+  }
+
+  .drawer__thumb img {
+    padding: 2px;
+  }
+
+  .drawer__foot {
+    margin: 16px 22px 28px;
+    font-size: 0.78rem;
+    color: var(--tinta-3);
   }
 </style>
 
@@ -235,4 +305,10 @@ import { site } from '../data/site';
   menu?.addEventListener('click', (e) => {
     if (e.target === menu && e.clientX > menu.getBoundingClientRect().right) menu.close();
   });
+
+  // Barra de vidrio al hacer scroll
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 6);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
 </script>

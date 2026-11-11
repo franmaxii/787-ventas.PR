@@ -1,0 +1,233 @@
+---
+/*
+ * Encabezado de perfil (diseño de la socia): foto, usuario, pueblo, seguidores y estrellas.
+ * - mode="own": tu perfil. Los datos se rellenan en el navegador (data-ph-*). Muestra lápiz y engranaje.
+ * - mode="public": perfil de un vendedor. Muestra "Seguir" y "Mensaje".
+ */
+import Icon from './Icon.astro';
+import Stars from './Stars.astro';
+
+interface Props {
+  mode: 'own' | 'public';
+  username?: string;
+  town?: string;
+  followers?: number;
+  showFollowers?: boolean;
+  rating?: number;
+  reviews?: number;
+  photo?: string;
+  verified?: boolean;
+  sellerId?: string;
+  since?: number;
+}
+const {
+  mode,
+  username = '',
+  town = '',
+  followers = 0,
+  showFollowers = true,
+  rating = 0,
+  reviews = 0,
+  photo,
+  verified = false,
+  sellerId,
+  since,
+} = Astro.props;
+---
+
+<section class="ph glass" aria-label="Perfil">
+  <div class="ph__top">
+    <div class="ph__avatar" data-ph-avatar>
+      {photo ? <img src={photo} alt="" /> : <Icon name="user" solid size={78} />}
+    </div>
+
+    <div class="ph__info">
+      <h1 class="ph__name">
+        <span data-ph-username>{username}</span>
+        <span class="ph__verified" data-ph-verified hidden={!verified} title="Identidad verificada">
+          <Icon name="verified" solid size={22} label="Identidad verificada" />
+        </span>
+      </h1>
+      <p class="ph__town">
+        <Icon name="home" solid size={20} />
+        <span data-ph-town>{town}{town && ', PR'}</span>
+      </p>
+      <p class="ph__followers" data-ph-followers-row hidden={!showFollowers}>
+        <strong data-ph-followers>{followers.toLocaleString('es-PR')}</strong>
+        <Icon name="users" size={22} stroke={1.8} />
+        <span class="sr-only">seguidores</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="ph__bar">
+    <div class="ph__rating">
+      <Stars rating={rating} size={26} tone="naranja" whiteBase />
+      <span class="ph__count" data-ph-reviews>{reviews > 0 ? `${rating.toFixed(1)} · ${reviews} reviews` : 'Sin reviews aún'}</span>
+    </div>
+
+    {
+      mode === 'own' ? (
+        <div class="ph__actions">
+          <button type="button" class="ph__icon" data-ph-edit aria-label="Editar perfil" title="Editar perfil">
+            <Icon name="pencil" size={22} stroke={2} />
+          </button>
+          <button type="button" class="ph__icon" data-ph-settings aria-label="Ajustes y privacidad" title="Ajustes y privacidad">
+            <Icon name="cog" size={24} stroke={1.9} />
+          </button>
+        </div>
+      ) : (
+        <div class="ph__actions">
+          <button type="button" class="btn btn--red ph__follow" data-follow={sellerId} aria-pressed="false">
+            <Icon name="userPlus" size={18} stroke={2} /> <span data-follow-label>Seguir</span>
+          </button>
+        </div>
+      )
+    }
+  </div>
+  {since && <p class="ph__since">Vendiendo en Plaza 787 desde {since}</p>}
+</section>
+
+<style>
+  .ph {
+    margin-top: 12px;
+    padding: 20px;
+    border-radius: var(--radius-xl);
+  }
+
+  .ph__top {
+    display: flex;
+    align-items: center;
+    gap: clamp(12px, 4vw, 20px);
+  }
+
+  .ph__avatar {
+    display: grid;
+    place-items: end center;
+    flex: none;
+    width: clamp(84px, 25vw, 124px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    overflow: hidden;
+    color: var(--rojito);
+    background: var(--blanco);
+    border: 4px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 14px 30px -12px rgba(74, 56, 22, 0.45);
+  }
+
+  .ph__avatar :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ph__avatar :global(.icon) {
+    width: 78%;
+    height: 78%;
+    margin-bottom: -6%;
+  }
+
+  .ph__info {
+    min-width: 0;
+    display: grid;
+    gap: 4px;
+  }
+
+  .ph__name {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: clamp(1rem, 4.5vw, 1.7rem);
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+
+  .ph__verified {
+    display: inline-grid;
+    color: var(--azul);
+  }
+
+  .ph__town,
+  .ph__followers {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .ph__town :global(.icon),
+  .ph__followers :global(.icon) {
+    color: var(--rojito);
+    flex: none;
+  }
+
+  .ph__followers strong {
+    font-size: 1.25rem;
+  }
+
+  .ph__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .ph__rating {
+    display: grid;
+    gap: 2px;
+  }
+
+  .ph__count {
+    font-size: 0.82rem;
+    color: var(--tinta-3);
+    font-weight: 600;
+  }
+
+  .ph__actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .ph__icon {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    color: var(--tinta-2);
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.55));
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: inset 0 1px 0 #fff, 0 6px 16px -6px rgba(74, 56, 22, 0.4);
+    transition: transform 0.2s var(--ease-spring);
+  }
+
+  .ph__icon:hover {
+    transform: scale(1.08) rotate(-6deg);
+  }
+
+  .ph__follow {
+    min-height: 44px;
+    padding: 0 18px;
+  }
+
+  .ph__follow[aria-pressed='true'] {
+    color: var(--rojito-700);
+    background: var(--glass-bg-strong);
+    border-color: var(--glass-border);
+    box-shadow: var(--glass-edge), var(--shadow-sm);
+  }
+
+  .ph__since {
+    margin: 12px 0 0;
+    font-size: 0.85rem;
+    color: var(--tinta-3);
+  }
+</style>

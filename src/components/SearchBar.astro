@@ -5,69 +5,92 @@ import Icon from './Icon.astro';
 interface Props {
   value?: string;
   autofocus?: boolean;
+  /** id del input (para tener más de un buscador en la misma página). */
+  id?: string;
+  placeholder?: string;
+  /** Si es false, no navega a /buscar: solo emite eventos de input (filtros locales). */
+  action?: boolean;
 }
-const { value = '', autofocus = false } = Astro.props;
+const {
+  value = '',
+  autofocus = false,
+  id = 'q',
+  placeholder = 'Buscar en Plaza 787…',
+  action = true,
+} = Astro.props;
 ---
 
-<form class="search" action={url('/buscar')} method="get" role="search" data-search-form>
-  <label for="q" class="sr-only">Buscar productos</label>
-  <span class="search__icon"><Icon name="search" size={30} /></span>
-  <input
-    id="q"
-    class="search__input"
-    type="search"
-    name="q"
-    value={value}
-    placeholder="Buscar en Plaza 787…"
-    autocomplete="off"
-    enterkeyhint="search"
-    autofocus={autofocus}
-  />
-  <button type="button" class="search__clear" data-search-clear aria-label="Borrar búsqueda">
-    <Icon name="x" size={18} />
-  </button>
-</form>
+<div class="search-wrap">
+  <form
+    class="search glass"
+    action={action ? url('/buscar') : undefined}
+    method="get"
+    role="search"
+    data-search-form
+    data-local={action ? undefined : ''}
+  >
+    <label for={id} class="sr-only">Buscar productos</label>
+    <span class="search__icon"><Icon name="search" size={24} stroke={2} /></span>
+    <input
+      id={id}
+      class="search__input"
+      type="search"
+      name="q"
+      value={value}
+      placeholder={placeholder}
+      autocomplete="off"
+      enterkeyhint="search"
+      autofocus={autofocus}
+    />
+    <button type="button" class="search__clear" data-search-clear aria-label="Borrar búsqueda">
+      <Icon name="x" size={16} stroke={2.6} />
+    </button>
+  </form>
+</div>
 
 <style>
+  .search-wrap {
+    max-width: var(--max);
+    margin-inline: auto;
+    padding: 14px var(--gutter) 2px;
+  }
+
   .search {
-    position: relative;
     display: flex;
     align-items: center;
     gap: 8px;
-    max-width: var(--max);
-    margin-inline: auto;
-    padding: 8px var(--gutter);
-    background: var(--crema-200);
-    border-bottom: 2px solid rgba(255, 255, 255, 0.9);
+    padding: 6px 8px 6px 16px;
+    border-radius: 999px;
+    transition: box-shadow 0.2s ease;
+  }
+
+  .search:focus-within {
+    box-shadow: 0 0 0 4px rgba(13, 144, 171, 0.2), var(--glass-edge), var(--glass-shadow);
   }
 
   .search__icon {
     display: grid;
-    color: #b9b2a5;
+    color: var(--tinta-3);
   }
 
   .search__input {
     flex: 1;
     min-width: 0;
-    height: 46px;
+    height: 44px;
     padding: 0 4px;
     border: 0;
     background: transparent;
-    font-size: 1.05rem;
-    font-weight: 600;
+    font-size: 1.02rem;
+    font-weight: 500;
   }
 
   .search__input::placeholder {
-    color: #a69d8c;
-    font-weight: 500;
+    color: var(--tinta-3);
+    font-weight: 400;
   }
 
   .search__input:focus {
     outline: none;
-  }
-
-  .search:focus-within {
-    border-bottom-color: var(--azul);
   }
 
   /* ocultamos la X nativa del navegador */
@@ -79,18 +102,19 @@ const { value = '', autofocus = false } = Astro.props;
   .search__clear {
     display: grid;
     place-items: center;
-    width: 38px;
-    height: 38px;
+    width: 34px;
+    height: 34px;
     flex: none;
     border: 0;
     border-radius: 50%;
-    background: #444;
+    background: rgba(61, 61, 61, 0.85);
     color: var(--blanco);
-    transition: opacity 0.15s ease;
+    transition: opacity 0.15s ease, transform 0.2s var(--ease-spring);
   }
 
   .search__input:placeholder-shown ~ .search__clear {
     opacity: 0;
+    transform: scale(0.6);
     pointer-events: none;
   }
 </style>
@@ -104,5 +128,7 @@ const { value = '', autofocus = false } = Astro.props;
       input.dispatchEvent(new Event('input', { bubbles: true }));
       input.focus();
     });
+    // buscadores locales (p. ej. en el perfil) no navegan
+    if (form.hasAttribute('data-local')) form.addEventListener('submit', (e) => e.preventDefault());
   });
 </script>

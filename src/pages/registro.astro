@@ -1,0 +1,540 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import { municipios } from '../data/site';
+import { url } from '../lib/url';
+---
+
+<Layout title="Crear perfil" description="Crea tu perfil verificado en Plaza 787." accent="rojito">
+  <div class="container reg">
+    <h1 class="page-title">Crea tu perfil</h1>
+    <p class="page-sub">Tres pasos y listo. Tu información personal nunca se muestra en tu perfil.</p>
+
+    <ol class="steps glass" aria-label="Progreso">
+      <li data-step-dot="1" aria-current="step"><span>1</span> Perfil</li>
+      <li data-step-dot="2"><span>2</span> Privado</li>
+      <li data-step-dot="3"><span>3</span> Verificar</li>
+    </ol>
+
+    <form class="panel step" data-step="1" novalidate>
+      <h2><Icon name="user" /> Tu perfil público</h2>
+      <p class="hint">Esto es lo que verán compradores y vendedores.</p>
+
+      <div class="photo">
+        <label class="photo__pick">
+          <span class="photo__circle" data-photo-preview><Icon name="user" solid size={64} /></span>
+          <span class="photo__btn"><Icon name="camera" size={18} /> Subir foto</span>
+          <input type="file" accept="image/*" data-photo-input />
+        </label>
+        <p class="hint">Opcional. Una foto clara genera más confianza.</p>
+      </div>
+
+      <div class="field">
+        <label for="r-user">Nombre de usuario</label>
+        <input id="r-user" name="username" class="input" required minlength="3" maxlength="20" pattern="[A-Za-z0-9_]+"
+          autocomplete="username" placeholder="Ej. DAYANNAPR" />
+        <p class="hint">De 3 a 20 letras, números o _. Se muestra en mayúsculas.</p>
+      </div>
+
+      <div class="field">
+        <label for="r-town">Pueblo</label>
+        <select id="r-town" name="town" class="select" required>
+          <option value="">Selecciona tu pueblo…</option>
+          {municipios.map((m) => <option value={m}>{m}</option>)}
+        </select>
+      </div>
+
+      <label class="switch">
+        <input type="checkbox" name="showFollowers" checked />
+        <span class="switch__track" aria-hidden="true"></span>
+        Mostrar mis seguidores en el perfil
+      </label>
+
+      <p class="error" data-error role="alert" hidden></p>
+      <button type="submit" class="btn btn--primary btn--block">Continuar <Icon name="arrowRight" size={18} /></button>
+    </form>
+
+    <form class="panel step" data-step="2" hidden novalidate>
+      <h2><Icon name="lock" /> Información personal</h2>
+      <p class="private-note">
+        <Icon name="eyeOff" size={18} />
+        Privada: no aparece en tu perfil. Solo la usamos para proteger tu cuenta y tus compras.
+      </p>
+
+      <div class="field">
+        <label for="r-first">Nombre de pila</label>
+        <input id="r-first" name="firstName" class="input" required maxlength="40" autocomplete="given-name" />
+      </div>
+      <div class="field">
+        <label for="r-phone">Número de teléfono</label>
+        <input id="r-phone" name="phone" class="input" type="tel" required autocomplete="tel" inputmode="tel"
+          placeholder="(787) 555-0123" />
+      </div>
+      <div class="field">
+        <label for="r-birth">Fecha de nacimiento</label>
+        <input id="r-birth" name="birthDate" class="input" type="date" required autocomplete="bday" />
+        <p class="hint">Debes tener 18 años o más.</p>
+      </div>
+      <div class="field">
+        <label for="r-email">Email</label>
+        <input id="r-email" name="email" class="input" type="email" required autocomplete="email" placeholder="tu@email.com" />
+      </div>
+
+      <p class="error" data-error role="alert" hidden></p>
+      <div class="actions">
+        <button type="button" class="btn btn--soft" data-back>Atrás</button>
+        <button type="submit" class="btn btn--primary">Continuar <Icon name="arrowRight" size={18} /></button>
+      </div>
+    </form>
+
+    <form class="panel step" data-step="3" hidden novalidate>
+      <h2><Icon name="id" /> Verifica tu identidad</h2>
+      <p class="hint">
+        Sube una foto de tu licencia, pasaporte o ID de Puerto Rico. Es solo para confirmar que eres tú.
+      </p>
+      <ul class="promise">
+        <li><Icon name="shield" size={20} /><span>Tu ID <strong>no se guarda</strong> ni queda registrada en tu perfil.</span></li>
+        <li><Icon name="eyeOff" size={20} /><span>Nadie más la ve: ni compradores ni vendedores.</span></li>
+        <li><Icon name="verified" size={20} /><span>Tu perfil gana la insignia de identidad verificada.</span></li>
+      </ul>
+
+      <label class="id-drop" data-id-drop>
+        <input type="file" accept="image/*" capture="environment" data-id-input />
+        <span class="id-drop__state" data-id-state="idle">
+          <Icon name="camera" size={36} />
+          <strong>Tomar o subir foto de tu ID</strong>
+          <small>JPG o PNG, hasta 10 MB</small>
+        </span>
+        <span class="id-drop__state" data-id-state="checking" hidden>
+          <span class="spinner" aria-hidden="true"></span>
+          <strong>Verificando…</strong>
+          <small>Un momento</small>
+        </span>
+        <span class="id-drop__state ok" data-id-state="ok" hidden>
+          <Icon name="checkCircle" solid size={44} />
+          <strong>Identidad verificada</strong>
+          <small>La foto ya se descartó.</small>
+        </span>
+      </label>
+      <p class="hint demo">Demo: la verificación es simulada; en producción la hace un proveedor de verificación y la imagen se elimina.</p>
+
+      <p class="error" data-error role="alert" hidden></p>
+      <div class="actions">
+        <button type="button" class="btn btn--soft" data-back>Atrás</button>
+        <button type="submit" class="btn btn--green" data-finish disabled>Crear perfil</button>
+      </div>
+    </form>
+
+    <section class="panel step done" data-step="4" hidden>
+      <span class="done__icon"><Icon name="verified" solid size={56} /></span>
+      <h2>¡Bienvenido/a, <span data-done-user></span>!</h2>
+      <p>Tu perfil está listo y verificado.</p>
+      <div class="actions center">
+        <a href={url('/cuenta')} class="btn btn--primary">Ver mi perfil</a>
+        <a href={url('/vender')} class="btn btn--soft">Publicar algo</a>
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .reg {
+    max-width: 640px;
+  }
+
+  .steps {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    margin: 0 0 16px;
+    padding: 5px;
+    border-radius: 999px;
+  }
+
+  .steps li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 40px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--tinta-3);
+  }
+
+  .steps li span {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    background: rgba(0, 0, 0, 0.06);
+  }
+
+  .steps li[aria-current='step'] {
+    color: var(--blanco);
+    background: linear-gradient(180deg, #ff6c61, var(--rojito));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 6px 14px -6px rgba(246, 78, 67, 0.8);
+  }
+
+  .steps li[aria-current='step'] span,
+  .steps li.is-done span {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .steps li.is-done {
+    color: var(--verde-700);
+  }
+
+  .step h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.3rem;
+  }
+
+  .step h2 :global(.icon) {
+    color: var(--rojito);
+  }
+
+  .step > .hint {
+    margin: 6px 0 16px;
+  }
+
+  .photo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+
+  .photo__pick {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+
+  .photo__pick input,
+  .id-drop input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+
+  .photo__pick:has(input:focus-visible) .photo__circle,
+  .id-drop:has(input:focus-visible) {
+    outline: 3px solid var(--azul);
+    outline-offset: 3px;
+  }
+
+  .photo__circle {
+    display: grid;
+    place-items: end center;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    overflow: hidden;
+    color: var(--rojito);
+    background: var(--blanco);
+    box-shadow: 0 10px 24px -10px rgba(74, 56, 22, 0.5);
+  }
+
+  .photo__circle :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .photo__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--azul-700);
+  }
+
+  .switch {
+    margin-bottom: 18px;
+  }
+
+  .private-note {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin: 8px 0 18px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    font-size: 0.88rem;
+    color: var(--azul-700);
+    background: rgba(13, 144, 171, 0.1);
+    border: 1px solid rgba(13, 144, 171, 0.2);
+  }
+
+  .private-note :global(.icon) {
+    flex: none;
+    margin-top: 1px;
+  }
+
+  .promise {
+    list-style: none;
+    margin: 0 0 16px;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+    font-size: 0.92rem;
+  }
+
+  .promise li {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .promise :global(.icon) {
+    flex: none;
+    color: var(--verde);
+  }
+
+  .id-drop {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 180px;
+    padding: 20px;
+    border-radius: 20px;
+    border: 2px dashed rgba(13, 144, 171, 0.5);
+    background: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .id-drop:hover {
+    background: rgba(255, 255, 255, 0.75);
+  }
+
+  .id-drop.is-ok {
+    border-style: solid;
+    border-color: var(--verde);
+    background: rgba(57, 149, 82, 0.1);
+    cursor: default;
+  }
+
+  .id-drop__state {
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    color: var(--azul-700);
+  }
+
+  .id-drop__state strong {
+    color: var(--tinta);
+  }
+
+  .id-drop__state small {
+    color: var(--tinta-3);
+  }
+
+  .id-drop__state.ok {
+    color: var(--verde);
+  }
+
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 4px solid rgba(13, 144, 171, 0.2);
+    border-top-color: var(--azul);
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .demo {
+    margin: 10px 0 0;
+  }
+
+  .error {
+    margin: 0 0 14px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    color: var(--rojito-700);
+    background: rgba(246, 78, 67, 0.1);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .actions.center {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .done {
+    text-align: center;
+  }
+
+  .done__icon {
+    display: inline-grid;
+    color: var(--azul);
+  }
+
+  .done h2 {
+    justify-content: center;
+    margin-top: 8px;
+  }
+</style>
+
+<script>
+  import { profile, type PrivateInfo, type PublicProfile } from '../scripts/store';
+  import { shrinkImage } from '../scripts/image';
+  import { toast } from '../scripts/ui';
+
+  const steps = Array.from(document.querySelectorAll<HTMLElement>('[data-step]'));
+  const dots = Array.from(document.querySelectorAll<HTMLElement>('[data-step-dot]'));
+  const pub: Partial<PublicProfile> = {};
+  let priv: PrivateInfo | null = null;
+  let verifiedAt: string | null = null;
+
+  // Si ya tiene perfil, no hace falta registrarse otra vez.
+  if (profile.get()) window.location.replace(document.querySelector<HTMLAnchorElement>('[data-step="4"] a')!.href);
+
+  function go(n: number) {
+    steps.forEach((s) => (s.hidden = Number(s.dataset.step) !== n));
+    dots.forEach((d) => {
+      const i = Number(d.dataset.stepDot);
+      d.toggleAttribute('aria-current', i === n);
+      if (i === n) d.setAttribute('aria-current', 'step');
+      d.classList.toggle('is-done', i < n);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function fail(form: HTMLElement, msg: string) {
+    const el = form.querySelector<HTMLElement>('[data-error]')!;
+    el.textContent = msg;
+    el.hidden = !msg;
+  }
+
+  document.querySelectorAll('[data-back]').forEach((b) =>
+    b.addEventListener('click', () => {
+      const current = Number(b.closest<HTMLElement>('[data-step]')!.dataset.step);
+      go(current - 1);
+    }),
+  );
+
+  // ---------- Paso 1: perfil público ----------
+  const f1 = document.querySelector<HTMLFormElement>('[data-step="1"]')!;
+  const photoInput = f1.querySelector<HTMLInputElement>('[data-photo-input]')!;
+  const photoPreview = f1.querySelector<HTMLElement>('[data-photo-preview]')!;
+
+  photoInput.addEventListener('change', async () => {
+    const file = photoInput.files?.[0];
+    if (!file) return;
+    try {
+      pub.photo = await shrinkImage(file, 320);
+      const img = document.createElement('img');
+      img.src = pub.photo;
+      img.alt = 'Tu foto';
+      photoPreview.replaceChildren(img);
+    } catch {
+      toast('No pudimos leer esa foto');
+    }
+  });
+
+  f1.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = new FormData(f1);
+    const username = String(data.get('username')).trim();
+    const town = String(data.get('town'));
+    if (!/^[A-Za-z0-9_]{3,20}$/.test(username)) return fail(f1, 'El usuario debe tener de 3 a 20 letras, números o _.');
+    if (!town) return fail(f1, 'Selecciona tu pueblo.');
+    fail(f1, '');
+    Object.assign(pub, { username: username.toUpperCase(), town, showFollowers: data.get('showFollowers') === 'on' });
+    go(2);
+  });
+
+  // ---------- Paso 2: información privada ----------
+  const f2 = document.querySelector<HTMLFormElement>('[data-step="2"]')!;
+  f2.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const d = new FormData(f2);
+    const info = {
+      firstName: String(d.get('firstName')).trim(),
+      phone: String(d.get('phone')).trim(),
+      birthDate: String(d.get('birthDate')),
+      email: String(d.get('email')).trim(),
+    };
+    if (!info.firstName) return fail(f2, 'Escribe tu nombre de pila.');
+    if (info.phone.replace(/\D/g, '').length < 10) return fail(f2, 'Escribe un teléfono de 10 dígitos.');
+    const birth = new Date(info.birthDate);
+    const adult = new Date(birth.getFullYear() + 18, birth.getMonth(), birth.getDate()) <= new Date();
+    if (!info.birthDate || Number.isNaN(birth.getTime()) || !adult) return fail(f2, 'Debes tener 18 años o más.');
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(info.email)) return fail(f2, 'Escribe un email válido.');
+    fail(f2, '');
+    priv = info;
+    go(3);
+  });
+
+  // ---------- Paso 3: verificación de ID (la imagen NO se lee ni se guarda) ----------
+  const f3 = document.querySelector<HTMLFormElement>('[data-step="3"]')!;
+  const idInput = f3.querySelector<HTMLInputElement>('[data-id-input]')!;
+  const drop = f3.querySelector<HTMLElement>('[data-id-drop]')!;
+  const finish = f3.querySelector<HTMLButtonElement>('[data-finish]')!;
+  const state = (name: string) =>
+    f3.querySelectorAll<HTMLElement>('[data-id-state]').forEach((s) => (s.hidden = s.dataset.idState !== name));
+
+  idInput.addEventListener('change', () => {
+    const file = idInput.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/') || file.size > 10 * 1024 * 1024) {
+      idInput.value = '';
+      return fail(f3, 'Sube una imagen (JPG o PNG) de hasta 10 MB.');
+    }
+    fail(f3, '');
+    state('checking');
+    // Descartamos el archivo de inmediato: solo nos quedamos con el resultado.
+    idInput.value = '';
+    window.setTimeout(() => {
+      verifiedAt = new Date().toISOString();
+      state('ok');
+      drop.classList.add('is-ok');
+      idInput.disabled = true;
+      finish.disabled = false;
+    }, 1400);
+  });
+
+  f3.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!verifiedAt || !priv || !pub.username) return fail(f3, 'Primero verifica tu identidad.');
+    const ok = profile.save({
+      public: { username: pub.username, town: pub.town!, photo: pub.photo, showFollowers: pub.showFollowers ?? true },
+      private: priv,
+      verifiedAt,
+      createdAt: new Date().toISOString(),
+    });
+    if (!ok) return fail(f3, 'No se pudo guardar en este navegador. Prueba sin foto de perfil.');
+    document.querySelector('[data-done-user]')!.textContent = pub.username;
+    dots.forEach((d) => {
+      d.removeAttribute('aria-current');
+      d.classList.add('is-done');
+    });
+    steps.forEach((s) => (s.hidden = s.dataset.step !== '4'));
+  });
+</script>

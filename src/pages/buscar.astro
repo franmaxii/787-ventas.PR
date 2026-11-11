@@ -4,7 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import SearchBar from '../components/SearchBar.astro';
 import ProductGrid from '../components/ProductGrid.astro';
 import Icon from '../components/Icon.astro';
-import { products, sellers } from '../data/products';
+import { activeProducts as products, sellers } from '../data/products';
 import { categories } from '../data/categories';
 
 const towns = [...new Set(sellers.map((s) => s.town))].sort((a, b) => a.localeCompare(b, 'es'));
@@ -86,7 +86,7 @@ const towns = [...new Set(sellers.map((s) => s.town))].sort((a, b) => a.localeCo
     <ProductGrid products={products} filterable id="results" />
 
     <div class="empty" data-results-empty hidden>
-      <div class="empty__emoji">🔍</div>
+      <span class="empty__icon"><Icon name="search" size={40} /></span>
       <h2>No encontramos publicaciones</h2>
       <p>Revisa la ortografía o usa palabras más generales.</p>
       <a href={url('/buscar')} class="btn btn--primary">Ver todos los productos</a>

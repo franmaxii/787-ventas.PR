@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+<defs><filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter></defs>
+
+<ellipse cx="120" cy="204" rx="88" ry="9" fill="#0f172a" opacity=".22" filter="url(#sh)"/>
+<rect x="40" y="156" width="160" height="42" rx="12" fill="#0f172a" opacity=".12"/><rect x="40" y="152" width="160" height="42" rx="12" fill="#e0f2fe"/><path d="M46 173H194" stroke="#0f172a" stroke-opacity=".07" stroke-width="2"/><rect x="48" y="155" width="144" height="4" rx="2" fill="#fff" opacity=".6"/>
+<rect x="46" y="118" width="148" height="42" rx="12" fill="#0f172a" opacity=".12"/><rect x="46" y="114" width="148" height="42" rx="12" fill="#ffffff"/><path d="M52 135H188" stroke="#0f172a" stroke-opacity=".07" stroke-width="2"/><rect x="54" y="117" width="132" height="4" rx="2" fill="#fff" opacity=".6"/>
+<rect x="52" y="80" width="136" height="42" rx="12" fill="#0f172a" opacity=".12"/><rect x="52" y="76" width="136" height="42" rx="12" fill="#fde68a"/><path d="M58 97H182" stroke="#0f172a" stroke-opacity=".07" stroke-width="2"/><rect x="60" y="79" width="120" height="4" rx="2" fill="#fff" opacity=".6"/>
+<circle cx="66" cy="88" r="2" fill="#f59e0b" opacity=".55"/><circle cx="80" cy="88" r="2" fill="#f59e0b" opacity=".55"/><circle cx="94" cy="88" r="2" fill="#f59e0b" opacity=".55"/><circle cx="108" cy="88" r="2" fill="#f59e0b" opacity=".55"/><circle cx="122" cy="88" r="2" fill="#f59e0b" opacity=".55"/><circle cx="136" cy="88" r="2" fill="#f59e0b" opacity=".55"/><circle cx="150" cy="88" r="2" fill="#f59e0b" opacity=".55"/><circle cx="164" cy="88" r="2" fill="#f59e0b" opacity=".55"/><circle cx="66" cy="100" r="2" fill="#f59e0b" opacity=".55"/><circle cx="80" cy="100" r="2" fill="#f59e0b" opacity=".55"/><circle cx="94" cy="100" r="2" fill="#f59e0b" opacity=".55"/><circle cx="108" cy="100" r="2" fill="#f59e0b" opacity=".55"/><circle cx="122" cy="100" r="2" fill="#f59e0b" opacity=".55"/><circle cx="136" cy="100" r="2" fill="#f59e0b" opacity=".55"/><circle cx="150" cy="100" r="2" fill="#f59e0b" opacity=".55"/><circle cx="164" cy="100" r="2" fill="#f59e0b" opacity=".55"/>
+<rect x="150" y="72" width="14" height="126" rx="3" fill="#f64e43"/>
+<rect x="142" y="120" width="30" height="20" rx="4" fill="#fff" stroke="#f64e43" stroke-width="2"/>
+
+</svg>

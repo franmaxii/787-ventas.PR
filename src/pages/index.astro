@@ -6,7 +6,7 @@ import SearchBar from '../components/SearchBar.astro';
 import CategoryRow from '../components/CategoryRow.astro';
 import ProductGrid from '../components/ProductGrid.astro';
 import Icon from '../components/Icon.astro';
-import { products } from '../data/products';
+import { activeProducts as products } from '../data/products';
 import { discountPct } from '../lib/format';
 
 const featured = products.filter((p) => p.featured);
@@ -32,7 +32,7 @@ const local = products.filter((p) => p.category === 'hecho-en-pr' || p.category 
 
     <section class="section">
       <div class="section__head">
-        <h2 class="section__title">🔥 Ofertas del día</h2>
+        <h2 class="section__title">Ofertas del día</h2>
         <a class="section__link" href={url('/buscar?ofertas=1')}>Ver ofertas</a>
       </div>
       <ProductGrid products={deals} scroller />

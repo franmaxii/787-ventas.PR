@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+<defs><filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter><linearGradient id="w1" x1="0" y1="0" x2="1" y2="0"><stop offset="0.00" stop-color="#b45309"/><stop offset="1.00" stop-color="#78350f"/></linearGradient><linearGradient id="w2" x1="0" y1="0" x2="1" y2="0"><stop offset="0.00" stop-color="#d97706"/><stop offset="1.00" stop-color="#92400e"/></linearGradient></defs>
+
+<ellipse cx="120" cy="208" rx="62" ry="9" fill="#0f172a" opacity=".22" filter="url(#sh)"/>
+<ellipse cx="120" cy="196" rx="48" ry="12" fill="#78350f"/>
+<rect x="72" y="184" width="96" height="12" fill="#78350f"/>
+<ellipse cx="120" cy="184" rx="48" ry="12" fill="#92400e"/>
+<path d="M100 160H140L134 186H106Z" fill="url(#w1)"/>
+<ellipse cx="120" cy="96" rx="62" ry="14" fill="#a16207"/>
+<ellipse cx="120" cy="96" rx="52" ry="9" fill="#451a03"/>
+<rect x="128" y="16" width="22" height="104" rx="11" transform="rotate(24 139 68)" fill="url(#w2)"/>
+<path d="M58 96A62 14 0 0 0 182 96C182 138 162 160 140 166H100C78 160 58 138 58 96Z" fill="url(#w1)"/>
+<path d="M58 96A62 14 0 0 0 182 96" stroke="#fcd34d" stroke-opacity=".5" stroke-width="3"/>
+<path d="M76 124C96 136 144 136 164 124M86 146C102 154 138 154 154 146" stroke="#fbbf24" stroke-opacity=".25" stroke-width="3" stroke-linecap="round"/>
+<ellipse cx="186" cy="198" rx="9" ry="11" fill="#fefce8"/><path d="M186 188v20" stroke="#e7e5e4" stroke-width="1.5"/>
+<ellipse cx="200" cy="202" rx="7" ry="9" fill="#fefce8"/>
+
+</svg>

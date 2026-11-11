@@ -2,7 +2,7 @@
  * Comportamiento global: contador del carrito, botones de favoritos
  * y botones "Agregar al carrito" / "Comprar ahora".
  */
-import { cart, favs, onChange } from './store';
+import { cart, favs, onChange, profile } from './store';
 import { url } from '../lib/url';
 import { toast } from './ui';
 
@@ -29,15 +29,40 @@ function renderFavButtons() {
   });
 }
 
+/** Saludo y foto del menú lateral según el perfil guardado. */
+function renderProfileBits() {
+  const p = profile.get();
+  document.querySelectorAll<HTMLElement>('[data-profile-greeting]').forEach((el) => {
+    el.textContent = p ? `¡Hola, ${p.private.firstName || p.public.username}!` : '¡Hola!';
+  });
+  document.querySelectorAll<HTMLElement>('[data-profile-sub]').forEach((el) => {
+    el.textContent = p ? `@${p.public.username.toLowerCase()} · ${p.public.town}` : 'Crea tu perfil para vender';
+  });
+  document.querySelectorAll<HTMLElement>('[data-profile-avatar]').forEach((el) => {
+    const img = el.querySelector('img');
+    if (p?.public.photo) {
+      if (img) img.src = p.public.photo;
+      else {
+        const i = document.createElement('img');
+        i.src = p.public.photo;
+        i.alt = '';
+        el.replaceChildren(i);
+      }
+    }
+  });
+}
+
 let lastCount = cart.count();
 renderCartBadge();
 renderFavButtons();
+renderProfileBits();
 
 onChange(() => {
   const count = cart.count();
   renderCartBadge(count > lastCount);
   lastCount = count;
   renderFavButtons();
+  renderProfileBits();
 });
 
 document.addEventListener('click', (e) => {
@@ -47,7 +72,7 @@ document.addEventListener('click', (e) => {
   if (favBtn) {
     e.preventDefault();
     const saved = favs.toggle(favBtn.dataset.fav!);
-    toast(saved ? '❤️ Guardado en favoritos' : 'Quitado de favoritos');
+    toast(saved ? 'Guardado en favoritos' : 'Quitado de favoritos');
     return;
   }
 
@@ -70,6 +95,6 @@ document.addEventListener('click', (e) => {
       window.location.href = url('/carrito');
       return;
     }
-    toast(inCart + qty > max ? `Solo hay ${max} disponibles 🛒` : '🛒 Agregado al carrito');
+    toast(inCart + qty > max ? `Solo hay ${max} disponibles` : 'Agregado al carrito');
   }
 });

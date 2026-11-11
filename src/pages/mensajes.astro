@@ -1,5 +1,6 @@
 ---
 import { url } from '../lib/url';
+import Icon from '../components/Icon.astro';
 import Layout from '../layouts/Layout.astro';
 ---
 
@@ -11,7 +12,7 @@ import Layout from '../layouts/Layout.astro';
     <ul class="msgs" data-msgs></ul>
 
     <div class="empty" data-msgs-empty hidden>
-      <div class="empty__emoji">💬</div>
+      <span class="empty__icon"><Icon name="chat" size={40} /></span>
       <h2>No tienes mensajes</h2>
       <p>Pregúntale al vendedor desde la página de cualquier producto.</p>
       <a href={url('/')} class="btn btn--primary">Ver productos</a>
@@ -34,9 +35,10 @@ import Layout from '../layouts/Layout.astro';
     gap: 12px;
     align-items: start;
     padding: 14px;
-    border-radius: var(--radius-lg);
-    background: var(--blanco);
-    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-xl);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-edge), var(--glass-shadow);
     color: var(--tinta);
     text-decoration: none;
   }
@@ -79,7 +81,7 @@ import Layout from '../layouts/Layout.astro';
       (q) => `
     <li>
       <a class="msg" href="${base}/producto/${esc(q.productId)}#preguntas">
-        <span class="msg__avatar" aria-hidden="true">✉️</span>
+        <span class="msg__avatar" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg></span>
         <span>
           <span class="msg__title">${esc(q.productTitle)}</span>
           <span class="msg__text">${esc(q.text)}</span>

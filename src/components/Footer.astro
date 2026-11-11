@@ -1,0 +1,122 @@
+---
+import { url } from '../lib/url';
+import { site } from '../data/site';
+import { categories } from '../data/categories';
+import Icon from './Icon.astro';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer container">
+  <div class="footer__card glass-lite">
+    <div class="footer__brand">
+      <strong>{site.name}</strong>
+      <p>{site.tagline}. Compra protegida, vendedores verificados y envíos a toda la isla.</p>
+      <ul class="footer__trust">
+        <li><Icon name="shield" size={18} /> Compra protegida</li>
+        <li><Icon name="verified" size={18} /> Identidad verificada</li>
+      </ul>
+    </div>
+    <nav aria-label="Categorías">
+      <p class="footer__label">Categorías</p>
+      <ul>
+        {categories.slice(0, 6).map((c) => <li><a href={url(`/categoria/${c.slug}`)}>{c.name}</a></li>)}
+      </ul>
+    </nav>
+    <nav aria-label="Tu cuenta">
+      <p class="footer__label">Tu cuenta</p>
+      <ul>
+        <li><a href={url('/cuenta')}>Mi perfil</a></li>
+        <li><a href={url('/vender')}>Vender</a></li>
+        <li><a href={url('/compras')}>Mis compras</a></li>
+        <li><a href={url('/favoritos')}>Favoritos</a></li>
+      </ul>
+    </nav>
+  </div>
+  <p class="footer__legal">© {year} {site.name} · Hecho en Puerto Rico</p>
+</footer>
+
+<style>
+  .footer {
+    margin-top: 48px;
+  }
+
+  .footer__card {
+    display: grid;
+    gap: 24px;
+    padding: 24px;
+    border-radius: var(--radius-xl);
+  }
+
+  @media (min-width: 720px) {
+    .footer__card {
+      grid-template-columns: 2fr 1fr 1fr;
+    }
+  }
+
+  .footer__brand strong {
+    font-family: var(--font-logo);
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: var(--rojito);
+  }
+
+  .footer__brand p {
+    margin: 6px 0 12px;
+    color: var(--tinta-2);
+    font-size: 0.92rem;
+    max-width: 42ch;
+  }
+
+  .footer__trust {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--verde-700);
+  }
+
+  .footer__trust li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .footer__label {
+    margin: 0 0 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--tinta-3);
+  }
+
+  nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+  }
+
+  nav a {
+    color: var(--tinta);
+    text-decoration: none;
+    font-size: 0.92rem;
+  }
+
+  nav a:hover {
+    color: var(--azul-700);
+  }
+
+  .footer__legal {
+    margin: 14px 0 0;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--tinta-3);
+  }
+</style>

@@ -1,12 +1,13 @@
 ---
 import { url } from '../lib/url';
 import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
 ---
 
 <Layout title="Mis compras">
   <div class="container orders-page">
     <div class="success" data-success hidden>
-      <div class="success__emoji" aria-hidden="true">🎉</div>
+      <span class="success__icon"><Icon name="checkCircle" solid size={34} /></span>
       <div>
         <h2>¡Wepa! Compra confirmada</h2>
         <p>Te avisaremos cuando el vendedor despache tu pedido.</p>
@@ -17,7 +18,7 @@ import Layout from '../layouts/Layout.astro';
     <ul class="orders" data-orders></ul>
 
     <div class="empty" data-orders-empty hidden>
-      <div class="empty__emoji">🛍️</div>
+      <span class="empty__icon"><Icon name="bag" size={40} /></span>
       <h2>Aún no has comprado nada</h2>
       <p>Cuando compres, verás aquí el estado de tus pedidos.</p>
       <a href={url('/')} class="btn btn--primary">Ir a comprar</a>
@@ -32,14 +33,22 @@ import Layout from '../layouts/Layout.astro';
     align-items: center;
     margin-top: 16px;
     padding: 18px;
-    border-radius: var(--radius-lg);
-    background: var(--verde);
+    border-radius: var(--radius-xl);
     color: var(--blanco);
-    box-shadow: var(--shadow-sm);
+    background: linear-gradient(160deg, rgba(85, 178, 110, 0.95), rgba(43, 116, 64, 0.95));
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 16px 34px -14px rgba(57, 149, 82, 0.8);
   }
 
-  .orders-page .success__emoji {
-    font-size: 2.6rem;
+  .orders-page .success__icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.22);
+    border: 1px solid rgba(255, 255, 255, 0.5);
   }
 
   .orders-page .success h2 {
@@ -61,9 +70,7 @@ import Layout from '../layouts/Layout.astro';
 
   .orders-page .order {
     padding: 16px;
-    border-radius: var(--radius-lg);
-    background: var(--blanco);
-    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-xl);
   }
 
   .orders-page .order.is-new {
@@ -108,8 +115,12 @@ import Layout from '../layouts/Layout.astro';
     display: grid;
     place-items: center;
     aspect-ratio: 1;
-    border-radius: 10px;
+    border-radius: 14px;
     font-size: 1.6rem;
+  }
+
+  .orders-page .order__img img {
+    padding: 4px;
   }
 
   .orders-page .order__item a {
@@ -143,7 +154,8 @@ import Layout from '../layouts/Layout.astro';
 
 <script>
   import { formatMoney } from '../lib/format';
-  import { base } from '../lib/url';
+  import { base, url } from '../lib/url';
+  import { getProduct } from '../data/products';
   import { orders } from '../scripts/store';
   import { esc, formatDate } from '../scripts/ui';
 
@@ -158,7 +170,7 @@ import Layout from '../layouts/Layout.astro';
   list.innerHTML = all
     .map(
       (o) => `
-    <li class="order ${o.id === newId ? 'is-new' : ''}">
+    <li class="order glass-lite ${o.id === newId ? 'is-new' : ''}">
       <div class="order__head">
         <span>${formatDate(o.date)} · Pedido #${esc(o.id)}</span>
         <span class="status">${o.delivery === 'recogido' ? 'Listo para coordinar' : 'Preparando envío'}</span>
@@ -168,7 +180,9 @@ import Layout from '../layouts/Layout.astro';
           .map(
             (l) => `
           <li class="order__item">
-            <span class="order__img" style="background: var(--${esc(l.color)})" aria-hidden="true">${esc(l.emoji)}</span>
+            <span class="order__img tile tile--${esc(l.color)}" aria-hidden="true">${
+              (l.image ?? getProduct(l.id)?.image) ? `<img src="${esc(url(l.image ?? getProduct(l.id)!.image!))}" alt="" />` : esc(l.emoji)
+            }</span>
             <span>
               <a href="${base}/producto/${esc(l.id)}">${esc(l.title)}</a>
               <small>${l.qty} × ${formatMoney(l.price)}</small>

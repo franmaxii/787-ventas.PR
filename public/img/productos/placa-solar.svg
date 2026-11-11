@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+<defs><filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter><linearGradient id="cell" x1="0" y1="0" x2="1" y2="1"><stop offset="0.00" stop-color="#1d4ed8"/><stop offset="1.00" stop-color="#0c4a6e"/></linearGradient></defs>
+
+<ellipse cx="132" cy="214" rx="88" ry="9" fill="#0f172a" opacity=".22" filter="url(#sh)"/>
+<circle cx="196" cy="40" r="14" fill="#ebb549"/><path d="M216.0 40.0L224.0 40.0" stroke="#ebb549" stroke-width="4" stroke-linecap="round"/><path d="M210.1 54.1L215.8 59.8" stroke="#ebb549" stroke-width="4" stroke-linecap="round"/><path d="M196.0 60.0L196.0 68.0" stroke="#ebb549" stroke-width="4" stroke-linecap="round"/><path d="M181.9 54.1L176.2 59.8" stroke="#ebb549" stroke-width="4" stroke-linecap="round"/><path d="M176.0 40.0L168.0 40.0" stroke="#ebb549" stroke-width="4" stroke-linecap="round"/><path d="M181.9 25.9L176.2 20.2" stroke="#ebb549" stroke-width="4" stroke-linecap="round"/><path d="M196.0 20.0L196.0 12.0" stroke="#ebb549" stroke-width="4" stroke-linecap="round"/><path d="M210.1 25.9L215.8 20.2" stroke="#ebb549" stroke-width="4" stroke-linecap="round"/>
+<path d="M84 178L74 212M184 170L194 212M120 176L134 212" stroke="#64748b" stroke-width="6" stroke-linecap="round"/>
+<polygon points="40,80 200,64 214,168 54,184" fill="url(#cell)" stroke="#e2e8f0" stroke-width="5" stroke-linejoin="round"/>
+<path d="M80 76L94 180M120 72L134 176M160 68L174 172M44.7 114.7L204.7 98.7M49.3 149.3L209.3 133.3" stroke="#7dd3fc" stroke-opacity=".55" stroke-width="2"/>
+<polygon points="92,75 132,71 88,181 64,183" fill="#fff" opacity=".12"/>
+
+</svg>

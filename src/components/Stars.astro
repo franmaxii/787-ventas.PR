@@ -4,17 +4,28 @@ import Icon from './Icon.astro';
 interface Props {
   rating: number;
   size?: number;
+  /** Color de las estrellas llenas. El perfil usa rojito-naranja, como en el diseño. */
+  tone?: 'amarillo' | 'naranja';
+  /** Estrellas vacías blancas (sobre fondos de color) en vez de grises. */
+  whiteBase?: boolean;
+  class?: string;
 }
-const { rating, size = 16 } = Astro.props;
+const { rating, size = 16, tone = 'amarillo', whiteBase = false, class: className } = Astro.props;
 const pct = Math.max(0, Math.min(100, (rating / 5) * 100));
 ---
 
-<span class="stars" role="img" aria-label={`${rating.toFixed(1)} de 5 estrellas`} style={`--pct:${pct}%`}>
+<span
+  class:list={['stars', `stars--${tone}`, { 'stars--white': whiteBase }, className]}
+  role="img"
+  aria-label={rating > 0 ? `${rating.toFixed(1)} de 5 estrellas` : 'Sin calificaciones'}
+  style={`--pct:${pct}%`}
+  data-stars
+>
   <span class="stars__base" aria-hidden="true">
-    {Array.from({ length: 5 }, () => <Icon name="star" size={size} />)}
+    {Array.from({ length: 5 }, () => <Icon name="star" solid size={size} />)}
   </span>
   <span class="stars__fill" aria-hidden="true">
-    {Array.from({ length: 5 }, () => <Icon name="star" size={size} />)}
+    {Array.from({ length: 5 }, () => <Icon name="star" solid size={size} />)}
   </span>
 </span>
 
@@ -32,7 +43,12 @@ const pct = Math.max(0, Math.min(100, (rating / 5) * 100));
   }
 
   .stars__base {
-    color: rgba(29, 27, 23, 0.18);
+    color: rgba(29, 27, 23, 0.16);
+  }
+
+  .stars--white .stars__base {
+    color: var(--blanco);
+    filter: drop-shadow(0 1px 2px rgba(74, 56, 22, 0.25));
   }
 
   .stars__fill {
@@ -40,5 +56,10 @@ const pct = Math.max(0, Math.min(100, (rating / 5) * 100));
     inset: 0;
     color: var(--amarillo);
     clip-path: inset(0 calc(100% - var(--pct)) 0 0);
+    filter: drop-shadow(0 1px 2px rgba(74, 56, 22, 0.2));
+  }
+
+  .stars--naranja .stars__fill {
+    color: #f4511e;
   }
 </style>

@@ -1,8 +1,9 @@
 ---
 import { url } from '../lib/url';
+import Icon from '../components/Icon.astro';
 import Layout from '../layouts/Layout.astro';
 import ProductGrid from '../components/ProductGrid.astro';
-import { products } from '../data/products';
+import { activeProducts as products } from '../data/products';
 ---
 
 <Layout title="Favoritos">
@@ -16,7 +17,7 @@ import { products } from '../data/products';
     </div>
 
     <div class="empty" data-fav-empty hidden>
-      <div class="empty__emoji">💚</div>
+      <span class="empty__icon"><Icon name="heart" size={40} /></span>
       <h2>Todavía no tienes favoritos</h2>
       <p>Toca el corazón en cualquier producto para guardarlo aquí.</p>
       <a href={url('/')} class="btn btn--primary">Explorar productos</a>

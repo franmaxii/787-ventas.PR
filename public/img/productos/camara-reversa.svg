@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+<defs><filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter><linearGradient id="scr2" x1="0" y1="0" x2="0" y2="1"><stop offset="0.00" stop-color="#475569"/><stop offset="1.00" stop-color="#1e293b"/></linearGradient></defs>
+
+<ellipse cx="120" cy="208" rx="82" ry="9" fill="#0f172a" opacity=".22" filter="url(#sh)"/>
+<path d="M104 160H124L128 176H100Z" fill="#1f2937"/>
+<rect x="84" y="174" width="60" height="8" rx="4" fill="#111827"/>
+<rect x="36" y="56" width="156" height="106" rx="12" fill="#111827"/>
+<rect x="46" y="66" width="136" height="84" rx="6" fill="url(#scr2)"/>
+<polygon points="56,150 172,150 136,96 92,96" fill="#64748b" opacity=".35"/>
+<path d="M78.0 150L85.0 134M150.0 150L143.0 134" stroke="#f64e43" stroke-width="4" stroke-linecap="round"/><path d="M85.0 134h8M143.0 134h-8" stroke="#f64e43" stroke-width="4" stroke-linecap="round"/><path d="M85.9 132L92.5 117M142.1 132L135.5 117" stroke="#ebb549" stroke-width="4" stroke-linecap="round"/><path d="M92.5 117h8M135.5 117h-8" stroke="#ebb549" stroke-width="4" stroke-linecap="round"/><path d="M93.4 115L100.0 100M134.6 115L128.0 100" stroke="#4ade80" stroke-width="4" stroke-linecap="round"/><path d="M100.0 100h8M128.0 100h-8" stroke="#4ade80" stroke-width="4" stroke-linecap="round"/>
+<rect x="150" y="168" width="60" height="32" rx="10" fill="#1f2937"/>
+<circle cx="180" cy="184" r="11" fill="#0f172a" stroke="#64748b" stroke-width="3"/>
+<circle cx="177" cy="181" r="3" fill="#7dd3fc"/>
+<circle cx="160" cy="176" r="2" fill="#f87171"/><circle cx="160" cy="192" r="2" fill="#f87171"/>
+<circle cx="200" cy="176" r="2" fill="#f87171"/><circle cx="200" cy="192" r="2" fill="#f87171"/>
+
+</svg>

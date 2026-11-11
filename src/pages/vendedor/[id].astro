@@ -1,0 +1,184 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProfileHeader from '../../components/ProfileHeader.astro';
+import SearchBar from '../../components/SearchBar.astro';
+import Stars from '../../components/Stars.astro';
+import Icon from '../../components/Icon.astro';
+import { productsBySeller, sampleReviews, sellers, statusOf, type Seller } from '../../data/products';
+import { formatMoney } from '../../lib/format';
+import { url } from '../../lib/url';
+
+export function getStaticPaths() {
+  return sellers.map((seller) => ({ params: { id: seller.id }, props: { seller } }));
+}
+
+interface Props {
+  seller: Seller;
+}
+const { seller } = Astro.props;
+const items = productsBySeller(seller.id);
+const statusLabel = { activo: 'Activo', vendido: 'Vendido', expirado: 'Expirado' } as const;
+const reviewCount = Math.round(seller.sales * 0.4);
+const index = sellers.indexOf(seller);
+const reviews = [0, 1, 2].map((i) => sampleReviews[(index + i) % sampleReviews.length]);
+---
+
+<Layout title={`${seller.username} en ${seller.town}`} description={`Perfil de ${seller.name} en Plaza 787.`} accent="rojito">
+  <div class="container">
+    <ProfileHeader
+      mode="public"
+      username={seller.username}
+      town={seller.town}
+      followers={seller.followers}
+      rating={seller.rating}
+      reviews={reviewCount}
+      verified={seller.star}
+      sellerId={seller.id}
+      since={seller.since}
+    />
+
+    <div class="tabs glass" role="tablist" aria-label="Secciones del perfil" data-tabs>
+      <button type="button" role="tab" id="t-pubs" aria-controls="tab-pubs" aria-selected="true">Publicaciones</button>
+      <button type="button" role="tab" id="t-reviews" aria-controls="tab-reviews" aria-selected="false">Reviews</button>
+    </div>
+
+    <section id="tab-pubs" role="tabpanel" aria-labelledby="t-pubs">
+      <SearchBar id="pq" action={false} placeholder={`Buscar en ${seller.name}`} />
+      <div class="filter-chips" data-status-chips>
+        <button type="button" class="chip" data-status="" aria-pressed="true">Todas <span class="count"></span></button>
+        <button type="button" class="chip" data-status="activo" aria-pressed="false">Activos <span class="count"></span></button>
+        <button type="button" class="chip" data-status="vendido" aria-pressed="false">Vendidos <span class="count"></span></button>
+        <button type="button" class="chip" data-status="expirado" aria-pressed="false">Expirados <span class="count"></span></button>
+      </div>
+
+      <div class="ltiles" data-ltiles>
+        {
+          items.map((p) => {
+            const st = statusOf(p);
+            return (
+              <a
+                href={url(`/producto/${p.id}`)}
+                class:list={['ltile', `is-${st}`]}
+                data-status={st}
+                data-title={`${p.title} ${p.description}`}
+              >
+                <div class="ltile__media">
+                  <div class:list={['tile', `tile--${p.color}`]}>
+                    <img src={url(p.image ?? '')} alt="" loading="lazy" width="240" height="240" />
+                  </div>
+                  {st !== 'activo' && <span class:list={['status', `status--${st}`]}>{statusLabel[st]}</span>}
+                  <span class="ltile__price">{formatMoney(p.price)}</span>
+                </div>
+                <span class="ltile__title">{p.title}</span>
+              </a>
+            );
+          })
+        }
+      </div>
+      <div class="empty" data-ltiles-empty hidden>
+        <span class="empty__icon"><Icon name="archive" size={40} /></span>
+        <h2>No hay publicaciones aquí</h2>
+        <p>Prueba con otro filtro.</p>
+      </div>
+    </section>
+
+    <section id="tab-reviews" role="tabpanel" aria-labelledby="t-reviews" hidden>
+      <div class="panel score">
+        <strong>{seller.rating.toFixed(1)}</strong>
+        <div>
+          <Stars rating={seller.rating} size={24} tone="naranja" />
+          <p>{reviewCount.toLocaleString('es-PR')} reviews · {seller.sales.toLocaleString('es-PR')} ventas</p>
+        </div>
+      </div>
+      <ul class="reviews">
+        {
+          reviews.map((r) => (
+            <li class="panel">
+              <Stars rating={r.stars} size={16} tone="naranja" />
+              <p>{r.text}</p>
+              <small>
+                {r.name} · {r.town}
+              </small>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .score {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .score > strong {
+    font-size: 3.2rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--rojito);
+  }
+
+  .score p {
+    margin: 4px 0 0;
+    color: var(--tinta-3);
+    font-size: 0.9rem;
+  }
+
+  .reviews {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+
+  .reviews p {
+    margin: 8px 0 4px;
+  }
+
+  .reviews small {
+    color: var(--tinta-3);
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  import { initTabs } from '../../scripts/tabs';
+  import { initListingFilter } from '../../scripts/listing-filter';
+  import { following, onChange } from '../../scripts/store';
+  import { toast } from '../../scripts/ui';
+
+  initTabs(document.querySelector<HTMLElement>('[data-tabs]')!);
+  initListingFilter({
+    grid: document.querySelector<HTMLElement>('[data-ltiles]')!,
+    chips: document.querySelector<HTMLElement>('[data-status-chips]')!,
+    input: document.querySelector<HTMLInputElement>('#pq'),
+    empty: document.querySelector<HTMLElement>('[data-ltiles-empty]'),
+  });
+
+  // Seguir / dejar de seguir (suma 1 al contador mientras lo sigues)
+  const btn = document.querySelector<HTMLButtonElement>('[data-follow]');
+  const label = document.querySelector<HTMLElement>('[data-follow-label]');
+  const countEl = document.querySelector<HTMLElement>('[data-ph-followers]');
+  const base = Number(countEl?.textContent?.replace(/\D/g, '') ?? 0);
+
+  function render() {
+    if (!btn) return;
+    const on = following.has(btn.dataset.follow!);
+    btn.setAttribute('aria-pressed', String(on));
+    if (label) label.textContent = on ? 'Siguiendo' : 'Seguir';
+    if (countEl) countEl.textContent = (base + (on ? 1 : 0)).toLocaleString('es-PR');
+  }
+
+  btn?.addEventListener('click', () => {
+    const on = following.toggle(btn.dataset.follow!);
+    toast(on ? 'Ahora sigues a este vendedor' : 'Dejaste de seguir a este vendedor');
+  });
+  render();
+  onChange(render);
+</script>

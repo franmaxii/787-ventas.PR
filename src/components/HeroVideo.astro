@@ -4,45 +4,52 @@ import Icon from './Icon.astro';
 import { url } from '../lib/url';
 ---
 
-<section class="hero" aria-label="Video de Plaza 787">
-  {
-    site.heroVideo && (
-      <video
-        class="hero__video"
-        src={url(site.heroVideo)}
-        poster={site.heroPoster ? url(site.heroPoster) : undefined}
-        preload="metadata"
-        playsinline
-      />
-    )
-  }
-  <div class="hero__overlay" data-hero-overlay>
-    <p class="hero__kicker">{site.tagline}</p>
-    <button type="button" class="hero__play" data-hero-play data-has-video={site.heroVideo ? 'true' : 'false'} aria-label="Reproducir video">
-      <Icon name="play" size={46} />
-    </button>
-    <p class="hero__note" data-hero-note hidden>🎬 ¡Nuestro video viene pronto!</p>
-  </div>
-</section>
+<div class="hero-wrap">
+  <section class="hero" aria-label="Video de Plaza 787">
+    {
+      site.heroVideo && (
+        <video
+          class="hero__video"
+          src={url(site.heroVideo)}
+          poster={site.heroPoster ? url(site.heroPoster) : undefined}
+          preload="metadata"
+          playsinline
+        />
+      )
+    }
+    <div class="hero__overlay" data-hero-overlay>
+      <span class="hero__kicker">{site.tagline}</span>
+      <button type="button" class="hero__play" data-hero-play aria-label="Reproducir video">
+        <Icon name="play" solid size={40} />
+      </button>
+      <p class="hero__note" data-hero-note hidden>
+        <Icon name="sparkles" size={18} /> Nuestro video viene pronto
+      </p>
+    </div>
+  </section>
+</div>
 
 <style>
+  .hero-wrap {
+    max-width: var(--max);
+    margin-inline: auto;
+    padding: 6px var(--gutter) 0;
+  }
+
   .hero {
     position: relative;
     width: 100%;
-    max-width: var(--max);
-    margin-inline: auto;
-    aspect-ratio: 16 / 7.5;
-    max-height: 440px;
-    background: var(--video);
-    border-block: 2px solid rgba(255, 255, 255, 0.85);
+    aspect-ratio: 16 / 8;
+    max-height: 340px;
     overflow: hidden;
-  }
-
-  @media (min-width: 1180px) {
-    .hero {
-      border: 2px solid rgba(255, 255, 255, 0.85);
-      border-radius: var(--radius-lg);
-    }
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(60% 80% at 12% 10%, rgba(246, 78, 67, 0.35), transparent 60%),
+      radial-gradient(60% 80% at 90% 90%, rgba(13, 144, 171, 0.45), transparent 60%),
+      radial-gradient(40% 50% at 85% 10%, rgba(235, 181, 73, 0.3), transparent 60%),
+      var(--video);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 18px 40px -18px rgba(28, 26, 22, 0.55);
   }
 
   .hero__video {
@@ -59,13 +66,9 @@ import { url } from '../lib/url';
     display: grid;
     place-items: center;
     align-content: center;
-    gap: 10px;
+    gap: 12px;
     padding: 16px;
     text-align: center;
-    background:
-      radial-gradient(circle at 15% 20%, rgba(246, 78, 67, 0.25), transparent 40%),
-      radial-gradient(circle at 85% 80%, rgba(13, 144, 171, 0.3), transparent 45%),
-      radial-gradient(circle at 80% 15%, rgba(235, 181, 73, 0.2), transparent 35%);
     transition: opacity 0.25s ease;
   }
 
@@ -75,45 +78,58 @@ import { url } from '../lib/url';
   }
 
   .hero__kicker {
-    margin: 0;
-    color: rgba(255, 255, 255, 0.82);
-    font-weight: 800;
-    font-size: clamp(0.8rem, 3vw, 1rem);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 999px;
+    color: var(--blanco);
+    font-weight: 600;
+    font-size: clamp(0.72rem, 2.8vw, 0.9rem);
+    letter-spacing: 0.04em;
+    background: rgba(255, 255, 255, 0.14);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.28);
   }
 
   .hero__play {
+    position: relative;
     display: grid;
     place-items: center;
-    width: clamp(64px, 20vw, 92px);
+    width: clamp(66px, 20vw, 88px);
     aspect-ratio: 1;
-    padding: 0 0 0 6px;
-    border: 0;
+    padding: 0 0 0 5px;
     border-radius: 50%;
-    background: var(--blanco);
     color: #111;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-    transition: transform 0.15s ease;
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.78));
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: inset 0 -3px 8px rgba(0, 0, 0, 0.08), 0 0 0 10px rgba(255, 255, 255, 0.12),
+      0 14px 30px rgba(0, 0, 0, 0.4);
+    transition: transform 0.25s var(--ease-spring), box-shadow 0.25s ease;
   }
 
   .hero__play :global(.icon) {
-    width: 50%;
-    height: 50%;
+    width: 46%;
+    height: 46%;
   }
 
   .hero__play:hover {
-    transform: scale(1.07);
+    transform: scale(1.08);
+    box-shadow: inset 0 -3px 8px rgba(0, 0, 0, 0.08), 0 0 0 16px rgba(255, 255, 255, 0.1),
+      0 18px 36px rgba(0, 0, 0, 0.45);
   }
 
   .hero__note {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     margin: 0;
-    padding: 6px 12px;
+    padding: 6px 14px;
     border-radius: 999px;
-    background: var(--amarillo);
+    background: rgba(255, 255, 255, 0.9);
     color: var(--tinta);
-    font-weight: 800;
-    font-size: 0.9rem;
+    font-weight: 600;
+    font-size: 0.88rem;
   }
 </style>
 

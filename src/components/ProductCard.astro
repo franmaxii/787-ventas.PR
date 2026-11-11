@@ -30,7 +30,7 @@ const data = filterable
   : {};
 ---
 
-<article class="card" {...data}>
+<article class="card glass-lite" {...data}>
   <div class="card__media">
     <ProductImage product={p} />
     {off > 0 && <span class="card__badge">-{off}%</span>}
@@ -43,87 +43,103 @@ const data = filterable
     aria-pressed="false"
     aria-label={`Guardar ${p.title} en favoritos`}
   >
-    <Icon name="heart" size={20} />
+    <Icon name="heart" size={20} stroke={2} />
   </button>
 
-  <h3 class="card__title">
-    <a href={url(`/producto/${p.id}`)}>{p.title}</a>
-  </h3>
+  <div class="card__body">
+    <h3 class="card__title">
+      <a href={url(`/producto/${p.id}`)}>{p.title}</a>
+    </h3>
 
-  <p class="card__price">
-    {p.originalPrice && off > 0 && <s>{formatMoney(p.originalPrice)}</s>}
-    <strong>{formatMoney(p.price)}</strong>
-  </p>
-  <p class:list={['card__ship', { free: p.shipping === 0 }]}>
-    {shippingText(p.shipping)}
-  </p>
-  <p class="card__desc">{p.description}</p>
+    <p class="card__price">
+      <strong>{formatMoney(p.price)}</strong>
+      {p.originalPrice && off > 0 && <s>{formatMoney(p.originalPrice)}</s>}
+    </p>
+    <p class:list={['card__ship', { free: p.shipping === 0 }]}>
+      {p.shipping === 0 && <Icon name="truck" size={15} stroke={2} />}
+      {shippingText(p.shipping)}
+    </p>
+    <p class="card__desc">{p.description}</p>
+  </div>
 </article>
 
 <style>
   .card {
     position: relative;
-    text-align: center;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    padding: 8px;
+    border-radius: 28px;
+    text-align: center;
+    transition: transform 0.3s var(--ease-spring), box-shadow 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--glass-edge), 0 22px 40px -16px rgba(74, 56, 22, 0.4);
+  }
+
+  .card:hover :global(.pimg img) {
+    transform: scale(1.07) rotate(-2deg);
   }
 
   .card__media {
     position: relative;
-    margin-bottom: 6px;
-    transition: transform 0.2s ease;
-  }
-
-  .card:hover .card__media {
-    transform: translateY(-3px);
-  }
-
-  .card:hover :global(.pimg__emoji) {
-    transform: scale(1.1) rotate(-4deg);
   }
 
   .card__badge {
     position: absolute;
-    left: 8px;
-    top: 8px;
-    padding: 3px 8px;
+    left: 10px;
+    top: 10px;
+    z-index: 2;
+    padding: 3px 9px;
     border-radius: 999px;
-    background: var(--blanco);
-    color: var(--verde-700);
-    font-weight: 900;
-    font-size: 0.8rem;
+    color: var(--blanco);
+    font-weight: 800;
+    font-size: 0.75rem;
+    background: linear-gradient(180deg, #4fae69, var(--verde));
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 10px -4px rgba(57, 149, 82, 0.8);
   }
 
   .card__fav {
     position: absolute;
-    right: 8px;
-    top: 8px;
+    right: 16px;
+    top: 16px;
     z-index: 2;
     display: grid;
     place-items: center;
     width: 38px;
     height: 38px;
-    border: 0;
+    border: 1px solid rgba(255, 255, 255, 0.8);
     border-radius: 50%;
-    background: var(--blanco);
     color: var(--rojito);
-    box-shadow: var(--shadow-sm);
-    transition: transform 0.15s ease;
+    background: rgba(255, 255, 255, 0.75);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s var(--ease-spring);
   }
 
   .card__fav:active {
-    transform: scale(0.88);
+    transform: scale(0.85);
   }
 
   .card__fav[aria-pressed='true'] :global(.icon) {
     fill: currentColor;
   }
 
+  .card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 6px 8px;
+  }
+
   .card__title {
-    font-size: clamp(1rem, 3.6vw, 1.2rem);
-    font-weight: 900;
-    line-height: 1.15;
+    font-size: clamp(0.98rem, 3.5vw, 1.1rem);
+    font-weight: 800;
+    line-height: 1.2;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
@@ -142,6 +158,7 @@ const data = filterable
     position: absolute;
     inset: 0;
     z-index: 1;
+    border-radius: inherit;
   }
 
   .card__price {
@@ -154,19 +171,24 @@ const data = filterable
   }
 
   .card__price strong {
-    font-size: 1.25rem;
-    font-weight: 900;
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
   }
 
   .card__price s {
     color: var(--tinta-3);
-    font-size: 0.85rem;
+    font-size: 0.82rem;
   }
 
   .card__ship {
     margin: 0;
-    font-size: 0.85rem;
-    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 0.82rem;
+    font-weight: 600;
     color: var(--tinta-2);
   }
 
@@ -175,13 +197,12 @@ const data = filterable
   }
 
   .card__desc {
-    margin: 0;
-    font-size: 0.88rem;
-    font-weight: 500;
+    margin: 2px 0 0;
+    font-size: 0.85rem;
     color: var(--tinta-2);
     display: -webkit-box;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }

@@ -15,6 +15,7 @@ export interface OrderLine {
   qty: number;
   emoji: string;
   color: string;
+  image?: string;
 }
 
 export interface Order {
@@ -41,6 +42,46 @@ export interface Listing {
   description: string;
   freeShipping: boolean;
   photos: string[];
+  /** 'activo' | 'vendido'. "Expirado" se calcula: activo y con más de LISTING_DAYS días. */
+  status?: 'activo' | 'vendido';
+}
+
+export type ListingState = 'activo' | 'vendido' | 'expirado';
+
+/** Días que dura una publicación antes de expirar. */
+export const LISTING_DAYS = 30;
+
+export function listingState(l: Listing, now = Date.now()): ListingState {
+  if (l.status === 'vendido') return 'vendido';
+  const age = now - new Date(l.date).getTime();
+  return age > LISTING_DAYS * 864e5 ? 'expirado' : 'activo';
+}
+
+/** Lo que se muestra en el perfil público. */
+export interface PublicProfile {
+  username: string;
+  town: string;
+  photo?: string;
+  showFollowers: boolean;
+}
+
+/**
+ * Información personal: nunca se muestra en el perfil.
+ * En producción va cifrada en el servidor, no en el navegador.
+ */
+export interface PrivateInfo {
+  firstName: string;
+  phone: string;
+  birthDate: string;
+  email: string;
+}
+
+export interface Profile {
+  public: PublicProfile;
+  private: PrivateInfo;
+  /** Solo se guarda que la identidad se verificó y cuándo. La foto de la ID NO se guarda. */
+  verifiedAt?: string;
+  createdAt: string;
 }
 
 export interface AskedQuestion {
@@ -56,6 +97,8 @@ const KEYS = {
   orders: 'p787:orders',
   listings: 'p787:listings',
   questions: 'p787:questions',
+  profile: 'p787:profile',
+  following: 'p787:following',
 } as const;
 
 type Key = (typeof KEYS)[keyof typeof KEYS];
@@ -135,4 +178,49 @@ export const listings = {
 export const questions = {
   all: () => read<AskedQuestion[]>(KEYS.questions, []),
   add: (q: AskedQuestion) => write(KEYS.questions, [q, ...questions.all()]),
+};
+
+export const profile = {
+  get: () => read<Profile | null>(KEYS.profile, null),
+  save: (p: Profile) => write(KEYS.profile, p),
+  updatePublic(patch: Partial<PublicProfile>) {
+    const current = profile.get();
+    if (!current) return false;
+    return write(KEYS.profile, { ...current, public: { ...current.public, ...patch } });
+  },
+  updatePrivate(patch: Partial<PrivateInfo>) {
+    const current = profile.get();
+    if (!current) return false;
+    return write(KEYS.profile, { ...current, private: { ...current.private, ...patch } });
+  },
+  remove: () => {
+    try {
+      localStorage.removeItem(KEYS.profile);
+    } catch {
+      /* sin almacenamiento */
+    }
+    window.dispatchEvent(new CustomEvent(CHANGE_EVENT, { detail: { key: KEYS.profile } }));
+  },
+};
+
+export const following = {
+  ids: () => read<string[]>(KEYS.following, []),
+  has: (id: string) => following.ids().includes(id),
+  /** Devuelve true si quedó siguiendo. */
+  toggle(id: string) {
+    const ids = following.ids();
+    const next = ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id];
+    write(KEYS.following, next);
+    return next.includes(id);
+  },
+};
+
+export const listingActions = {
+  markSold: (id: string) =>
+    write(KEYS.listings, listings.all().map((l) => (l.id === id ? { ...l, status: 'vendido' } : l))),
+  renew: (id: string) =>
+    write(
+      KEYS.listings,
+      listings.all().map((l) => (l.id === id ? { ...l, status: 'activo', date: new Date().toISOString() } : l)),
+    ),
 };

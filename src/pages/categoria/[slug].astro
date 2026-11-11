@@ -1,10 +1,11 @@
 ---
+import { url } from '../../lib/url';
 import Layout from '../../layouts/Layout.astro';
 import CategoryRow from '../../components/CategoryRow.astro';
 import ProductGrid from '../../components/ProductGrid.astro';
 import Icon from '../../components/Icon.astro';
 import { categories, type Category } from '../../data/categories';
-import { products } from '../../data/products';
+import { activeProducts as products } from '../../data/products';
 
 export function getStaticPaths() {
   return categories.map((category) => ({ params: { slug: category.slug }, props: { category } }));
@@ -19,8 +20,8 @@ const items = products.filter((p) => p.category === category.slug);
 
 <Layout title={category.name} description={`${category.name} en Plaza 787. ${category.blurb}`}>
   <div class="container">
-    <header class:list={['banner', `bg-${category.color}`]}>
-      <span class="banner__emoji" aria-hidden="true">{category.emoji}</span>
+    <header class:list={['banner', 'tile', `tile--${category.color}`, { dark: category.color === 'amarillo' }]}>
+      <span class="banner__art" aria-hidden="true"><img src={url(category.image)} alt="" width="120" height="120" /></span>
       <div>
         <h1>{category.name}</h1>
         <p>{category.blurb}</p>
@@ -51,7 +52,7 @@ const items = products.filter((p) => p.category === category.slug);
     <ProductGrid products={items} filterable id="results" />
 
     <div class="empty" data-results-empty hidden>
-      <div class="empty__emoji">{category.emoji}</div>
+      <span class="empty__icon"><Icon name="filter" size={40} /></span>
       <h2>No hay productos con esos filtros</h2>
       <p>Prueba quitando “Envío gratis”.</p>
     </div>
@@ -61,19 +62,25 @@ const items = products.filter((p) => p.category === category.slug);
 <style>
   .banner {
     display: flex;
+    justify-content: flex-start;
     align-items: center;
     gap: 16px;
     margin-top: 12px;
-    padding: 20px;
-    border-radius: var(--radius-lg);
+    padding: 18px 20px;
+    border-radius: var(--radius-xl);
     color: var(--blanco);
-    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 18px 36px -18px rgba(28, 26, 22, 0.55);
   }
 
-  .bg-azul { background: var(--azul); }
-  .bg-rojito { background: var(--rojito); }
-  .bg-amarillo { background: var(--amarillo); color: var(--tinta); }
-  .bg-verde { background: var(--verde); }
+  .banner > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  .banner.dark {
+    color: var(--tinta);
+  }
 
   .banner h1 {
     font-size: clamp(1.6rem, 6vw, 2.3rem);
@@ -84,15 +91,23 @@ const items = products.filter((p) => p.category === category.slug);
     font-weight: 600;
   }
 
-  .banner__emoji {
+  .banner__art {
     display: grid;
     place-items: center;
     flex: none;
-    width: 72px;
-    height: 72px;
+    width: 84px;
+    height: 84px;
     border-radius: 50%;
-    background: var(--blanco);
-    font-size: 2.3rem;
+    background: rgba(255, 255, 255, 0.28);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+  }
+
+  .banner__art img {
+    width: 82%;
+    height: 82%;
+    padding: 0;
   }
 
   .bar {

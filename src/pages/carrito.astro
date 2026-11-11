@@ -86,7 +86,7 @@ import { municipios } from '../data/site';
     </form>
 
     <div class="empty" data-cart-empty hidden>
-      <div class="empty__emoji">🛒</div>
+      <span class="empty__icon"><Icon name="cart" size={40} /></span>
       <h2>Tu carrito está vacío</h2>
       <p>Suma productos y aprovecha el envío gratis a toda la isla.</p>
       <a href={url('/')} class="btn btn--primary">Descubrir productos</a>
@@ -126,25 +126,24 @@ import { municipios } from '../data/site';
     gap: 14px;
     align-items: start;
     padding: 14px;
-    border-radius: var(--radius-lg);
-    background: var(--blanco);
-    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-xl);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-edge), var(--glass-shadow);
   }
 
   .cart-page .line__img {
     display: grid;
     place-items: center;
     aspect-ratio: 1;
-    border-radius: 12px;
+    border-radius: 18px;
     font-size: 2.4rem;
     text-decoration: none;
     overflow: hidden;
   }
 
   .cart-page .line__img img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    padding: 6px;
   }
 
   .cart-page .line__title {
@@ -270,14 +269,17 @@ import { municipios } from '../data/site';
     gap: 12px;
     align-items: center;
     padding: 14px;
-    border: 2px solid var(--linea);
-    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.5);
     cursor: pointer;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
   }
 
   .cart-page .option:has(input:checked) {
-    border-color: var(--azul);
-    background: var(--azul-100);
+    border-color: rgba(13, 144, 171, 0.6);
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 0 0 3px rgba(13, 144, 171, 0.25), 0 8px 20px -10px rgba(13, 144, 171, 0.6);
   }
 
   .cart-page .option:has(input:disabled) {
@@ -375,7 +377,7 @@ import { municipios } from '../data/site';
         const max = Math.min(p.stock, 99);
         return `
         <li class="line" data-id="${esc(p.id)}">
-          <a class="line__img" href="${href}" style="background: var(--${esc(p.color)})" aria-hidden="true" tabindex="-1">${img}</a>
+          <a class="line__img tile tile--${esc(p.color)}" href="${href}" aria-hidden="true" tabindex="-1">${img}</a>
           <div>
             <a class="line__title" href="${href}">${esc(p.title)}</a>
             <p class="line__ship ${p.shipping === 0 ? 'free' : ''}">${shippingText(p.shipping)}</p>
@@ -466,6 +468,7 @@ import { municipios } from '../data/site';
         price: p.price,
         qty,
         emoji: p.emoji,
+        image: p.image,
         color: p.color,
       })),
       subtotal: t.subtotal,

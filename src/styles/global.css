@@ -1,37 +1,54 @@
 /* ==========================================================
-   Plaza 787 — tokens y estilos base
+   Plaza 787 — sistema visual "Liquid Glass"
    Paleta: Azul DTMF, Rojito, Crema, Amarillo, Verde, Blanco
    ========================================================== */
 :root {
   --azul: #0d90ab;
+  --azul-400: #2bb0cc;
   --azul-700: #0a6f85;
   --azul-100: #d3ebef;
   --rojito: #f64e43;
+  --rojito-400: #ff7a6f;
   --rojito-700: #c9362c;
   --crema: #eedbba;
   --crema-200: #f3e5cb;
   --crema-300: #e4cea8;
   --amarillo: #ebb549;
+  --amarillo-400: #f5cb6e;
   --verde: #399552;
+  --verde-400: #55b26e;
   --verde-700: #2b7440;
   --blanco: #ffffff;
 
-  --tinta: #1d1b17;
+  --tinta: #1c1a16;
   --tinta-2: #4a443a;
-  --tinta-3: #7a7262;
+  --tinta-3: #776f60;
   --video: #3d3d3d;
-  --linea: rgba(29, 27, 23, 0.12);
+  --linea: rgba(29, 27, 23, 0.1);
 
-  --font-body: 'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-logo: 'Chewy', 'Archivo', system-ui, sans-serif;
+  /* color de acento por sección (barra inferior, estrellas, etc.) */
+  --accent: var(--verde);
 
-  --radius: 14px;
-  --radius-lg: 22px;
-  --shadow: 0 6px 18px rgba(74, 56, 22, 0.14);
-  --shadow-sm: 0 2px 8px rgba(74, 56, 22, 0.12);
+  /* ---- Vidrio ---- */
+  --glass-bg: linear-gradient(150deg, rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0.34));
+  --glass-bg-strong: linear-gradient(150deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.6));
+  --glass-border: rgba(255, 255, 255, 0.7);
+  --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 -1px 1px rgba(255, 255, 255, 0.3);
+  --glass-shadow: 0 12px 32px -10px rgba(74, 56, 22, 0.28), 0 2px 6px rgba(74, 56, 22, 0.08);
+  --glass-blur: blur(22px) saturate(180%);
+
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+  --font-logo: 'Chewy', 'Inter', system-ui, sans-serif;
+
+  --radius: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 30px;
+  --shadow: 0 10px 28px -8px rgba(74, 56, 22, 0.3);
+  --shadow-sm: 0 4px 14px -4px rgba(74, 56, 22, 0.22);
   --gutter: 16px;
   --max: 1180px;
   --bottom-nav-h: 112px;
+  --ease-spring: cubic-bezier(0.3, 1.5, 0.5, 1);
 }
 
 *,
@@ -47,21 +64,36 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+  background-color: var(--crema);
 }
 
 body {
   margin: 0;
   min-height: 100dvh;
-  background-color: var(--crema);
-  /* textura de puntitos como en el diseño */
-  background-image: radial-gradient(rgba(255, 255, 255, 0.35) 1px, transparent 1.2px);
-  background-size: 22px 22px;
   color: var(--tinta);
   font-family: var(--font-body);
   font-size: 16px;
-  line-height: 1.45;
+  line-height: 1.5;
+  letter-spacing: -0.006em;
+  -webkit-font-smoothing: antialiased;
   padding-bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom));
   overflow-x: hidden;
+}
+
+/* Fondo: crema con luces de la paleta difuminadas (lo que se ve "a través" del vidrio) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1.3px) 0 0 / 22px 22px,
+    radial-gradient(42% 36% at 8% 6%, rgba(13, 144, 171, 0.34), transparent 70%),
+    radial-gradient(36% 30% at 96% 14%, rgba(246, 78, 67, 0.26), transparent 70%),
+    radial-gradient(46% 38% at 88% 88%, rgba(235, 181, 73, 0.36), transparent 70%),
+    radial-gradient(40% 36% at 4% 84%, rgba(57, 149, 82, 0.24), transparent 70%),
+    var(--crema);
 }
 
 img {
@@ -93,10 +125,10 @@ button {
 h1,
 h2,
 h3 {
-  line-height: 1.15;
+  line-height: 1.12;
   margin: 0;
-  font-weight: 900;
-  letter-spacing: -0.01em;
+  font-weight: 800;
+  letter-spacing: -0.025em;
 }
 
 .container {
@@ -118,9 +150,79 @@ h3 {
   border: 0;
 }
 
-/* ---------- Secciones ---------- */
+/* ==========================================================
+   Vidrio
+   ========================================================== */
+.glass {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-edge), var(--glass-shadow);
+}
+
+.glass-strong {
+  background: var(--glass-bg-strong);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-edge), var(--glass-shadow);
+}
+
+/* Vidrio "liviano": mismo aspecto sin backdrop-filter (para listas largas) */
+.glass-lite {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-edge), var(--glass-shadow);
+}
+
+/* ==========================================================
+   Fondos de ilustración (tiles de producto)
+   ========================================================== */
+.tile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.tile::after {
+  /* reflejo de vidrio */
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.38) 0%, rgba(255, 255, 255, 0.08) 38%, transparent 60%),
+    radial-gradient(120% 60% at 50% 120%, rgba(0, 0, 0, 0.12), transparent 70%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
+.tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8%;
+}
+
+.tile img.is-photo {
+  object-fit: cover;
+  padding: 0;
+}
+
+.tile--azul { background: radial-gradient(120% 90% at 30% 15%, var(--azul-400), var(--azul) 55%, var(--azul-700)); }
+.tile--rojito { background: radial-gradient(120% 90% at 30% 15%, var(--rojito-400), var(--rojito) 55%, var(--rojito-700)); }
+.tile--amarillo { background: radial-gradient(120% 90% at 30% 15%, var(--amarillo-400), var(--amarillo) 55%, #c9952f); }
+.tile--verde { background: radial-gradient(120% 90% at 30% 15%, var(--verde-400), var(--verde) 55%, var(--verde-700)); }
+
+/* ==========================================================
+   Secciones y títulos
+   ========================================================== */
 .section {
-  margin-block: 28px;
+  margin-block: 32px;
 }
 
 .section__head {
@@ -128,23 +230,33 @@ h3 {
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .section__title {
-  font-size: clamp(1.3rem, 4.5vw, 1.75rem);
+  font-size: clamp(1.3rem, 4.5vw, 1.7rem);
 }
 
 .section__link {
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   text-decoration: none;
   white-space: nowrap;
 }
 
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tinta-3);
+}
+
 .page-title {
-  font-size: clamp(1.6rem, 6vw, 2.4rem);
-  margin: 20px 0 6px;
+  font-size: clamp(1.7rem, 6vw, 2.4rem);
+  margin: 22px 0 6px;
 }
 
 .page-sub {
@@ -152,20 +264,28 @@ h3 {
   color: var(--tinta-2);
 }
 
-/* ---------- Botones ---------- */
+/* ==========================================================
+   Botones (vidrio teñido)
+   ========================================================== */
 .btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 48px;
-  padding: 0 22px;
-  border: 0;
+  min-height: 50px;
+  padding: 0 24px;
+  border: 1px solid transparent;
   border-radius: 999px;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 1rem;
+  letter-spacing: -0.01em;
   text-decoration: none;
-  transition: transform 0.12s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.15s var(--ease-spring), filter 0.15s ease, box-shadow 0.2s ease;
+}
+
+.btn:hover {
+  filter: brightness(1.05) saturate(1.05);
 }
 
 .btn:active {
@@ -173,37 +293,41 @@ h3 {
 }
 
 .btn--primary {
-  background: var(--azul);
   color: var(--blanco);
-  box-shadow: var(--shadow-sm);
-}
-
-.btn--primary:hover {
-  background: var(--azul-700);
-}
-
-.btn--soft {
-  background: var(--azul-100);
-  color: var(--azul-700);
-}
-
-.btn--soft:hover {
-  background: #c1e2e8;
+  border-color: rgba(255, 255, 255, 0.35);
+  background: linear-gradient(180deg, #27adc9 0%, var(--azul) 55%, #0b7d95 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -2px 4px rgba(0, 0, 0, 0.12),
+    0 10px 24px -8px rgba(13, 144, 171, 0.75);
 }
 
 .btn--green {
-  background: var(--verde);
   color: var(--blanco);
+  border-color: rgba(255, 255, 255, 0.35);
+  background: linear-gradient(180deg, #4fae69 0%, var(--verde) 55%, #2e8146 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -2px 4px rgba(0, 0, 0, 0.12),
+    0 10px 24px -8px rgba(57, 149, 82, 0.75);
 }
 
-.btn--green:hover {
-  background: var(--verde-700);
+.btn--red {
+  color: var(--blanco);
+  border-color: rgba(255, 255, 255, 0.35);
+  background: linear-gradient(180deg, #ff6c61 0%, var(--rojito) 55%, #dc3f35 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -2px 4px rgba(0, 0, 0, 0.12),
+    0 10px 24px -8px rgba(246, 78, 67, 0.7);
+}
+
+.btn--soft,
+.btn--white {
+  color: var(--azul-700);
+  background: var(--glass-bg-strong);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border-color: var(--glass-border);
+  box-shadow: var(--glass-edge), var(--shadow-sm);
 }
 
 .btn--white {
-  background: var(--blanco);
   color: var(--tinta);
-  box-shadow: var(--shadow-sm);
 }
 
 .btn--block {
@@ -211,38 +335,60 @@ h3 {
 }
 
 .btn[disabled] {
-  opacity: 0.55;
+  opacity: 0.5;
   cursor: not-allowed;
+  filter: grayscale(0.4);
 }
 
-/* ---------- Tarjetas / paneles ---------- */
+.icon-circle {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 50%;
+  color: var(--tinta-2);
+}
+
+/* ==========================================================
+   Paneles, chips, etiquetas
+   ========================================================== */
 .panel {
-  background: var(--blanco);
+  padding: 20px;
   border-radius: var(--radius-lg);
-  padding: 18px;
-  box-shadow: var(--shadow-sm);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-edge), var(--glass-shadow);
 }
 
 .chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 7px 14px;
   border-radius: 999px;
-  background: var(--blanco);
-  border: 2px solid transparent;
-  font-weight: 700;
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-edge), 0 2px 8px -2px rgba(74, 56, 22, 0.15);
+  font-weight: 600;
   font-size: 0.88rem;
   text-decoration: none;
   color: var(--tinta);
   white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+button.chip {
+  min-height: 40px;
 }
 
 .chip[aria-pressed='true'],
+.chip[aria-selected='true'],
 .chip.is-active {
-  border-color: var(--azul);
-  color: var(--azul-700);
-  background: var(--azul-100);
+  color: var(--blanco);
+  border-color: rgba(255, 255, 255, 0.4);
+  background: linear-gradient(180deg, #27adc9, var(--azul));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 6px 14px -6px rgba(13, 144, 171, 0.7);
 }
 
 .chip--toggle {
@@ -259,9 +405,10 @@ h3 {
 }
 
 .chip--toggle:has(input:checked) {
-  border-color: var(--verde);
-  background: #dcefe1;
-  color: var(--verde-700);
+  color: var(--blanco);
+  border-color: rgba(255, 255, 255, 0.4);
+  background: linear-gradient(180deg, #4fae69, var(--verde));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 6px 14px -6px rgba(57, 149, 82, 0.7);
 }
 
 .chip--toggle:has(input:focus-visible) {
@@ -269,47 +416,196 @@ h3 {
   outline-offset: 2px;
 }
 
-button.chip {
-  border-color: transparent;
-  min-height: 40px;
-}
-
-.tag-green {
-  color: var(--verde-700);
-  font-weight: 800;
-}
-
+.tag-green,
 .tag-off {
   color: var(--verde-700);
-  font-weight: 800;
+  font-weight: 700;
 }
 
-/* ---------- Formularios ---------- */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--tinta);
+  background: rgba(255, 255, 255, 0.85);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.status--vendido { color: var(--rojito-700); }
+.status--expirado { color: var(--tinta-3); }
+.status--activo { color: var(--verde-700); }
+
+/* ==========================================================
+   Publicaciones estilo perfil (estado + precio sobre la imagen)
+   ========================================================== */
+.ltiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 14px;
+}
+
+@media (min-width: 720px) {
+  .ltiles {
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  }
+}
+
+.ltile {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+.ltile__media {
+  position: relative;
+}
+
+.ltile .tile {
+  aspect-ratio: 1;
+  border-radius: 20px;
+}
+
+button.ltile {
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  font: inherit;
+}
+
+/* ==========================================================
+   Pestañas (control segmentado de vidrio)
+   ========================================================== */
+.tabs {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 4px;
+  margin: 18px 0 4px;
+  padding: 5px;
+  border-radius: 999px;
+}
+
+.tabs [role='tab'] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--tinta-2);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.tabs [role='tab'][aria-selected='true'] {
+  color: var(--blanco);
+  background: linear-gradient(180deg, #27adc9, var(--azul) 60%, #0b7d95);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 6px 14px -6px rgba(13, 144, 171, 0.8);
+}
+
+.filter-chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 14px 2px 16px;
+  scrollbar-width: none;
+}
+
+.filter-chips .count {
+  opacity: 0.7;
+  font-weight: 500;
+}
+
+.ltile .status {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+}
+
+.ltile__price {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 2;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.88);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.ltile__title {
+  font-weight: 800;
+  font-size: 1rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ltile.is-vendido .tile img,
+.ltile.is-expirado .tile img {
+  filter: saturate(0.55);
+  opacity: 0.85;
+}
+
+/* ==========================================================
+   Formularios
+   ========================================================== */
 .field {
   display: grid;
   gap: 6px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .field label,
 .field legend {
-  font-weight: 800;
-  font-size: 0.95rem;
+  font-weight: 700;
+  font-size: 0.9rem;
 }
 
 .input,
 .select,
 .textarea {
   width: 100%;
-  min-height: 48px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 2px solid var(--linea);
-  background: var(--blanco);
+  min-height: 50px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: inset 0 1px 2px rgba(74, 56, 22, 0.08);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
 .textarea {
-  min-height: 110px;
+  min-height: 120px;
   resize: vertical;
 }
 
@@ -317,27 +613,94 @@ button.chip {
 .select:focus,
 .textarea:focus {
   outline: none;
+  background: var(--blanco);
   border-color: var(--azul);
+  box-shadow: 0 0 0 4px rgba(13, 144, 171, 0.18);
 }
 
-/* ---------- Estado vacío ---------- */
+.hint {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--tinta-3);
+}
+
+/* Interruptor estilo iOS */
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.switch input {
+  position: absolute;
+  opacity: 0;
+}
+
+.switch__track {
+  position: relative;
+  flex: none;
+  width: 50px;
+  height: 30px;
+  border-radius: 999px;
+  background: rgba(29, 27, 23, 0.15);
+  transition: background 0.2s ease;
+}
+
+.switch__track::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--blanco);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s var(--ease-spring);
+}
+
+.switch input:checked + .switch__track {
+  background: var(--verde);
+}
+
+.switch input:checked + .switch__track::after {
+  transform: translateX(20px);
+}
+
+.switch input:focus-visible + .switch__track {
+  outline: 3px solid var(--azul);
+  outline-offset: 2px;
+}
+
+/* ==========================================================
+   Estado vacío
+   ========================================================== */
 .empty {
   text-align: center;
-  padding: 40px 16px;
+  padding: 44px 16px;
 }
 
-.empty__emoji {
-  font-size: 3.5rem;
-  line-height: 1;
+.empty__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  color: var(--azul);
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-edge), var(--glass-shadow);
 }
 
 .empty h2 {
-  margin: 12px 0 6px;
-  font-size: 1.35rem;
+  margin: 16px 0 6px;
+  font-size: 1.3rem;
 }
 
 .empty p {
-  margin: 0 0 18px;
+  margin: 0 0 20px;
   color: var(--tinta-2);
 }
 
@@ -348,5 +711,14 @@ button.chip {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass,
+  .glass-strong,
+  .btn--soft,
+  .btn--white {
+    background: rgba(255, 255, 255, 0.92);
   }
 }

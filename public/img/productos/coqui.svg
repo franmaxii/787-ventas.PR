@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+<defs><filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter><linearGradient id="fb" x1="0" y1="0" x2="0" y2="1"><stop offset="0.00" stop-color="#f2c48d"/><stop offset="1.00" stop-color="#c98b4a"/></linearGradient></defs>
+
+<ellipse cx="120" cy="208" rx="72" ry="9" fill="#0f172a" opacity=".22" filter="url(#sh)"/>
+<ellipse cx="74" cy="170" rx="30" ry="22" fill="#b97a3c"/>
+<ellipse cx="166" cy="170" rx="30" ry="22" fill="#b97a3c"/>
+<ellipse cx="120" cy="156" rx="52" ry="44" fill="url(#fb)"/>
+<ellipse cx="120" cy="172" rx="30" ry="24" fill="#fbe3c0"/>
+<path d="M94 176C90 190 84 196 78 198M146 176C150 190 156 196 162 198" stroke="#b97a3c" stroke-width="9" stroke-linecap="round"/>
+<circle cx="74" cy="198" r="4.5" fill="#f2c48d"/><circle cx="66" cy="202" r="4.5" fill="#f2c48d"/><circle cx="80" cy="196" r="4.5" fill="#f2c48d"/><circle cx="166" cy="198" r="4.5" fill="#f2c48d"/><circle cx="174" cy="202" r="4.5" fill="#f2c48d"/><circle cx="160" cy="196" r="4.5" fill="#f2c48d"/>
+<circle cx="100" cy="146" r="5" fill="#a86b32" opacity=".45"/><circle cx="144" cy="150" r="4" fill="#a86b32" opacity=".45"/>
+<ellipse cx="120" cy="108" rx="48" ry="34" fill="url(#fb)"/>
+<circle cx="92" cy="84" r="17" fill="url(#fb)"/><circle cx="148" cy="84" r="17" fill="url(#fb)"/>
+<circle cx="92" cy="84" r="11" fill="#1f2937"/><circle cx="148" cy="84" r="11" fill="#1f2937"/>
+<circle cx="88" cy="80" r="3.5" fill="#fff"/><circle cx="144" cy="80" r="3.5" fill="#fff"/>
+<path d="M100 118Q120 130 140 118" stroke="#7c4a1e" stroke-width="3" stroke-linecap="round"/>
+<circle cx="86" cy="112" r="7" fill="#f64e43" opacity=".3"/><circle cx="154" cy="112" r="7" fill="#f64e43" opacity=".3"/>
+<ellipse cx="104" cy="98" rx="14" ry="6" fill="#fff" opacity=".35" transform="rotate(-20 104 98)"/>
+<path d="M184 64V40L202 35V59" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="180" cy="64" r="5" fill="#fff"/><circle cx="198" cy="59" r="5" fill="#fff"/>
+
+</svg>

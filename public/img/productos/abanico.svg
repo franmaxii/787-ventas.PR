@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+<defs><filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter><linearGradient id="wood" x1="0" y1="0" x2="1" y2="0"><stop offset="0.00" stop-color="#e7b77a"/><stop offset="1.00" stop-color="#b7791f"/></linearGradient><linearGradient id="metal" x1="0" y1="0" x2="0" y2="1"><stop offset="0.00" stop-color="#f8fafc"/><stop offset="1.00" stop-color="#94a3b8"/></linearGradient></defs>
+
+<rect x="96" y="16" width="48" height="12" rx="6" fill="#f1f5f9"/>
+<rect x="116" y="24" width="8" height="66" rx="3" fill="#cbd5e1"/>
+<g transform="translate(120 104) scale(1 .34)"><rect x="14" y="-15" width="100" height="30" rx="15" fill="url(#wood)" transform="rotate(0)"/><rect x="14" y="-15" width="100" height="30" rx="15" fill="url(#wood)" transform="rotate(72)"/><rect x="14" y="-15" width="100" height="30" rx="15" fill="url(#wood)" transform="rotate(144)"/><rect x="14" y="-15" width="100" height="30" rx="15" fill="url(#wood)" transform="rotate(216)"/><rect x="14" y="-15" width="100" height="30" rx="15" fill="url(#wood)" transform="rotate(288)"/></g>
+<rect x="94" y="88" width="52" height="24" rx="12" fill="url(#metal)"/>
+<circle cx="120" cy="130" r="30" fill="#fde68a" opacity=".5" filter="url(#sh)"/>
+<path d="M100 112a20 18 0 0 0 40 0z" fill="#fef9c3"/>
+<path d="M56 166q16-10 32 0t32 0t32 0t32 0" stroke="#fff" stroke-opacity=".6" stroke-width="5" stroke-linecap="round"/>
+<path d="M80 190q14-9 28 0t28 0t28 0" stroke="#fff" stroke-opacity=".45" stroke-width="5" stroke-linecap="round"/>
+
+</svg>

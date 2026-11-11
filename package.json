@@ -12,7 +12,8 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^7.4.8"
+    "astro": "^7.4.8",
+    "heroicons": "^2.2.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
