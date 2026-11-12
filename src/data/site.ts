@@ -2,7 +2,7 @@ export const site = {
   name: 'Plaza 787',
   tagline: 'Compra y vende en Puerto Rico',
   description:
-    'Plaza 787: el mercado de la isla. Compra y vende tecnología, hogar, energía, artesanías y sabores de Puerto Rico.',
+    'Plaza 787: el marketplace de la isla. Compra, vende, alquila y regala cerca de ti: autos, bienes raíces, hogar, bebés, electrónica y lo hecho en Puerto Rico.',
   /**
    * Video del hero de la portada. Pon tu archivo en `public/video/` y escribe la ruta,
    * por ejemplo: '/video/promo.mp4'. Si se deja vacío, el botón de play muestra un aviso.
@@ -14,8 +14,6 @@ export const site = {
    * (por ejemplo '/logo.png'), se usa en lugar del logo de texto.
    */
   logo: '',
-  installments: 4,
-  installmentsFrom: 50,
 };
 
 export const municipios = [

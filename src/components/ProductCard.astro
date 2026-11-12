@@ -1,19 +1,19 @@
 ---
 import { url } from '../lib/url';
 import type { Product } from '../data/products';
-import { getSeller } from '../data/products';
-import { discountPct, formatMoney, shippingText } from '../lib/format';
+import { townOf } from '../data/products';
+import { formatMoney, priceLabel, timeAgo } from '../lib/format';
 import Icon from './Icon.astro';
 import ProductImage from './ProductImage.astro';
 
 interface Props {
   product: Product;
-  /** Atributos de datos para filtrar en el cliente (búsqueda). */
+  /** Atributos de datos para filtrar y ordenar en el navegador (búsqueda). */
   filterable?: boolean;
 }
 const { product: p, filterable = false } = Astro.props;
-const off = discountPct(p.price, p.originalPrice);
-const seller = getSeller(p.sellerId);
+const town = townOf(p);
+const dropped = !!p.originalPrice && p.originalPrice > p.price;
 
 const data = filterable
   ? {
@@ -22,10 +22,10 @@ const data = filterable
       'data-category': p.category,
       'data-price': String(p.price),
       'data-condition': p.condition,
-      'data-free': String(p.shipping === 0),
-      'data-off': String(off),
-      'data-town': seller?.town ?? '',
-      'data-sold': String(p.sold),
+      'data-town': town,
+      'data-days': String(p.daysAgo),
+      'data-drop': String(dropped),
+      'data-type': p.type ?? 'articulo',
     }
   : {};
 ---
@@ -33,7 +33,8 @@ const data = filterable
 <article class="card glass-lite" {...data}>
   <div class="card__media">
     <ProductImage product={p} />
-    {off > 0 && <span class="card__badge">-{off}%</span>}
+    {p.price === 0 && <span class="card__badge free">Gratis</span>}
+    {dropped && <span class="card__badge drop">Rebajado</span>}
   </div>
   <!-- fuera de .card__media: su transform en hover dejaría el botón debajo del enlace -->
   <button
@@ -41,25 +42,24 @@ const data = filterable
     class="card__fav"
     data-fav={p.id}
     aria-pressed="false"
-    aria-label={`Guardar ${p.title} en favoritos`}
+    aria-label={`Añadir ${p.title} a favoritos`}
   >
-    <Icon name="heart" size={20} stroke={2} />
+    <Icon name="heart" size={19} stroke={2} />
   </button>
 
   <div class="card__body">
+    <p class="card__price">
+      <strong>{priceLabel(p)}</strong>
+      {dropped && <s>{formatMoney(p.originalPrice!)}</s>}
+    </p>
     <h3 class="card__title">
       <a href={url(`/producto/${p.id}`)}>{p.title}</a>
     </h3>
-
-    <p class="card__price">
-      <strong>{formatMoney(p.price)}</strong>
-      {p.originalPrice && off > 0 && <s>{formatMoney(p.originalPrice)}</s>}
+    <p class="card__meta">
+      <Icon name="pin" solid size={13} />
+      <span data-dist={town}>{town}</span>
     </p>
-    <p class:list={['card__ship', { free: p.shipping === 0 }]}>
-      {p.shipping === 0 && <Icon name="truck" size={15} stroke={2} />}
-      {shippingText(p.shipping)}
-    </p>
-    <p class="card__desc">{p.description}</p>
+    <p class="card__time">{timeAgo(p.daysAgo)}</p>
   </div>
 </article>
 
@@ -96,10 +96,18 @@ const data = filterable
     border-radius: 999px;
     color: var(--blanco);
     font-weight: 800;
-    font-size: 0.75rem;
-    background: linear-gradient(180deg, #4fae69, var(--verde));
+    font-size: 0.72rem;
     border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  .card__badge.free {
+    background: linear-gradient(180deg, #4fae69, var(--verde));
     box-shadow: 0 4px 10px -4px rgba(57, 149, 82, 0.8);
+  }
+
+  .card__badge.drop {
+    background: linear-gradient(180deg, #ff6c61, var(--rojito));
+    box-shadow: 0 4px 10px -4px rgba(246, 78, 67, 0.8);
   }
 
   .card__fav {
@@ -113,8 +121,8 @@ const data = filterable
     height: 38px;
     border: 1px solid rgba(255, 255, 255, 0.8);
     border-radius: 50%;
-    color: var(--rojito);
-    background: rgba(255, 255, 255, 0.75);
+    color: var(--azul-700);
+    background: rgba(255, 255, 255, 0.78);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.25);
@@ -132,14 +140,34 @@ const data = filterable
   .card__body {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding: 12px 6px 8px;
+    gap: 3px;
+    padding: 10px 6px 6px;
+  }
+
+  .card__price {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .card__price strong {
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .card__price s {
+    color: var(--tinta-3);
+    font-size: 0.82rem;
   }
 
   .card__title {
-    font-size: clamp(0.98rem, 3.5vw, 1.1rem);
-    font-weight: 800;
-    line-height: 1.2;
+    font-size: clamp(0.95rem, 3.4vw, 1.05rem);
+    font-weight: 700;
+    line-height: 1.22;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
@@ -161,28 +189,8 @@ const data = filterable
     border-radius: inherit;
   }
 
-  .card__price {
+  .card__meta {
     margin: 2px 0 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: baseline;
-    gap: 6px;
-  }
-
-  .card__price strong {
-    font-size: 1.3rem;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-  }
-
-  .card__price s {
-    color: var(--tinta-3);
-    font-size: 0.82rem;
-  }
-
-  .card__ship {
-    margin: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -192,18 +200,14 @@ const data = filterable
     color: var(--tinta-2);
   }
 
-  .card__ship.free {
-    color: var(--verde-700);
+  .card__meta :global(.icon) {
+    color: var(--rojito);
+    flex: none;
   }
 
-  .card__desc {
-    margin: 2px 0 0;
-    font-size: 0.85rem;
-    color: var(--tinta-2);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  .card__time {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--tinta-3);
   }
 </style>

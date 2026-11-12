@@ -5,9 +5,9 @@ import Icon from '../../components/Icon.astro';
 import Stars from '../../components/Stars.astro';
 import ProductImage from '../../components/ProductImage.astro';
 import ProductGrid from '../../components/ProductGrid.astro';
-import { activeProducts, getSeller, products, sampleReviews, statusOf, type Product } from '../../data/products';
+import { activeProducts, getSeller, products, statusOf, townOf, type Product } from '../../data/products';
 import { getCategory } from '../../data/categories';
-import { discountPct, formatMoney, installmentsText } from '../../lib/format';
+import { formatMiles, formatMoney, priceLabel, timeAgo } from '../../lib/format';
 
 export function getStaticPaths() {
   return products.map((product) => ({ params: { id: product.id }, props: { product } }));
@@ -19,17 +19,48 @@ interface Props {
 const { product: p } = Astro.props;
 const seller = getSeller(p.sellerId)!;
 const category = getCategory(p.category);
-const off = discountPct(p.price, p.originalPrice);
-const cuotas = installmentsText(p.price);
-const maxQty = Math.min(p.stock, 10);
-const index = products.indexOf(p);
-const reviews = [0, 1].map((i) => sampleReviews[(index + i) % sampleReviews.length]);
-const related = activeProducts.filter((x) => x.category === p.category && x.id !== p.id).slice(0, 4);
+const town = townOf(p);
 const status = statusOf(p);
 const isActive = status === 'activo';
+const dropped = !!p.originalPrice && p.originalPrice > p.price;
+const fromSeller = activeProducts.filter((x) => x.sellerId === p.sellerId && x.id !== p.id).slice(0, 4);
+const similar = activeProducts
+  .filter((x) => x.category === p.category && x.id !== p.id && x.sellerId !== p.sellerId)
+  .slice(0, 4);
+
+const isProperty = p.type === 'alquiler' || p.type === 'propiedad';
+const isRent = p.category === 'renta-articulos';
+const facts: [string, string][] = [
+  ...(isProperty ? [] : ([['Condición', p.condition === 'nuevo' ? 'Nuevo' : 'Usado']] as [string, string][])),
+  ['Categoría', category?.name ?? ''],
+];
+if (isRent) facts.push(['Precio', 'Por día']);
+if (p.vehicle) {
+  facts.push(
+    ['Año', String(p.vehicle.year)],
+    ['Marca y modelo', `${p.vehicle.make} ${p.vehicle.model}`],
+    ['Millaje', `${formatMiles(p.vehicle.miles)} millas`],
+    ['Transmisión', p.vehicle.transmission],
+  );
+}
+if (p.rental) {
+  facts.push(
+    ['Cuartos', String(p.rental.beds)],
+    ['Baños', String(p.rental.baths)],
+  );
+  if (p.type === 'alquiler') facts.push(['Amueblado', p.rental.furnished ? 'Sí' : 'No']);
+}
+const quick =
+  p.type === 'alquiler'
+    ? ['¿Sigue disponible?', '¿Cuándo la puedo ver?', '¿Qué incluye la renta?', '¿Aceptan mascotas?']
+    : p.type === 'propiedad'
+      ? ['¿Sigue disponible?', '¿Cuándo la puedo ver?', '¿Acepta FHA?', '¿Cuánto es el CRIM?']
+      : isRent
+        ? ['¿Está disponible el sábado?', '¿Cuánto es el depósito?', '¿Incluye entrega?', '¿Cuál es el último precio?']
+        : ['¿Sigue disponible?', '¿Cuál es el último precio?', '¿Dónde nos podemos encontrar?', '¿Lo puedo recoger hoy?'];
 ---
 
-<Layout title={p.title} description={p.description}>
+<Layout title={p.title} description={`${priceLabel(p)} · ${town}. ${p.description}`}>
   <div class="container">
     <nav class="crumbs" aria-label="Ruta">
       <a href={url('/')}>Inicio</a>
@@ -40,41 +71,24 @@ const isActive = status === 'activo';
     <div class="pdp">
       <div class="pdp__media">
         <ProductImage product={p} size="large" loading="eager" />
-        <button
-          type="button"
-          class="pdp__fav"
-          hidden={!isActive}
-          data-fav={p.id}
-          aria-pressed="false"
-          aria-label={`Guardar ${p.title} en favoritos`}
-        >
-          <Icon name="heart" size={24} />
+        <button type="button" class="pdp__fav" hidden={!isActive} data-fav={p.id} aria-pressed="false" aria-label={`Añadir ${p.title} a favoritos`}>
+          <Icon name="heart" size={24} stroke={2} />
         </button>
       </div>
 
       <div class="pdp__info">
-        <p class="pdp__meta">
-          {p.condition === 'nuevo' ? 'Nuevo' : 'Usado'} · {p.sold.toLocaleString('es-PR')} vendidos
-        </p>
         <h1 class="pdp__title">{p.title}</h1>
-        {
-          p.reviews > 0 && (
-            <a href="#opiniones" class="pdp__rating">
-              <strong>{p.rating.toFixed(1)}</strong>
-              <Stars rating={p.rating} />
-              <span>({p.reviews})</span>
-            </a>
-          )
-        }
-
-        <div class="pdp__price">
-          {off > 0 && p.originalPrice && <s>{formatMoney(p.originalPrice)}</s>}
-          <p>
-            <strong>{formatMoney(p.price)}</strong>
-            {off > 0 && <span class="tag-off">{off}% OFF</span>}
-          </p>
-          {cuotas && <p class="pdp__cuotas">{cuotas}</p>}
-        </div>
+        <p class="pdp__price">
+          <strong>{priceLabel(p)}</strong>
+          {dropped && <s>{formatMoney(p.originalPrice!)}</s>}
+          {dropped && <span class="pill-drop">Bajó de precio</span>}
+        </p>
+        <p class="pdp__meta">
+          <Icon name="pin" solid size={16} />
+          <span data-dist={town}>{town}</span>
+          <span aria-hidden="true">·</span>
+          <span>Publicado {timeAgo(p.daysAgo).toLowerCase()}</span>
+        </p>
 
         {
           !isActive && (
@@ -82,169 +96,165 @@ const isActive = status === 'activo';
               <Icon name="archive" size={26} />
               <div>
                 <strong>{status === 'vendido' ? 'Este artículo ya se vendió' : 'Esta publicación expiró'}</strong>
-                <p>Mira otras publicaciones de {seller.name}.</p>
+                <p>Mira otras publicaciones de {seller.username}.</p>
               </div>
             </div>
           )
         }
 
-        <div class="buybox panel" hidden={!isActive}>
-          <ul class="perks">
-            <li class:list={{ free: p.shipping === 0 }}>
-              <Icon name="truck" />
-              <span>
-                <strong>{p.shipping === 0 ? 'Envío gratis a toda la isla' : `Envío por ${formatMoney(p.shipping)}`}</strong>
-                <small>Llega en 2 a 4 días laborables</small>
-              </span>
-            </li>
-            {
-              p.pickup && (
-                <li>
-                  <Icon name="pin" />
-                  <span>
-                    <strong>Recógelo gratis en {seller.town}</strong>
-                    <small>Coordina con el vendedor</small>
-                  </span>
-                </li>
-              )
-            }
+        <form
+          class="msgbox panel"
+          data-msg-form
+          hidden={!isActive}
+          data-listing={p.id}
+          data-title={p.title}
+          data-price={p.price}
+          data-type={p.type ?? 'articulo'}
+          data-category={p.category}
+          data-image={p.image ? url(p.image) : ''}
+          data-color={p.color}
+          data-seller-name={seller.username}
+          data-seller-id={seller.id}
+        >
+          <h2><Icon name="chat" solid size={22} /> Envíale un mensaje al vendedor</h2>
+          <div class="quick" role="group" aria-label="Mensajes rápidos">
+            {quick.map((q) => <button type="button" class="chip" data-quick={q}>{q}</button>)}
+          </div>
+          <div class="msgbox__row">
+            <label for="msg" class="sr-only">Mensaje</label>
+            <input id="msg" name="text" class="input" value="Hola, ¿sigue disponible?" maxlength="500" required />
+            <button type="submit" class="btn btn--primary">Enviar</button>
+          </div>
+          <p class="hint">Responde {seller.responds}. Nunca compartas códigos ni pagues por adelantado.</p>
+        </form>
+
+        <div class="actions" hidden={!isActive}>
+          <button type="button" class="act" data-fav={p.id} aria-pressed="false"><Icon name="heart" size={20} /> Favorito</button>
+          <button type="button" class="act" data-offer><Icon name="currency" size={20} /> Hacer oferta</button>
+          <button type="button" class="act" data-share><Icon name="share" size={20} /> Compartir</button>
+          <button type="button" class="act" data-report><Icon name="flag" size={20} /> Reportar</button>
+        </div>
+
+        <section class="panel details">
+          <h2>Detalles</h2>
+          <dl class="facts">
+            {facts.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}
+          </dl>
+          <p class="desc">{p.description}</p>
+          <ul class="specs">
+            {p.details.map((d) => <li><Icon name="check" size={16} /> {d}</li>)}
           </ul>
-
-          <p class="stock">
-            {p.stock === 1 ? '¡Último disponible!' : <>Stock disponible <span>({p.stock} disponibles)</span></>}
-          </p>
-
           {
-            maxQty > 1 && (
-              <div class="qty">
-                <label for="qty">Cantidad</label>
-                <select id="qty" class="select">
-                  {Array.from({ length: maxQty }, (_, i) => (
-                    <option value={i + 1}>
-                      {i + 1} {i === 0 ? 'unidad' : 'unidades'}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            p.type === 'vehiculo' && (
+              <p class="tip"><Icon name="id" size={18} /> El traspaso se hace en CESCO. Pide ver el título y la licencia del vendedor antes de pagar.</p>
             )
           }
-
-          <div class="buybox__actions">
-            <button
-              type="button"
-              class="btn btn--primary btn--block"
-              data-add-to-cart={p.id}
-              data-buy-now
-              data-max={p.stock}
-              data-qty-from={maxQty > 1 ? '#qty' : undefined}
-            >
-              Comprar ahora
-            </button>
-            <button
-              type="button"
-              class="btn btn--soft btn--block"
-              data-add-to-cart={p.id}
-              data-max={p.stock}
-              data-qty-from={maxQty > 1 ? '#qty' : undefined}
-            >
-              <Icon name="cart" size={20} /> Agregar al carrito
-            </button>
-          </div>
-
-          <p class="protect">
-            <Icon name="shield" size={18} />
-            <span><strong>Compra protegida.</strong> Recibe el producto que esperabas o te devolvemos tu dinero.</span>
-          </p>
-        </div>
+          {
+            p.type === 'alquiler' && (
+              <p class="tip"><Icon name="shieldAlert" size={18} /> Nunca pagues depósito ni renta sin ver la propiedad en persona y firmar un contrato.</p>
+            )
+          }
+          {
+            p.type === 'propiedad' && (
+              <p class="tip"><Icon name="document" size={18} /> Antes de dar dinero, verifica la titularidad en el Registro de la Propiedad y cierra la compraventa ante notario. Nunca envíes depósitos sin ver la propiedad.</p>
+            )
+          }
+          {
+            isRent && (
+              <p class="tip"><Icon name="calendar" size={18} /> Acuerden por escrito las fechas, el depósito y el estado del artículo al entregarlo y al devolverlo.</p>
+            )
+          }
+        </section>
 
         <a href={url(`/vendedor/${seller.id}`)} class="seller panel">
           <span class="seller__avatar" aria-hidden="true"><Icon name="user" solid size={40} /></span>
           <span class="seller__body">
             <span class="seller__name">
               {seller.username}
-              {seller.star && <Icon name="verified" solid size={18} label="Vendedor verificado" class="seller__check" />}
+              {seller.star && <Icon name="verified" solid size={18} label="Identidad verificada" class="seller__check" />}
             </span>
             <span class="seller__meta">
               <Icon name="home" solid size={14} />
-              {seller.town} · {seller.sales.toLocaleString('es-PR')} ventas
+              {seller.town} · en Plaza 787 desde {seller.since}
             </span>
             <span class="seller__rating">
               <Stars rating={seller.rating} size={14} tone="naranja" />
-              {seller.rating.toFixed(1)}
+              {seller.rating.toFixed(1)} · responde {seller.responds}
             </span>
           </span>
           <span class="seller__cta">Ver perfil <Icon name="chevronRight" size={16} /></span>
         </a>
+
+        <section class="panel safety">
+          <h2><Icon name="shield" size={22} /> Para un encuentro seguro</h2>
+          <ul>
+            <li><Icon name="pin" size={18} /> Encuéntrense en un lugar público y con cámaras: un centro comercial o frente a un cuartel de la Policía.</li>
+            <li><Icon name="users" size={18} /> Ve de día y, si puedes, acompañado.</li>
+            <li><Icon name="eye" size={18} /> Revisa el artículo antes de pagar.</li>
+            <li><Icon name="cash" size={18} /> Paga al recibir: en efectivo o por ATH Móvil en persona.</li>
+            <li><Icon name="shieldAlert" size={18} /> Nunca envíes depósitos, códigos de verificación ni pagos por adelantado.</li>
+          </ul>
+        </section>
       </div>
     </div>
 
-    <section class="section panel">
-      <h2 class="block-title">Características</h2>
-      <ul class="specs">
-        {p.details.map((d) => <li><Icon name="check" size={18} /> {d}</li>)}
-        <li><Icon name="check" size={18} /> Condición: {p.condition}</li>
-      </ul>
-      <h2 class="block-title">Descripción</h2>
-      <p class="desc">{p.description}</p>
-    </section>
-
-    <section class="section panel" id="preguntas">
-      <h2 class="block-title">Preguntas y respuestas</h2>
-      <form class="ask" data-ask-form data-product-id={p.id} data-product-title={p.title}>
-        <label for="ask" class="sr-only">Escribe tu pregunta</label>
-        <input id="ask" name="text" class="input" placeholder="Pregúntale al vendedor…" maxlength="300" required />
-        <button type="submit" class="btn btn--primary" aria-label="Enviar pregunta">
-          <Icon name="send" size={20} />
-        </button>
-      </form>
-      <ul class="qa" data-qa-list>
-        {
-          (p.questions ?? []).map((q) => (
-            <li>
-              <p class="qa__q">{q.q}</p>
-              {q.a && <p class="qa__a">↳ {q.a}</p>}
-            </li>
-          ))
-        }
-      </ul>
-      {!p.questions?.length && <p class="muted" data-qa-empty>Nadie ha preguntado todavía. ¡Sé el primero!</p>}
-    </section>
-
-    <section class="section panel" id="opiniones">
-      <h2 class="block-title">Opiniones del producto</h2>
-      <div class="score">
-        <strong>{p.rating.toFixed(1)}</strong>
-        <div>
-          <Stars rating={p.rating} size={22} />
-          <p class="muted">{p.reviews} opiniones</p>
-        </div>
-      </div>
-      <ul class="reviews">
-        {
-          reviews.map((r) => (
-            <li>
-              <Stars rating={r.stars} size={14} />
-              <p>{r.text}</p>
-              <small>
-                {r.name} · {r.town}
-              </small>
-            </li>
-          ))
-        }
-      </ul>
-    </section>
-
     {
-      related.length > 0 && (
+      fromSeller.length > 0 && (
         <section class="section">
           <div class="section__head">
-            <h2 class="section__title">También te puede gustar</h2>
+            <h2 class="section__title">Más de {seller.username}</h2>
+            <a class="section__link" href={url(`/vendedor/${seller.id}`)}>Ver todo</a>
           </div>
-          <ProductGrid products={related} />
+          <ProductGrid products={fromSeller} />
+        </section>
+      )
+    }
+    {
+      similar.length > 0 && (
+        <section class="section">
+          <div class="section__head">
+            <h2 class="section__title">Publicaciones similares</h2>
+          </div>
+          <ProductGrid products={similar} />
         </section>
       )
     }
   </div>
+
+  <dialog class="sheet" data-offer-dialog aria-labelledby="offer-title">
+    <form method="dialog" data-offer-form>
+      <h2 id="offer-title">Hacer una oferta</h2>
+      <p class="hint">Precio publicado: {priceLabel(p)}. El vendedor recibirá tu oferta por mensaje.</p>
+      <div class="field">
+        <label for="offer">Tu oferta (USD)</label>
+        <input id="offer" name="amount" class="input" type="number" min="1" step="1" inputmode="numeric" required />
+      </div>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--soft" data-close>Cancelar</button>
+        <button type="submit" class="btn btn--primary" value="send">Enviar oferta</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="sheet" data-report-dialog aria-labelledby="report-title">
+    <form method="dialog" data-report-form>
+      <h2 id="report-title">Reportar publicación</h2>
+      <p class="hint">Nuestro equipo la revisará. El vendedor no sabrá quién la reportó.</p>
+      <div class="reasons">
+        {
+          ['Estafa o fraude', 'Artículo prohibido', 'Información o fotos falsas', 'Precio abusivo en emergencia', 'Otro'].map((r, i) => (
+            <label class="chip chip--toggle">
+              <input type="radio" name="reason" value={r} checked={i === 0} /> {r}
+            </label>
+          ))
+        }
+      </div>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--soft" data-close>Cancelar</button>
+        <button type="submit" class="btn btn--red" value="send">Enviar reporte</button>
+      </div>
+    </form>
+  </dialog>
 </Layout>
 
 <style>
@@ -263,19 +273,19 @@ const isActive = status === 'activo';
 
   .pdp {
     display: grid;
-    gap: 20px;
+    gap: 18px;
   }
 
   @media (min-width: 860px) {
     .pdp {
       grid-template-columns: 1.1fr 1fr;
-      gap: 36px;
+      gap: 32px;
       align-items: start;
     }
 
     .pdp__media {
       position: sticky;
-      top: 16px;
+      top: 90px;
     }
   }
 
@@ -283,158 +293,222 @@ const isActive = status === 'activo';
     position: relative;
   }
 
+  /* los hijos de un grid no se encogen solos: sin esto la fila de mensajes rápidos ensancha la página */
+  .pdp > *,
+  .pdp__info > * {
+    min-width: 0;
+  }
+
   .pdp__fav {
     position: absolute;
     top: 14px;
     right: 14px;
+    z-index: 2;
     display: grid;
     place-items: center;
-    z-index: 2;
     width: 52px;
     height: 52px;
     border: 1px solid rgba(255, 255, 255, 0.85);
     border-radius: 50%;
-    color: var(--rojito);
+    color: var(--azul-700);
     background: rgba(255, 255, 255, 0.78);
     -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
     box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.35);
   }
 
-  .pdp__fav[aria-pressed='true'] :global(.icon) {
+  .pdp__fav[aria-pressed='true'] :global(.icon),
+  .act[aria-pressed='true'] :global(.icon) {
     fill: currentColor;
   }
 
-  .pdp__meta {
-    margin: 0 0 4px;
-    color: var(--tinta-2);
-    font-size: 0.9rem;
-    font-weight: 600;
+  .pdp__info {
+    display: grid;
+    gap: 14px;
+    align-content: start;
   }
 
   .pdp__title {
     font-size: clamp(1.5rem, 5.5vw, 2.1rem);
   }
 
-  .pdp__rating {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 8px;
-    color: var(--tinta-2);
-    text-decoration: none;
-    font-size: 0.9rem;
+  .pdp__price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px;
+    margin: -4px 0 0;
   }
 
-  .pdp__price {
-    margin: 16px 0;
+  .pdp__price strong {
+    font-size: clamp(1.9rem, 8vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
   }
 
   .pdp__price s {
     color: var(--tinta-3);
   }
 
-  .pdp__price p {
-    margin: 0;
+  .pill-drop {
+    padding: 3px 10px;
+    border-radius: 999px;
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 800;
+    background: linear-gradient(180deg, #ff6c61, var(--rojito));
+  }
+
+  .pdp__meta {
     display: flex;
-    align-items: baseline;
-    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin: -6px 0 0;
+    color: var(--tinta-2);
+    font-size: 0.92rem;
+    font-weight: 600;
   }
 
-  .pdp__price strong {
-    font-size: clamp(2rem, 9vw, 2.6rem);
-    font-weight: 900;
-    line-height: 1.1;
+  .pdp__meta :global(.icon) {
+    color: var(--rojito);
   }
 
-  .pdp__price .tag-off {
-    font-size: 1.05rem;
+  .msgbox h2,
+  .details h2,
+  .safety h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.15rem;
+    margin-bottom: 12px;
   }
 
-  .pdp__cuotas {
-    color: var(--verde-700);
+  .msgbox h2 :global(.icon) {
+    color: var(--azul);
+  }
+
+  .quick {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    scrollbar-width: none;
+  }
+
+  .msgbox__row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .msgbox__row .btn {
+    flex: none;
+  }
+
+  .msgbox .hint {
+    margin-top: 10px;
+  }
+
+  .actions {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .act {
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    padding: 10px 4px;
+    border-radius: 18px;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg-strong);
+    box-shadow: var(--glass-edge), var(--shadow-sm);
+    color: var(--tinta);
+    font-size: 0.78rem;
     font-weight: 700;
   }
 
-  .buybox {
-    display: grid;
-    gap: 16px;
+  .act :global(.icon) {
+    color: var(--azul-700);
   }
 
-  .perks {
+  .facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 0 0 14px;
+  }
+
+  .facts div {
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.55);
+  }
+
+  .facts dt {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--tinta-3);
+  }
+
+  .facts dd {
+    margin: 2px 0 0;
+    font-weight: 700;
+  }
+
+  .desc {
+    margin: 0 0 12px;
+    font-size: 1.02rem;
+  }
+
+  .specs {
     list-style: none;
     margin: 0;
     padding: 0;
-    display: grid;
-    gap: 12px;
-  }
-
-  .perks li {
     display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    color: var(--tinta-2);
+    flex-wrap: wrap;
+    gap: 6px;
   }
 
-  .perks li.free {
-    color: var(--verde-700);
-  }
-
-  .perks strong,
-  .perks small {
-    display: block;
-  }
-
-  .perks small {
-    color: var(--tinta-3);
-    font-size: 0.85rem;
-  }
-
-  .stock {
-    margin: 0;
-    font-weight: 800;
-  }
-
-  .stock span {
-    font-weight: 500;
-    color: var(--tinta-3);
-  }
-
-  .qty {
-    display: flex;
+  .specs li {
+    display: inline-flex;
     align-items: center;
-    gap: 12px;
-    font-weight: 700;
-  }
-
-  .qty .select {
-    width: auto;
-    min-height: 42px;
-  }
-
-  .buybox__actions {
-    display: grid;
-    gap: 10px;
-  }
-
-  .protect {
-    display: flex;
-    gap: 10px;
-    margin: 0;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.6);
     font-size: 0.85rem;
-    color: var(--tinta-2);
+    font-weight: 600;
   }
 
-  .protect :global(.icon) {
-    flex: none;
+  .specs :global(.icon) {
     color: var(--verde);
+  }
+
+  .tip {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin: 14px 0 0;
+    padding: 12px 14px;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    color: var(--azul-700);
+    background: rgba(13, 144, 171, 0.1);
+  }
+
+  .tip :global(.icon) {
+    flex: none;
   }
 
   .seller {
     display: flex;
     align-items: center;
     gap: 14px;
-    margin-top: 14px;
     color: var(--tinta);
     text-decoration: none;
     transition: transform 0.25s var(--ease-spring);
@@ -470,19 +544,22 @@ const isActive = status === 'activo';
     gap: 6px;
     font-weight: 800;
     letter-spacing: 0.02em;
+    overflow-wrap: anywhere;
   }
 
   .seller__name :global(.seller__check) {
     color: var(--azul);
+    flex: none;
   }
 
   .seller__meta,
   .seller__rating {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 6px;
     color: var(--tinta-2);
-    font-size: 0.85rem;
+    font-size: 0.82rem;
   }
 
   .seller__meta :global(.icon) {
@@ -492,11 +569,31 @@ const isActive = status === 'activo';
   .seller__cta {
     display: inline-flex;
     align-items: center;
-    gap: 2px;
     flex: none;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     font-weight: 700;
     color: var(--azul-700);
+  }
+
+  .safety ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+    font-size: 0.92rem;
+  }
+
+  .safety li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .safety li :global(.icon) {
+    flex: none;
+    color: var(--verde);
+    margin-top: 1px;
   }
 
   .ended {
@@ -516,160 +613,89 @@ const isActive = status === 'activo';
     font-size: 0.9rem;
   }
 
-  .block-title {
-    font-size: 1.3rem;
-    margin-bottom: 12px;
-  }
-
-  .block-title:not(:first-child) {
-    margin-top: 22px;
-  }
-
-  .specs {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 8px;
-  }
-
-  @media (min-width: 720px) {
-    .specs {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-
-  .specs li {
+  .reasons {
     display: flex;
-    gap: 8px;
-    align-items: center;
-    padding: 10px 12px;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.55);
-    font-weight: 600;
-  }
-
-  .specs :global(.icon) {
-    color: var(--verde);
-    flex: none;
-  }
-
-  .desc {
-    margin: 0;
-    font-size: 1.05rem;
-  }
-
-  .ask {
-    display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     margin-bottom: 16px;
-  }
-
-  .ask .btn {
-    padding: 0 16px;
-  }
-
-  .qa {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 14px;
-  }
-
-  .qa :global(.qa__q) {
-    margin: 0;
-    font-weight: 700;
-  }
-
-  .qa :global(.qa__a) {
-    margin: 4px 0 0 4px;
-    color: var(--tinta-2);
-  }
-
-  .qa :global(.qa__pending) {
-    margin: 4px 0 0 4px;
-    color: var(--tinta-3);
-    font-style: italic;
-    font-size: 0.9rem;
-  }
-
-  .muted {
-    margin: 0;
-    color: var(--tinta-3);
-  }
-
-  .score {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 16px;
-  }
-
-  .score > strong {
-    font-size: 3rem;
-    font-weight: 900;
-    line-height: 1;
-    color: var(--azul);
-  }
-
-  .reviews {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 12px;
-  }
-
-  .reviews li {
-    padding: 12px 14px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.55);
-  }
-
-  .reviews p {
-    margin: 6px 0 4px;
-  }
-
-  .reviews small {
-    color: var(--tinta-3);
-    font-weight: 600;
   }
 </style>
 
 <script>
-  import { questions } from '../../scripts/store';
-  import { esc, toast } from '../../scripts/ui';
+  import { url } from '../../lib/url';
+  import { chats } from '../../scripts/store';
+  import { toast } from '../../scripts/ui';
 
-  const form = document.querySelector<HTMLFormElement>('[data-ask-form]');
-  const list = document.querySelector<HTMLUListElement>('[data-qa-list]');
+  const form = document.querySelector<HTMLFormElement>('[data-msg-form]')!;
+  const input = form.querySelector<HTMLInputElement>('input[name="text"]')!;
+  const d = form.dataset;
 
-  function addPending(text: string) {
-    if (!list) return;
-    document.querySelector('[data-qa-empty]')?.remove();
-    const li = document.createElement('li');
-    li.innerHTML = `<p class="qa__q">${esc(text)}</p><p class="qa__pending">Esperando respuesta del vendedor…</p>`;
-    list.prepend(li);
-  }
-
-  if (form) {
-    const { productId = '', productTitle = '' } = form.dataset;
-    // preguntas que este usuario ya hizo
-    questions
-      .all()
-      .filter((q) => q.productId === productId)
-      .reverse()
-      .forEach((q) => addPending(q.text));
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const input = form.elements.namedItem('text') as HTMLInputElement;
-      const text = input.value.trim();
-      if (!text) return;
-      questions.add({ productId, productTitle, text, date: new Date().toISOString() });
-      addPending(text);
-      input.value = '';
-      toast('Pregunta enviada al vendedor');
+  /** Abre (o crea) la conversación con el vendedor y envía el mensaje. */
+  function sendToSeller(text: string) {
+    const conv = chats.ensure({
+      id: d.listing!,
+      listingId: d.listing!,
+      role: 'comprando',
+      title: d.title!,
+      price: Number(d.price),
+      type: d.type,
+      category: d.category,
+      image: d.image || undefined,
+      color: d.color!,
+      withName: d.sellerName!,
+      withId: d.sellerId,
     });
+    if (!chats.send(conv.id, text)) return toast('No se pudo guardar el mensaje en este navegador');
+    window.location.href = url(`/mensajes?c=${encodeURIComponent(conv.id)}`);
   }
+
+  form.querySelectorAll<HTMLButtonElement>('[data-quick]').forEach((b) =>
+    b.addEventListener('click', () => {
+      input.value = b.dataset.quick!;
+      input.focus();
+    }),
+  );
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (text) sendToSeller(text);
+  });
+
+  // ---------- Oferta ----------
+  const offerDialog = document.querySelector<HTMLDialogElement>('[data-offer-dialog]')!;
+  const offerForm = document.querySelector<HTMLFormElement>('[data-offer-form]')!;
+  document.querySelector('[data-offer]')?.addEventListener('click', () => offerDialog.showModal());
+  offerForm.addEventListener('submit', () => {
+    const amount = Number(new FormData(offerForm).get('amount'));
+    if (amount > 0) sendToSeller(`Hola, ¿aceptarías $${amount.toLocaleString('es-PR')} por ${d.title}?`);
+  });
+
+  // ---------- Compartir ----------
+  document.querySelector('[data-share]')?.addEventListener('click', async () => {
+    const shareUrl = window.location.href;
+    try {
+      if (navigator.share) await navigator.share({ title: d.title, url: shareUrl });
+      else {
+        await navigator.clipboard.writeText(shareUrl);
+        toast('Enlace copiado');
+      }
+    } catch {
+      /* el usuario canceló */
+    }
+  });
+
+  // ---------- Reportar ----------
+  const reportDialog = document.querySelector<HTMLDialogElement>('[data-report-dialog]')!;
+  document.querySelector('[data-report]')?.addEventListener('click', () => reportDialog.showModal());
+  document.querySelector('[data-report-form]')!.addEventListener('submit', () => {
+    toast('Gracias. Revisaremos esta publicación.');
+  });
+
+  document.querySelectorAll<HTMLDialogElement>('dialog.sheet').forEach((dlg) => {
+    dlg.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => dlg.close()));
+    dlg.addEventListener('click', (e) => {
+      if (e.target === dlg) dlg.close();
+    });
+  });
 </script>

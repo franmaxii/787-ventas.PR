@@ -1,7 +1,10 @@
 /*
- * Filtra y ordena en el navegador las tarjetas de producto ya renderizadas
+ * Filtra y ordena en el navegador las tarjetas ya renderizadas
  * (las tarjetas traen data-* con lo necesario, ver ProductCard `filterable`).
+ * Aplica también el radio de distancia elegido en "¿Dónde estás?".
  */
+import { milesBetween } from '../data/pueblos';
+import { location, onChange } from './store';
 
 interface Options {
   form: HTMLFormElement;
@@ -15,7 +18,34 @@ interface Options {
 const normalize = (s: string) =>
   s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
 
-const FIELDS = ['q', 'categoria', 'condicion', 'municipio', 'orden', 'min', 'max', 'envio', 'ofertas'] as const;
+/** Sinónimos boricuas: buscar "guagua" también encuentra "carro". */
+const SYNONYMS: Record<string, string[]> = {
+  guagua: ['carro', 'jeep', 'vehiculo'],
+  carro: ['guagua', 'vehiculo'],
+  zafacon: ['basurero'],
+  mahones: ['jeans', 'pantalon'],
+  gomas: ['llantas', 'neumaticos'],
+  llantas: ['gomas'],
+  chancletas: ['sandalias'],
+  abanico: ['ventilador'],
+  ventilador: ['abanico'],
+  planta: ['generador'],
+  generador: ['planta'],
+  apartamento: ['apto', 'alquiler'],
+  cuarto: ['habitacion', 'alquiler'],
+  blower: ['secadora'],
+  secadora: ['blower'],
+  coche: ['cochecito', 'stroller'],
+  cochecito: ['coche'],
+  brincolin: ['inflable'],
+  inflable: ['brincolin'],
+  mueble: ['sofa'],
+  sofa: ['mueble'],
+  regalo: ['gratis'],
+  donacion: ['gratis'],
+};
+
+const FIELDS = ['q', 'categoria', 'condicion', 'orden', 'min', 'max', 'gratis', 'baja', 'dias'] as const;
 
 export function initFilters({ form, grid, queryInput, count, empty, syncUrl = false }: Options) {
   const cards = Array.from(grid.querySelectorAll<HTMLElement>('[data-id]'));
@@ -45,50 +75,62 @@ export function initFilters({ form, grid, queryInput, count, empty, syncUrl = fa
       q: queryInput?.value ?? '',
       categoria: get('categoria'),
       condicion: get('condicion'),
-      municipio: get('municipio'),
       orden: get('orden'),
       min: get('min'),
       max: get('max'),
-      envio: checked('envio'),
-      ofertas: checked('ofertas'),
+      dias: get('dias'),
+      gratis: checked('gratis'),
+      baja: checked('baja'),
     };
   }
 
   function apply() {
     const s = state();
-    const words = normalize(s.q).split(/\s+/).filter(Boolean);
+    const loc = location.get();
+    const words = normalize(s.q)
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((w) => [w, ...(SYNONYMS[w] ?? [])]);
     const min = s.min ? Number(s.min) : -Infinity;
     const max = s.max ? Number(s.max) : Infinity;
+    const days = s.dias ? Number(s.dias) : Infinity;
 
     let visible = 0;
     for (const card of cards) {
       const d = card.dataset;
       const price = Number(d.price);
+      const miles = milesBetween(loc.town, d.town ?? '');
+      d.miles = String(miles);
       const text = searchText.get(card) ?? '';
       const match =
-        words.every((w) => text.includes(w)) &&
+        words.every((alts) => alts.some((w) => text.includes(w))) &&
         (!s.categoria || d.category === s.categoria) &&
         (!s.condicion || d.condition === s.condicion) &&
-        (!s.municipio || d.town === s.municipio) &&
-        (!s.envio || d.free === 'true') &&
-        (!s.ofertas || Number(d.off) > 0) &&
+        (!s.gratis || price === 0) &&
+        (!s.baja || d.drop === 'true') &&
+        Number(d.days) <= days &&
         price >= min &&
-        price <= max;
+        price <= max &&
+        (!loc.radius || miles <= loc.radius);
       card.hidden = !match;
       if (match) visible++;
     }
 
     const key = (c: HTMLElement) => {
       switch (s.orden) {
+        case 'cerca': return Number(c.dataset.miles);
+        case 'recientes': return Number(c.dataset.days);
         case 'menor': return Number(c.dataset.price);
         case 'mayor': return -Number(c.dataset.price);
-        case 'vendidos': return -Number(c.dataset.sold);
         default: return Number(c.dataset.index);
       }
     };
     [...cards].sort((a, b) => key(a) - key(b)).forEach((c) => grid.appendChild(c));
 
-    if (count) count.textContent = `${visible} ${visible === 1 ? 'resultado' : 'resultados'}`;
+    if (count) {
+      const where = loc.radius ? ` a ${loc.radius} mi de ${loc.town}` : ' en toda la isla';
+      count.textContent = `${visible} ${visible === 1 ? 'resultado' : 'resultados'}${where}`;
+    }
     if (empty) empty.hidden = visible > 0;
 
     if (syncUrl) {
@@ -110,6 +152,7 @@ export function initFilters({ form, grid, queryInput, count, empty, syncUrl = fa
     apply();
   });
   form.addEventListener('reset', () => setTimeout(apply));
+  onChange(apply); // si cambia la ubicación o el radio
 
   if (queryInput) {
     queryInput.addEventListener('input', apply);

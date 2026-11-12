@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+<defs><filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter><linearGradient id="cv" x1="0" y1="0" x2="0" y2="1"><stop offset="0.00" stop-color="#fef3c7"/><stop offset="1.00" stop-color="#fcd9a0"/></linearGradient></defs>
+
+<ellipse cx="120" cy="208" rx="102" ry="9" fill="#0f172a" opacity=".22" filter="url(#sh)"/>
+<rect x="84" y="68" width="40" height="16" rx="3" fill="#1e3a8a" transform="skewX(-14)"/>
+<path d="M84 72H120" stroke="#93c5fd" stroke-width="2" transform="skewX(-14)"/>
+<rect x="104" y="62" width="34" height="14" rx="7" fill="#e5e7eb"/><rect x="109" y="76" width="4" height="8" fill="#9ca3af"/><rect x="129" y="76" width="4" height="8" fill="#9ca3af"/>
+<rect x="44" y="84" width="152" height="14" rx="3" fill="#ffffff"/>
+<rect x="50" y="96" width="140" height="110" fill="url(#cv)"/>
+<rect x="50" y="96" width="140" height="6" fill="#000" opacity=".06"/>
+<rect x="60" y="114" width="36" height="36" rx="3" fill="#bae6fd"/><path d="M67 118V146" stroke="#fff" stroke-width="2.2"/><path d="M74 118V146" stroke="#fff" stroke-width="2.2"/><path d="M81 118V146" stroke="#fff" stroke-width="2.2"/><path d="M88 118V146" stroke="#fff" stroke-width="2.2"/>
+<rect x="144" y="114" width="36" height="36" rx="3" fill="#bae6fd"/><path d="M151 118V146" stroke="#fff" stroke-width="2.2"/><path d="M158 118V146" stroke="#fff" stroke-width="2.2"/><path d="M165 118V146" stroke="#fff" stroke-width="2.2"/><path d="M172 118V146" stroke="#fff" stroke-width="2.2"/>
+<rect x="104" y="146" width="32" height="60" rx="3" fill="#0d90ab"/><circle cx="130" cy="178" r="2.6" fill="#fde68a"/>
+<rect x="100" y="140" width="40" height="8" rx="2" fill="#fff"/>
+<circle cx="56" cy="200" r="14" fill="#22c55e"/><circle cx="74" cy="204" r="11" fill="#16a34a"/>
+<path d="M212 208V138" stroke="#78350f" stroke-width="5" stroke-linecap="round"/>
+<rect x="166" y="126" width="70" height="30" rx="5" fill="#f64e43" stroke="#b91c1c" stroke-width="2"/>
+<text x="201" y="145" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="11" fill="#fff">SE VENDE</text>
+
+</svg>

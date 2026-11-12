@@ -1,47 +1,25 @@
 /*
  * Estado del usuario guardado en el navegador (localStorage).
- * Es un prototipo: cuando haya backend, reemplaza estas funciones por llamadas a la API.
+ * Es un prototipo: cuando haya backend, reemplaza estas funciones por llamadas a la API
+ * (ver docs/ → Apéndice B).
  */
 
-export interface CartLine {
-  id: string;
-  qty: number;
-}
-
-export interface OrderLine {
-  id: string;
-  title: string;
-  price: number;
-  qty: number;
-  emoji: string;
-  color: string;
-  image?: string;
-}
-
-export interface Order {
-  id: string;
-  date: string;
-  lines: OrderLine[];
-  subtotal: number;
-  shipping: number;
-  total: number;
-  payment: string;
-  name: string;
-  town: string;
-  delivery: 'envio' | 'recogido';
-}
+// ---------------------------------------------------------------- Tipos
 
 export interface Listing {
   id: string;
   date: string;
+  type: 'articulo' | 'vehiculo' | 'alquiler' | 'propiedad';
   title: string;
+  /** 0 = gratis. En alquileres, renta mensual; en renta de artículos, por día. */
   price: number;
   category: string;
   condition: string;
   town: string;
   description: string;
-  freeShipping: boolean;
   photos: string[];
+  /** Datos extra según el tipo (año, millaje, cuartos…). */
+  extra?: Record<string, string>;
   /** 'activo' | 'vendido'. "Expirado" se calcula: activo y con más de LISTING_DAYS días. */
   status?: 'activo' | 'vendido';
 }
@@ -84,21 +62,47 @@ export interface Profile {
   createdAt: string;
 }
 
-export interface AskedQuestion {
-  productId: string;
-  productTitle: string;
+export interface ChatMessage {
+  from: 'yo' | 'ellos';
   text: string;
-  date: string;
+  at: string;
 }
 
+export interface Conversation {
+  /** Id de la conversación (una por publicación). */
+  id: string;
+  listingId: string;
+  role: 'comprando' | 'vendiendo';
+  title: string;
+  price: number;
+  type?: string;
+  category?: string;
+  image?: string;
+  color: string;
+  /** Con quién hablas. */
+  withName: string;
+  withId?: string;
+  messages: ChatMessage[];
+  updatedAt: string;
+  unread: number;
+}
+
+export interface Location {
+  town: string;
+  /** Millas. 0 = toda la isla. */
+  radius: number;
+}
+
+// ---------------------------------------------------------------- Almacenamiento
+
 const KEYS = {
-  cart: 'p787:cart',
   favs: 'p787:favs',
-  orders: 'p787:orders',
   listings: 'p787:listings',
-  questions: 'p787:questions',
   profile: 'p787:profile',
   following: 'p787:following',
+  chats: 'p787:chats',
+  location: 'p787:location',
+  notifSeen: 'p787:notif-seen',
 } as const;
 
 type Key = (typeof KEYS)[keyof typeof KEYS];
@@ -134,28 +138,12 @@ export function onChange(cb: () => void) {
 
 export const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 
-export const cart = {
-  lines: () => read<CartLine[]>(KEYS.cart, []),
-  count: () => cart.lines().reduce((n, l) => n + l.qty, 0),
-  add(id: string, qty = 1, max = 99) {
-    const lines = cart.lines();
-    const line = lines.find((l) => l.id === id);
-    if (line) line.qty = Math.min(line.qty + qty, max);
-    else lines.push({ id, qty: Math.min(qty, max) });
-    return write(KEYS.cart, lines);
-  },
-  setQty(id: string, qty: number) {
-    const lines = cart.lines().map((l) => (l.id === id ? { ...l, qty } : l)).filter((l) => l.qty > 0);
-    return write(KEYS.cart, lines);
-  },
-  remove: (id: string) => write(KEYS.cart, cart.lines().filter((l) => l.id !== id)),
-  clear: () => write(KEYS.cart, []),
-};
+// ---------------------------------------------------------------- Favoritos
 
 export const favs = {
   ids: () => read<string[]>(KEYS.favs, []),
   has: (id: string) => favs.ids().includes(id),
-  /** Devuelve true si quedó guardado en favoritos. */
+  /** Devuelve true si quedó guardado. */
   toggle(id: string) {
     const ids = favs.ids();
     const next = ids.includes(id) ? ids.filter((x) => x !== id) : [id, ...ids];
@@ -164,10 +152,7 @@ export const favs = {
   },
 };
 
-export const orders = {
-  all: () => read<Order[]>(KEYS.orders, []),
-  add: (order: Order) => write(KEYS.orders, [order, ...orders.all()]),
-};
+// ---------------------------------------------------------------- Mis publicaciones
 
 export const listings = {
   all: () => read<Listing[]>(KEYS.listings, []),
@@ -175,10 +160,17 @@ export const listings = {
   remove: (id: string) => write(KEYS.listings, listings.all().filter((l) => l.id !== id)),
 };
 
-export const questions = {
-  all: () => read<AskedQuestion[]>(KEYS.questions, []),
-  add: (q: AskedQuestion) => write(KEYS.questions, [q, ...questions.all()]),
+export const listingActions = {
+  markSold: (id: string) =>
+    write(KEYS.listings, listings.all().map((l) => (l.id === id ? { ...l, status: 'vendido' } : l))),
+  renew: (id: string) =>
+    write(
+      KEYS.listings,
+      listings.all().map((l) => (l.id === id ? { ...l, status: 'activo', date: new Date().toISOString() } : l)),
+    ),
 };
+
+// ---------------------------------------------------------------- Perfil
 
 export const profile = {
   get: () => read<Profile | null>(KEYS.profile, null),
@@ -215,12 +207,51 @@ export const following = {
   },
 };
 
-export const listingActions = {
-  markSold: (id: string) =>
-    write(KEYS.listings, listings.all().map((l) => (l.id === id ? { ...l, status: 'vendido' } : l))),
-  renew: (id: string) =>
-    write(
-      KEYS.listings,
-      listings.all().map((l) => (l.id === id ? { ...l, status: 'activo', date: new Date().toISOString() } : l)),
-    ),
+// ---------------------------------------------------------------- Mensajes
+
+export const chats = {
+  all: () =>
+    read<Conversation[]>(KEYS.chats, []).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)),
+  get: (id: string) => chats.all().find((c) => c.id === id),
+  /** Crea la conversación si no existe y la devuelve. */
+  ensure(base: Omit<Conversation, 'messages' | 'updatedAt' | 'unread'>) {
+    const existing = chats.get(base.id);
+    if (existing) return existing;
+    const conv: Conversation = { ...base, messages: [], updatedAt: new Date().toISOString(), unread: 0 };
+    write(KEYS.chats, [conv, ...chats.all()]);
+    return conv;
+  },
+  send(id: string, text: string, from: ChatMessage['from'] = 'yo') {
+    const at = new Date().toISOString();
+    return write(
+      KEYS.chats,
+      chats.all().map((c) =>
+        c.id === id
+          ? { ...c, messages: [...c.messages, { from, text, at }], updatedAt: at, unread: from === 'ellos' ? c.unread + 1 : c.unread }
+          : c,
+      ),
+    );
+  },
+  markRead: (id: string) =>
+    chats.get(id)?.unread ? write(KEYS.chats, chats.all().map((c) => (c.id === id ? { ...c, unread: 0 } : c))) : true,
+  unread: () => chats.all().reduce((n, c) => n + c.unread, 0),
+  remove: (id: string) => write(KEYS.chats, chats.all().filter((c) => c.id !== id)),
+};
+
+// ---------------------------------------------------------------- Ubicación
+
+export const location = {
+  get(): Location {
+    const saved = read<Location | null>(KEYS.location, null);
+    if (saved) return saved;
+    return { town: profile.get()?.public.town ?? 'San Juan', radius: 50 };
+  },
+  set: (l: Location) => write(KEYS.location, l),
+};
+
+// ---------------------------------------------------------------- Notificaciones
+
+export const notifSeen = {
+  get: () => read<string>(KEYS.notifSeen, '1970-01-01T00:00:00.000Z'),
+  mark: () => write(KEYS.notifSeen, new Date().toISOString()),
 };

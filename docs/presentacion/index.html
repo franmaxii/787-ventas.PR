@@ -1,0 +1,1028 @@
+<!doctype html>
+<html lang="es-PR">
+<head>
+<meta charset="utf-8" />
+<title>Plaza 787 — Infraestructura y arquitectura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&family=Chewy&display=swap" />
+<style>
+  @page { size: 1280px 720px; margin: 0; }
+  :root {
+    --azul: #0d90ab; --azul-700: #0a6f85; --rojito: #f64e43; --rojito-700: #c9362c;
+    --crema: #eedbba; --amarillo: #ebb549; --amarillo-700: #a8781c; --verde: #399552; --verde-700: #2b7440;
+    --tinta: #1c1a16; --tinta-2: #4a443a; --tinta-3: #776f60; --linea: rgba(29, 27, 23, .1);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: var(--tinta); -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    counter-reset: slide; background: #888;
+  }
+  .slide {
+    position: relative; width: 1280px; height: 720px; overflow: hidden;
+    padding: 40px 60px 54px; display: flex; flex-direction: column;
+    break-after: page; page-break-after: always; counter-increment: slide;
+    background:
+      radial-gradient(rgba(255,255,255,.35) 1px, transparent 1.3px) 0 0 / 22px 22px,
+      radial-gradient(40% 45% at 4% 0%, rgba(13,144,171,.30), transparent 70%),
+      radial-gradient(34% 40% at 100% 6%, rgba(246,78,67,.22), transparent 70%),
+      radial-gradient(42% 46% at 96% 100%, rgba(235,181,73,.32), transparent 70%),
+      radial-gradient(36% 44% at 0% 100%, rgba(57,149,82,.20), transparent 70%),
+      var(--crema);
+  }
+  .slide:last-child { break-after: auto; page-break-after: auto; }
+  .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .brand { font-family: 'Chewy', 'Inter', sans-serif; font-size: 24px; line-height: 1; letter-spacing: .01em; }
+  .brand b { font-weight: 400; }
+  .c1 { color: #f25c05; } .c2 { color: #2e3fce; } .c3 { color: #d9409a; } .c4 { color: #2f6b1a; }
+  .section { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-3); }
+  .foot { position: absolute; left: 60px; right: 60px; bottom: 20px; display: flex; justify-content: space-between; font-size: 11px; color: var(--tinta-3); }
+  .foot::after { content: counter(slide); font-weight: 700; }
+  h1, h2, h3, h4 { margin: 0; letter-spacing: -.025em; line-height: 1.1; }
+  h2.title { font-size: 36px; font-weight: 800; margin-bottom: 6px; }
+  .lead { font-size: 16.5px; line-height: 1.45; color: var(--tinta-2); margin: 0 0 18px; max-width: 1000px; }
+  p { margin: 0; }
+  .small { font-size: 12px; color: var(--tinta-3); line-height: 1.4; }
+  strong { font-weight: 700; }
+  .card { background: linear-gradient(150deg, rgba(255,255,255,.78), rgba(255,255,255,.46)); border: 1px solid rgba(255,255,255,.85); border-radius: 20px; padding: 16px 18px; box-shadow: inset 0 1px 0 #fff, 0 12px 28px -14px rgba(74,56,22,.35); }
+  .card h3 { font-size: 17px; font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .card h4 { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--tinta-3); margin-bottom: 8px; }
+  .grid { display: grid; gap: 14px; }
+  .g2 { grid-template-columns: 1fr 1fr; } .g3 { grid-template-columns: repeat(3, 1fr); } .g4 { grid-template-columns: repeat(4, 1fr); }
+  .fill { flex: 1; min-height: 0; }
+  .i { width: 20px; height: 20px; flex: none; vertical-align: -4px; }
+  ul.ticks { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; font-size: 15.5px; line-height: 1.4; }
+  ul.ticks li { display: flex; gap: 8px; align-items: flex-start; }
+  ul.ticks li > svg { margin-top: 1px; color: var(--verde); }
+  ul.ticks.red li > svg { color: var(--rojito); }
+  ul.ticks.blue li > svg { color: var(--azul); }
+  ul.ticks.sm { font-size: 14px; gap: 8px; }
+  .pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 700; background: rgba(255,255,255,.8); border: 1px solid rgba(255,255,255,.9); }
+  .pill.az { color: #fff; background: var(--azul); } .pill.rj { color: #fff; background: var(--rojito); }
+  .pill.vd { color: #fff; background: var(--verde); } .pill.am { color: var(--tinta); background: var(--amarillo); }
+  .pill.dk { color: #fff; background: var(--tinta); }
+  .kpi { display: grid; gap: 2px; }
+  .kpi b { font-size: 30px; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+  .kpi span { font-size: 12.5px; color: var(--tinta-2); line-height: 1.3; }
+  .note { font-size: 11.5px; color: var(--tinta-3); margin-top: 10px; line-height: 1.4; }
+  .bar-az { border-top: 5px solid var(--azul); } .bar-rj { border-top: 5px solid var(--rojito); }
+  .bar-vd { border-top: 5px solid var(--verde); } .bar-am { border-top: 5px solid var(--amarillo); } .bar-dk { border-top: 5px solid var(--tinta); }
+  table.tbl { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13.6px; line-height: 1.35; }
+  .tbl th { text-align: left; font-weight: 700; color: #fff; background: var(--azul); padding: 9px 12px; }
+  .tbl th:first-child { border-top-left-radius: 12px; } .tbl th:last-child { border-top-right-radius: 12px; }
+  .tbl td { padding: 8.5px 12px; vertical-align: top; background: rgba(255,255,255,.62); border-bottom: 1px solid rgba(29,27,23,.07); }
+  .tbl tr:nth-child(even) td { background: rgba(255,255,255,.42); }
+  .tbl tr:last-child td:first-child { border-bottom-left-radius: 12px; } .tbl tr:last-child td:last-child { border-bottom-right-radius: 12px; }
+  .tbl td:first-child { font-weight: 700; }
+  .tbl .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .tbl tr.total td { background: rgba(13,144,171,.14); font-weight: 800; }
+  table.tbl.compact { font-size: 11.8px; line-height: 1.28; }
+  .tbl.compact th { padding: 6px 10px; } .tbl.compact td { padding: 5px 10px; }
+  table.tbl.mid { font-size: 12.9px; } .tbl.mid td { padding: 7px 11px; } .tbl.mid th { padding: 8px 11px; }
+  .big ul.ticks.sm { font-size: 17px; gap: 13px; }
+  .big .card h3 { font-size: 19px; }
+  .big .why { font-size: 15.5px; }
+  .cover { padding: 56px 64px; }
+  .cover.end { justify-content: center; }
+  .cover .logo { font-family: 'Chewy', sans-serif; line-height: .9; }
+  .cover .logo .r1 { font-size: 92px; display: block; }
+  .cover .logo .r2 { font-size: 118px; display: block; margin-top: -6px; }
+  .cover h1 { font-size: 44px; font-weight: 800; margin-top: 26px; max-width: 640px; }
+  .cover .sub { font-size: 18px; color: var(--tinta-2); margin-top: 14px; max-width: 600px; line-height: 1.45; }
+  .tiles { position: absolute; right: 56px; top: 64px; width: 470px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .tile { aspect-ratio: 1; border-radius: 24px; display: grid; place-items: center; box-shadow: inset 0 1px 0 rgba(255,255,255,.5), 0 16px 30px -16px rgba(28,26,22,.6); border: 1px solid rgba(255,255,255,.6); }
+  .tile img { width: 86%; height: 86%; }
+  .t-az { background: radial-gradient(120% 90% at 30% 15%, #2bb0cc, #0d90ab 55%, #0a6f85); }
+  .t-rj { background: radial-gradient(120% 90% at 30% 15%, #ff7a6f, #f64e43 55%, #c9362c); }
+  .t-am { background: radial-gradient(120% 90% at 30% 15%, #f5cb6e, #ebb549 55%, #c9952f); }
+  .t-vd { background: radial-gradient(120% 90% at 30% 15%, #55b26e, #399552 55%, #2b7440); }
+  .rule-head { display: flex; align-items: center; gap: 18px; margin-bottom: 14px; }
+  .rule-num { display: grid; place-items: center; width: 74px; height: 74px; border-radius: 24px; color: #fff; font-size: 40px; font-weight: 800; flex: none; box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 12px 24px -10px rgba(0,0,0,.4); }
+  .n-rj { background: linear-gradient(160deg, #ff7a6f, var(--rojito)); } .n-az { background: linear-gradient(160deg, #2bb0cc, var(--azul)); }
+  .n-vd { background: linear-gradient(160deg, #55b26e, var(--verde)); } .n-am { background: linear-gradient(160deg, #f5cb6e, var(--amarillo)); color: var(--tinta); }
+  .n-dk { background: linear-gradient(160deg, #4a443a, var(--tinta)); }
+  .rule-head h2 { font-size: 34px; font-weight: 800; }
+  .rule-head p { font-size: 17px; color: var(--tinta-2); margin-top: 4px; font-style: italic; }
+  .rule-grid { display: grid; grid-template-columns: 1fr 1.35fr 1fr; gap: 14px; flex: 1; min-height: 0; }
+  .why { font-size: 15.5px; line-height: 1.55; color: var(--tinta-2); }
+  .why p + p { margin-top: 10px; }
+  .rule-grid ul.ticks.sm { font-size: 15px; gap: 11px; }
+  .metric { display: flex; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px dashed rgba(29,27,23,.15); font-size: 14.5px; }
+  .metric:last-child { border-bottom: 0; }
+  .metric b { white-space: nowrap; }
+  .golden { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; flex: 1; }
+  .golden .card { display: flex; flex-direction: column; gap: 10px; padding: 18px; }
+  .golden .rule-num { width: 58px; height: 58px; font-size: 30px; border-radius: 18px; }
+  .golden h3 { font-size: 20px; margin: 0; }
+  .golden .q { font-size: 15px; font-style: italic; color: var(--tinta-2); line-height: 1.4; }
+  .golden .d { font-size: 14px; line-height: 1.45; color: var(--tinta); }
+  .golden ul { margin-top: auto; font-size: 14.5px; }
+  .arch { display: grid; grid-template-columns: 1fr 230px; gap: 14px; flex: 1; min-height: 0; }
+  .layers { display: grid; gap: 6px; align-content: start; }
+  .layer { display: grid; grid-template-columns: 130px 1fr; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 16px; background: linear-gradient(150deg, rgba(255,255,255,.8), rgba(255,255,255,.5)); border: 1px solid rgba(255,255,255,.9); box-shadow: 0 8px 20px -14px rgba(74,56,22,.5); }
+  .layer > b { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--tinta-3); display: flex; align-items: center; gap: 6px; }
+  .boxes { display: flex; flex-wrap: wrap; gap: 6px; }
+  .box { padding: 6px 10px; border-radius: 10px; font-size: 12.5px; font-weight: 600; background: #fff; border: 1px solid rgba(29,27,23,.08); white-space: nowrap; }
+  .box.az { background: rgba(13,144,171,.12); border-color: rgba(13,144,171,.3); }
+  .box.vd { background: rgba(57,149,82,.12); border-color: rgba(57,149,82,.3); }
+  .box.am { background: rgba(235,181,73,.2); border-color: rgba(235,181,73,.5); }
+  .mods { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .mods .box { text-align: center; white-space: normal; }
+  .down { display: grid; place-items: center; height: 12px; color: var(--tinta-3); }
+  .down svg { width: 16px; height: 16px; }
+  .side { display: grid; gap: 10px; align-content: start; }
+  .bus { padding: 12px; border-radius: 16px; color: #fff; background: linear-gradient(160deg, #4a443a, var(--tinta)); font-size: 12.5px; line-height: 1.4; }
+  .bus b { display: flex; align-items: center; gap: 6px; font-size: 14px; margin-bottom: 4px; }
+  .bus code { background: rgba(255,255,255,.12); color: #fff; }
+  .flow { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 10px; align-items: stretch; }
+  .step { position: relative; padding: 14px 14px 12px; border-radius: 18px; background: linear-gradient(150deg, rgba(255,255,255,.85), rgba(255,255,255,.55)); border: 1px solid rgba(255,255,255,.9); box-shadow: 0 10px 22px -14px rgba(74,56,22,.5); }
+  .step .n { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; color: #fff; font-weight: 800; font-size: 14px; background: var(--azul); margin-bottom: 8px; }
+  .step h4 { font-size: 14.5px; font-weight: 800; margin-bottom: 4px; letter-spacing: -.01em; }
+  .step p { font-size: 12.5px; color: var(--tinta-2); line-height: 1.38; }
+  code { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; background: rgba(29,27,23,.06); padding: 1px 5px; border-radius: 5px; color: var(--azul-700); }
+  .step + .step::before { content: ''; position: absolute; left: -10px; top: 26px; width: 10px; height: 2px; background: var(--tinta-3); }
+  .flow.rj .n { background: var(--rojito); }
+  .timeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; flex: 1; }
+  .phase { display: flex; flex-direction: column; gap: 8px; }
+  .phase .when { font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+  .phase h3 { font-size: 19px; margin: 0; }
+  .two-col-list { columns: 2; column-gap: 28px; }
+  .quote { font-size: 22px; font-weight: 700; line-height: 1.35; letter-spacing: -.015em; }
+  .mono { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; }
+  .ep { display: grid; grid-template-columns: 66px 1fr; gap: 10px; align-items: baseline; padding: 6px 0; border-bottom: 1px dashed rgba(29,27,23,.12); font-size: 13.5px; }
+  .ep .mono { font-size: 13.5px; }
+  .ep:last-child { border-bottom: 0; }
+  .verb { font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; font-weight: 800; padding: 2px 6px; border-radius: 6px; text-align: center; color: #fff; }
+  .GET { background: var(--verde); } .POST { background: var(--azul); } .PATCH { background: var(--amarillo); color: var(--tinta); } .PUT { background: #6b5bd6; } .WS { background: var(--tinta); }
+</style>
+</head>
+<body>
+
+<!-- 1. PORTADA -->
+<section class="slide cover">
+  <div class="logo" aria-label="Plaza 787">
+    <span class="r1"><b class="c1">P</b><b class="c2">L</b><b class="c3">a</b><b class="c4">Z</b><b class="c1">a</b></span>
+    <span class="r2"><b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span>
+  </div>
+  <h1>Infraestructura y arquitectura del marketplace local de Puerto Rico</h1>
+  <p class="sub">Qué hace falta para que Plaza 787 sea el Facebook Marketplace boricua: las 5 reglas de oro, la arquitectura, los costos, el equipo y el plan por fases.</p>
+  <p class="sub" style="font-size:14px;margin-top:26px"><span class="pill dk">Noviembre 2026</span>&nbsp; <span class="pill">Documento de trabajo · versión 2.0</span></p>
+  <div class="tiles">
+    <div class="tile t-az"><img src="../../public/img/productos/carro.svg" alt="" /></div>
+    <div class="tile t-vd"><img src="../../public/img/productos/casa.svg" alt="" /></div>
+    <div class="tile t-am"><img src="../../public/img/productos/sofa.svg" alt="" /></div>
+    <div class="tile t-rj"><img src="../../public/img/productos/vejigante.svg" alt="" /></div>
+    <div class="tile t-am"><img src="../../public/img/productos/planta-electrica.svg" alt="" /></div>
+    <div class="tile t-vd"><img src="../../public/img/productos/cafe.svg" alt="" /></div>
+    <div class="tile t-vd"><img src="../../public/img/productos/coqui.svg" alt="" /></div>
+    <div class="tile t-rj"><img src="../../public/img/productos/bicicleta.svg" alt="" /></div>
+    <div class="tile t-az"><img src="../../public/img/productos/cooler.svg" alt="" /></div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Compra y vende en Puerto Rico</span></div>
+</section>
+
+<!-- 2. RESUMEN -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Resumen ejecutivo</span></div>
+  <h2 class="title">En una página</h2>
+  <p class="lead">Plaza 787 es un marketplace local como el de Facebook: publicas gratis, la gente cerca de ti te escribe por chat y se encuentran en persona. El prototipo ya muestra ese flujo completo. Este documento dice qué construir para operarlo de verdad, en qué orden y cuánto cuesta.</p>
+  <div class="grid g2 fill">
+    <div class="grid" style="align-content:start;gap:10px">
+      <div class="card"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg> Hoy</h3><p class="why">Prototipo en Astro con 71 páginas: publicaciones con distancia en millas, chat comprador–vendedor, guardados, notificaciones, vehículos y alquileres, y el perfil verificado que diseñó la socia. Todo se guarda en el navegador.</p></div>
+      <div class="card"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v1.5M3 21v-6m0 0 2.77-.693a9 9 0 0 1 6.208.682l.108.054a9 9 0 0 0 6.086.71l3.114-.732a48.524 48.524 0 0 1-.005-10.499l-3.11.732a9 9 0 0 1-6.085-.711l-.108-.054a9 9 0 0 0-6.208-.682L3 4.5M3 15V4.5"/></svg> Meta</h3><p class="why">Una plataforma real donde publicar toma segundos, lo que está cerca aparece primero, el chat funciona en tiempo real y comprar en persona es más seguro que en cualquier grupo o clasificado.</p></div>
+      <div class="card"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18"/></svg> Cómo</h3><p class="why">5 reglas de oro + arquitectura modular en la nube + chat en tiempo real + búsqueda por distancia + proveedores para identidad, notificaciones y moderación.</p></div>
+    </div>
+    <div class="grid g2" style="align-content:start">
+      <div class="card kpi"><b style="color:var(--azul)">~4 meses</b><span>MVP real con chat, búsqueda por distancia e identidad (beta cerrada)</span></div>
+      <div class="card kpi"><b style="color:var(--verde)">3–5</b><span>personas en el equipo inicial</span></div>
+      <div class="card kpi"><b>$150–550</b><span>al mes de infraestructura en el MVP</span></div>
+      <div class="card kpi"><b>$2.5k–10k</b><span>al mes en crecimiento (10k–250k usuarios activos)</span></div>
+      <div class="card kpi"><b style="color:var(--rojito)">$0</b><span>por publicar o vender: el pago es entre personas, como en Facebook</span></div>
+      <div class="card kpi"><b>3 fuentes</b><span>de ingreso: destacados, planes para negocios y anuncios locales</span></div>
+    </div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 3. VISIÓN -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Visión</span></div>
+  <h2 class="title">El Facebook Marketplace de Puerto Rico, hecho para la isla</h2>
+  <p class="lead">La gente ya compra y vende entre vecinos por Facebook, grupos y WhatsApp. Plaza 787 toma lo que funciona de ese modelo y le añade lo que falta: identidad verificada, encuentros seguros y cosas pensadas para Puerto Rico.</p>
+  <div class="grid g2 fill">
+    <div class="card">
+      <h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"/></svg> La oportunidad</h3>
+      <ul class="ticks">
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg> <span><strong>≈3.2 millones de personas</strong> en la isla, que ya compran y venden usado entre vecinos.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg> <span>Las estafas son comunes: piden dinero por adelantado, envían capturas falsas de pago o publican alquileres que no existen.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/></svg> <span><strong>Carros y alquileres</strong> son de lo más buscado y donde más se necesita confianza.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"/></svg> <span>Pago en persona con efectivo o ATH Móvil: no hace falta pasarela de pago para empezar.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"/></svg> <span>Dealers, administradores de propiedades, artesanos y pymes buscan un canal local para llegar a clientes.</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"/></svg> Qué hace "dinámico" a un Marketplace</h3>
+      <ul class="ticks blue">
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg> <span><strong>Publicar en segundos:</strong> foto, precio, pueblo y listo.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg> <span><strong>Todo cerca de ti:</strong> radio en millas y "Selecciones de hoy".</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/></svg> <span><strong>Chat integrado</strong> con "¿Sigue disponible?" y mensajes rápidos.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg> <span><strong>Notificaciones</strong> que te traen de vuelta: respuestas, bajadas de precio, publicaciones nuevas.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/></svg> <span><strong>Lo que haremos mejor:</strong> perfiles verificados, consejos y avisos antiestafa, guía de CESCO y alquileres verificados.</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 4. DÓNDE ESTAMOS -->
+<section class="slide big">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Situación actual</span></div>
+  <h2 class="title">Dónde estamos hoy</h2>
+  <p class="lead">El prototipo valida la experiencia completa estilo Marketplace. Los componentes se reutilizan; la capa de datos (<code>store.ts</code>) se reemplaza por la API.</p>
+  <div class="grid g2 fill">
+    <div class="card">
+      <h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg> Ya tenemos</h3>
+      <ul class="ticks sm">
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Marca y diseño "Liquid Glass" con la paleta de Plaza 787.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Portada con ubicación y "Selecciones de hoy" ordenadas por cercanía.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Búsqueda con radio en millas, sinónimos boricuas, Gratis y Bajó de precio.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Publicación con mensaje al vendedor, oferta, guardar, compartir y reportar.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Chat Comprando / Vendiendo y notificaciones.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Vender artículos, vehículos y alquileres; perfil verificado (diseño de la socia).</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>43 pruebas automáticas y publicación en GitHub Pages.</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z"/></svg> Falta para operar de verdad</h3>
+      <ul class="ticks red sm">
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg> <span>Servidor y base de datos con búsqueda geográfica.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg> <span>Cuentas reales y verificación de identidad con un proveedor.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg> <span>Chat en tiempo real entre personas reales + push y SMS.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg> <span>Fotos en la nube con moderación automática.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg> <span>Detección de estafas en el chat, reportes y bloqueo.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg> <span>Panel de moderación y soporte.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg> <span>Cumplimiento: INFORM Act, privacidad, vivienda justa en alquileres.</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 5. LAS 5 REGLAS -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Diseño</span></div>
+  <h2 class="title">Las 5 reglas de oro de Plaza 787</h2>
+  <p class="lead">Cinco principios que guían cada decisión técnica y de producto, para que un marketplace local pueda crecer a toda la isla. Si una decisión rompe una regla, se discute antes de construirla.</p>
+  <div class="golden">
+    <div class="card bar-rj"><span class="rule-num n-rj">1</span><h3>Confianza primero</h3><p class="q">"Nadie compra donde no confía."</p><p class="d">Identidad verificada, chat sin dar tu número y encuentros seguros antes que cualquier otra función.</p>
+      <ul class="ticks red sm"><li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z"/></svg> Perfiles verificados</li><li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.25-8.25-3.286Zm0 13.036h.008v.008H12v-.008Z"/></svg> Antiestafa en el chat</li><li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg> Encuentro seguro</li></ul></div>
+    <div class="card bar-az"><span class="rule-num n-az">2</span><h3>Todo es una API</h3><p class="q">"Piezas independientes que se hablan por contratos."</p><p class="d">Web, app y negocios usan la misma puerta; cada módulo es dueño de lo suyo.</p>
+      <ul class="ticks blue sm"><li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 0 0 2.25-2.25V6a2.25 2.25 0 0 0-2.25-2.25H6A2.25 2.25 0 0 0 3.75 6v2.25A2.25 2.25 0 0 0 6 10.5Zm0 9.75h2.25A2.25 2.25 0 0 0 10.5 18v-2.25a2.25 2.25 0 0 0-2.25-2.25H6a2.25 2.25 0 0 0-2.25 2.25V18A2.25 2.25 0 0 0 6 20.25Zm9.75-9.75H18a2.25 2.25 0 0 0 2.25-2.25V6A2.25 2.25 0 0 0 18 3.75h-2.25A2.25 2.25 0 0 0 13.5 6v2.25a2.25 2.25 0 0 0 2.25 2.25Z"/></svg> Módulos con fronteras</li><li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg> Eventos de dominio</li><li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 0 1-.657.643 48.39 48.39 0 0 1-4.163-.3c.186 1.613.293 3.25.315 4.907a.656.656 0 0 1-.658.663v0c-.355 0-.676-.186-.959-.401a1.647 1.647 0 0 0-1.003-.349c-1.036 0-1.875 1.007-1.875 2.25s.84 2.25 1.875 2.25c.369 0 .713-.128 1.003-.349.283-.215.604-.401.959-.401v0c.31 0 .555.26.532.57a48.039 48.039 0 0 1-.642 5.056c1.518.19 3.058.309 4.616.354a.64.64 0 0 0 .657-.643v0c0-.355-.186-.676-.401-.959a1.647 1.647 0 0 1-.349-1.003c0-1.035 1.008-1.875 2.25-1.875 1.243 0 2.25.84 2.25 1.875 0 .369-.128.713-.349 1.003-.215.283-.4.604-.4.959v0c0 .333.277.599.61.58a48.1 48.1 0 0 0 5.427-.63 48.05 48.05 0 0 0 .582-4.717.532.532 0 0 0-.533-.57v0c-.355 0-.676.186-.959.401-.29.221-.634.349-1.003.349-1.035 0-1.875-1.007-1.875-2.25s.84-2.25 1.875-2.25c.37 0 .713.128 1.003.349.283.215.604.401.96.401v0a.656.656 0 0 0 .658-.663 48.422 48.422 0 0 0-.37-5.36c-1.886.342-3.81.574-5.766.689a.578.578 0 0 1-.61-.58v0Z"/></svg> Proveedores intercambiables</li></ul></div>
+    <div class="card bar-vd"><span class="rule-num n-vd">3</span><h3>Escala sin reescribir</h3><p class="q">"Diseñado para 100×, pagando solo lo que se usa."</p><p class="d">El chat y la búsqueda por distancia aguantan de 100 a 100,000 usuarios cambiando capacidad, no código.</p>
+      <ul class="ticks sm"><li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg> Rápido en celular</li><li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/></svg> Chat que escala</li><li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15a4.5 4.5 0 0 0 4.5 4.5H18a3.75 3.75 0 0 0 1.332-7.257 3 3 0 0 0-3.758-3.848 5.25 5.25 0 0 0-10.233 2.33A4.502 4.502 0 0 0 2.25 15Z"/></svg> Caché y CDN</li></ul></div>
+    <div class="card bar-am"><span class="rule-num n-am">4</span><h3>A prueba de huracanes</h3><p class="q">"Si se va la luz en la isla, Plaza 787 sigue funcionando."</p><p class="d">Nube fuera de la isla, respaldos probados y un modo emergencia que protege a la gente.</p>
+      <ul class="ticks sm"><li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m6.115 5.19.319 1.913A6 6 0 0 0 8.11 10.36L9.75 12l-.387.775c-.217.433-.132.956.21 1.298l1.348 1.348c.21.21.329.497.329.795v1.089c0 .426.24.815.622 1.006l.153.076c.433.217.956.132 1.298-.21l.723-.723a8.7 8.7 0 0 0 2.288-4.042 1.087 1.087 0 0 0-.358-1.099l-1.33-1.108c-.251-.21-.582-.299-.905-.245l-1.17.195a1.125 1.125 0 0 1-.98-.314l-.295-.295a1.125 1.125 0 0 1 0-1.591l.13-.132a1.125 1.125 0 0 1 1.3-.21l.603.302a.809.809 0 0 0 1.086-1.086L14.25 7.5l1.256-.837a4.5 4.5 0 0 0 1.528-1.732l.146-.292M6.115 5.19A9 9 0 1 0 17.18 4.64M6.115 5.19A8.965 8.965 0 0 1 12 3c1.929 0 3.716.607 5.18 1.64"/></svg> Nube fuera de la isla</li><li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"/></svg> Respaldos probados</li><li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9.348 14.652a3.75 3.75 0 0 1 0-5.304m5.304 0a3.75 3.75 0 0 1 0 5.304m-7.425 2.121a6.75 6.75 0 0 1 0-9.546m9.546 0a6.75 6.75 0 0 1 0 9.546M5.106 18.894c-3.808-3.807-3.808-9.98 0-13.788m13.788 0c3.808 3.807 3.808 9.98 0 13.788M12 12h.008v.008H12V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg> Funciona con mala señal</li></ul></div>
+    <div class="card bar-dk"><span class="rule-num n-dk">5</span><h3>Medir y automatizar todo</h3><p class="q">"Lo que no se mide no mejora."</p><p class="d">Cada decisión con datos y cada cambio con pruebas y despliegue automático.</p>
+      <ul class="ticks sm"><li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg> Métricas y alertas</li><li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0 1 12 15a9.065 9.065 0 0 0-6.23-.693L5 14.5m14.8.8 1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0 1 12 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg> Experimentos A/B</li><li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z"/></svg> Despliegue automático</li></ul></div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 6. REGLA 1 -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Regla de oro 1 de 5</span></div>
+  <div class="rule-head"><span class="rule-num n-rj">1</span><div><h2>Confianza primero</h2><p>"Nadie compra donde no confía. La confianza es lo que nos diferencia."</p></div></div>
+  <div class="rule-grid">
+    <div class="card"><h4>Por qué</h4><div class="why">
+      <p>En los marketplaces entre personas el mayor riesgo no es técnico: son las estafas. Las más comunes son pedir un depósito por adelantado, mostrar una captura falsa de pago, alquilar propiedades que no existen y usar cuentas recién creadas.</p>
+      <p>Si en Plaza 787 la gente se siente más segura que en un grupo de Facebook, ya tenemos la razón para que se cambie.</p></div></div>
+    <div class="card"><h4>Cómo lo aplicamos</h4>
+      <ul class="ticks red sm">
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z"/></svg> <span><strong>Identidad verificada para vender</strong> (ID + selfie con un proveedor). La imagen no queda en el perfil.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/></svg> <span><strong>Todo por el chat de Plaza 787:</strong> no hace falta dar el teléfono.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.25-8.25-3.286Zm0 13.036h.008v.008H12v-.008Z"/></svg> <span><strong>Detector de estafas en mensajes:</strong> avisa si piden códigos, depósitos, enlaces externos o pagos por adelantado.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg> <span><strong>Encuentro seguro:</strong> consejos, lugares públicos sugeridos y alianzas para zonas de intercambio (propuesta).</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg> <span><strong>Reviews</strong> solo después de un encuentro confirmado por ambos.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M10.05 4.575a1.575 1.575 0 1 0-3.15 0v3m3.15-3v-1.5a1.575 1.575 0 0 1 3.15 0v1.5m-3.15 0 .075 5.925m3.075.75V4.575m0 0a1.575 1.575 0 0 1 3.15 0V15M6.9 7.575a1.575 1.575 0 1 0-3.15 0v8.175a6.75 6.75 0 0 0 6.75 6.75h2.018a5.25 5.25 0 0 0 3.712-1.538l1.732-1.732a5.25 5.25 0 0 0 1.538-3.712l.003-2.024a.668.668 0 0 1 .198-.471 1.575 1.575 0 1 0-2.228-2.228 3.818 3.818 0 0 0-1.12 2.687M6.9 7.575V12m6.27 4.318A4.49 4.49 0 0 1 16.35 15m.002 0h-.002"/></svg> <span><strong>Reportar y bloquear</strong> en un toque; límites para cuentas nuevas.</span></li>
+      </ul></div>
+    <div class="card"><h4>Cómo lo medimos</h4>
+      <div class="metric"><span>Vendedores activos verificados</span><b>&gt; 95%</b></div>
+      <div class="metric"><span>Reportes de estafa / 1,000 chats</span><b>&lt; 2</b></div>
+      <div class="metric"><span>Tiempo para atender un reporte</span><b>&lt; 24 h</b></div>
+      <div class="metric"><span>Estafadores bloqueados antes del primer contacto</span><b>&gt; 80%</b></div>
+      <div class="metric"><span>NPS (recomendación)</span><b>&gt; 50</b></div>
+    </div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 7. REGLA 2 -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Regla de oro 2 de 5</span></div>
+  <div class="rule-head"><span class="rule-num n-az">2</span><div><h2>Todo es una API</h2><p>"Piezas independientes que se hablan por contratos claros."</p></div></div>
+  <div class="rule-grid">
+    <div class="card"><h4>Por qué</h4><div class="why">
+      <p>A principios de los 2000 Amazon decidió que cada equipo expusiera lo suyo <strong>solo a través de APIs</strong>. Eso le permitió crecer sin que los equipos se pisaran.</p>
+      <p>Para nosotros significa que la web, la app y los negocios grandes (dealers, administradores de alquileres) usan la misma puerta, y que cambiar un proveedor no obliga a reescribir el sistema.</p></div></div>
+    <div class="card"><h4>Cómo lo aplicamos</h4>
+      <ul class="ticks blue sm">
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/></svg> <span><strong>Monolito modular primero:</strong> un solo despliegue con módulos claros (cuentas, publicaciones, mensajería…). Se separa un servicio solo cuando duele.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg> <span><strong>Contratos versionados</strong> (OpenAPI <code>/v1</code>).</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg> <span><strong>Eventos de dominio</strong> (<code>mensaje.enviado</code>, <code>publicacion.creada</code>, <code>reporte.creado</code>) para que otros módulos reaccionen.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg> <span>Cada módulo es <strong>dueño de sus datos</strong>.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 0 1-.657.643 48.39 48.39 0 0 1-4.163-.3c.186 1.613.293 3.25.315 4.907a.656.656 0 0 1-.658.663v0c-.355 0-.676-.186-.959-.401a1.647 1.647 0 0 0-1.003-.349c-1.036 0-1.875 1.007-1.875 2.25s.84 2.25 1.875 2.25c.369 0 .713-.128 1.003-.349.283-.215.604-.401.959-.401v0c.31 0 .555.26.532.57a48.039 48.039 0 0 1-.642 5.056c1.518.19 3.058.309 4.616.354a.64.64 0 0 0 .657-.643v0c0-.355-.186-.676-.401-.959a1.647 1.647 0 0 1-.349-1.003c0-1.035 1.008-1.875 2.25-1.875 1.243 0 2.25.84 2.25 1.875 0 .369-.128.713-.349 1.003-.215.283-.4.604-.4.959v0c0 .333.277.599.61.58a48.1 48.1 0 0 0 5.427-.63 48.05 48.05 0 0 0 .582-4.717.532.532 0 0 0-.533-.57v0c-.355 0-.676.186-.959.401-.29.221-.634.349-1.003.349-1.035 0-1.875-1.007-1.875-2.25s.84-2.25 1.875-2.25c.37 0 .713.128 1.003.349.283.215.604.401.96.401v0a.656.656 0 0 0 .658-.663 48.422 48.422 0 0 0-.37-5.36c-1.886.342-3.81.574-5.766.689a.578.578 0 0 1-.61-.58v0Z"/></svg> <span>Terceros detrás de <strong>adaptadores</strong>: KYC, push, SMS, tiempo real y moderación.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"/></svg> <span><strong>API para negocios:</strong> los dealers suben inventario de carros de forma automática (fase 2–3).</span></li>
+      </ul></div>
+    <div class="card"><h4>Cómo lo medimos</h4>
+      <div class="metric"><span>Tiempo de un cambio a producción</span><b>&lt; 1 día</b></div>
+      <div class="metric"><span>Endpoints documentados</span><b>100%</b></div>
+      <div class="metric"><span>Pruebas de contrato en CI</span><b>100%</b></div>
+      <div class="metric"><span>Accesos a datos de otro módulo</span><b>0</b></div>
+      <div class="metric"><span>Cambiar un proveedor</span><b>&lt; 4 semanas</b></div>
+    </div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 8. REGLA 3 -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Regla de oro 3 de 5</span></div>
+  <div class="rule-head"><span class="rule-num n-vd">3</span><div><h2>Escala sin reescribir</h2><p>"Diseñado para 100× desde el día 1, pagando solo lo que se usa."</p></div></div>
+  <div class="rule-grid">
+    <div class="card"><h4>Por qué</h4><div class="why">
+      <p>En un marketplace como este, cada venta genera muchos mensajes y la portada se consulta muchas veces al día. El chat y la búsqueda por distancia son las piezas que más carga reciben.</p>
+      <p>Además hay picos (Navidad, regreso a clases, temporada de huracanes) y casi todo se usa desde el celular, con señal regular.</p></div></div>
+    <div class="card"><h4>Cómo lo aplicamos</h4>
+      <ul class="ticks sm">
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 0 1-3-3m3 3a3 3 0 1 0 0 6h13.5a3 3 0 1 0 0-6m-16.5-3a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3m-19.5 0a4.5 4.5 0 0 1 .9-2.7L5.737 5.1a3.375 3.375 0 0 1 2.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 0 1 .9 2.7m0 0a3 3 0 0 1-3 3m0 3h.008v.008h-.008v-.008Zm0-6h.008v.008h-.008v-.008Zm-3 6h.008v.008h-.008v-.008Zm0-6h.008v.008h-.008v-.008Z"/></svg> <span><strong>Servidores sin estado</strong> con autoescalado.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/></svg> <span><strong>Chat por WebSockets</strong> en un servicio administrado que escala solo; los mensajes también se guardan en la base de datos.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg> <span><strong>Búsqueda geográfica en un motor dedicado</strong> (filtro por radio), no en la base de datos principal.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15a4.5 4.5 0 0 0 4.5 4.5H18a3.75 3.75 0 0 0 1.332-7.257 3 3 0 0 0-3.758-3.848 5.25 5.25 0 0 0-10.233 2.33A4.502 4.502 0 0 0 2.25 15Z"/></svg> <span><strong>CDN y caché</strong> para fotos y páginas.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z"/></svg> <span><strong>Colas</strong> para fotos, moderación y notificaciones.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg> <span>PostgreSQL + PostGIS con <strong>réplicas de lectura</strong>.</span></li>
+      </ul></div>
+    <div class="card"><h4>Cómo lo medimos</h4>
+      <div class="metric"><span>API: respuesta p95</span><b>&lt; 300 ms</b></div>
+      <div class="metric"><span>Búsqueda con radio p95</span><b>&lt; 200 ms</b></div>
+      <div class="metric"><span>Mensaje entregado p95</span><b>&lt; 1 s</b></div>
+      <div class="metric"><span>Carga en celular (LCP)</span><b>&lt; 2.5 s</b></div>
+      <div class="metric"><span>Prueba de carga superada</span><b>10× tráfico</b></div>
+    </div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 9. REGLA 4 -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Regla de oro 4 de 5</span></div>
+  <div class="rule-head"><span class="rule-num n-am">4</span><div><h2>A prueba de huracanes</h2><p>"Si se va la luz en la isla, Plaza 787 sigue funcionando."</p></div></div>
+  <div class="rule-grid">
+    <div class="card"><h4>Por qué</h4><div class="why">
+      <p>Después del huracán María (2017) gran parte de la isla estuvo sin luz ni comunicaciones por semanas o meses, y los apagones siguen siendo frecuentes.</p>
+      <p>Justo en esos momentos es cuando más se compran plantas, baterías y agua entre vecinos. La plataforma tiene que seguir en pie y proteger a la gente de abusos.</p></div></div>
+    <div class="card"><h4>Cómo lo aplicamos</h4>
+      <ul class="ticks sm">
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m6.115 5.19.319 1.913A6 6 0 0 0 8.11 10.36L9.75 12l-.387.775c-.217.433-.132.956.21 1.298l1.348 1.348c.21.21.329.497.329.795v1.089c0 .426.24.815.622 1.006l.153.076c.433.217.956.132 1.298-.21l.723-.723a8.7 8.7 0 0 0 2.288-4.042 1.087 1.087 0 0 0-.358-1.099l-1.33-1.108c-.251-.21-.582-.299-.905-.245l-1.17.195a1.125 1.125 0 0 1-.98-.314l-.295-.295a1.125 1.125 0 0 1 0-1.591l.13-.132a1.125 1.125 0 0 1 1.3-.21l.603.302a.809.809 0 0 0 1.086-1.086L14.25 7.5l1.256-.837a4.5 4.5 0 0 0 1.528-1.732l.146-.292M6.115 5.19A9 9 0 1 0 17.18 4.64M6.115 5.19A8.965 8.965 0 0 1 12 3c1.929 0 3.716.607 5.18 1.64"/></svg> <span><strong>Nube en EE. UU. continental</strong>, 2+ zonas de disponibilidad y réplica en otra región.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"/></svg> <span><strong>Respaldos automáticos</strong>; simulacro de restauración cada trimestre.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"/></svg> <span><strong>Degradación elegante:</strong> si falla la búsqueda se muestran categorías; si falla el chat en vivo, los mensajes se encolan y llegan por push o SMS.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9.348 14.652a3.75 3.75 0 0 1 0-5.304m5.304 0a3.75 3.75 0 0 1 0 5.304m-7.425 2.121a6.75 6.75 0 0 1 0-9.546m9.546 0a6.75 6.75 0 0 1 0 9.546M5.106 18.894c-3.808-3.807-3.808-9.98 0-13.788m13.788 0c3.808 3.807 3.808 9.98 0 13.788M12 12h.008v.008H12V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg> <span><strong>PWA liviana</strong> que funciona con mala señal.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5"/></svg> <span><strong>Modo emergencia:</strong> prioriza artículos esenciales y bloquea alzas abusivas de precio.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605"/></svg> <span>Página de estado pública; equipo 100% remoto.</span></li>
+      </ul></div>
+    <div class="card"><h4>Cómo lo medimos</h4>
+      <div class="metric"><span>Disponibilidad (MVP → escala)</span><b>99.9% → 99.95%</b></div>
+      <div class="metric"><span>Datos que se pueden perder (RPO)</span><b>≤ 5 min</b></div>
+      <div class="metric"><span>Tiempo para recuperarse (RTO)</span><b>≤ 1 h</b></div>
+      <div class="metric"><span>Simulacro de recuperación</span><b>trimestral</b></div>
+      <div class="metric"><span>Activar modo emergencia</span><b>&lt; 30 min</b></div>
+    </div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 10. REGLA 5 -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Regla de oro 5 de 5</span></div>
+  <div class="rule-head"><span class="rule-num n-dk">5</span><div><h2>Medir y automatizar todo</h2><p>"Lo que no se mide no mejora; lo que se repite, se automatiza."</p></div></div>
+  <div class="rule-grid">
+    <div class="card"><h4>Por qué</h4><div class="why">
+      <p>Un marketplace vive de que las publicaciones reciban mensajes rápido y de que la gente vuelva. Eso se mide cada día y se mejora con experimentos.</p>
+      <p>Automatizar pruebas y despliegues permite mejorar todos los días con un equipo pequeño. El prototipo ya corre 43 pruebas automáticas.</p></div></div>
+    <div class="card"><h4>Cómo lo aplicamos</h4>
+      <ul class="ticks sm">
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z"/>
+  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z"/></svg> <span><strong>Observabilidad:</strong> logs, métricas y trazas (OpenTelemetry) con alertas por objetivo de servicio.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg> <span><strong>Embudo de producto:</strong> búsqueda → vista → mensaje → encuentro → vendido.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0 1 12 15a9.065 9.065 0 0 0-6.23-.693L5 14.5m14.8.8 1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0 1 12 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg> <span><strong>Experimentos A/B</strong> y <em>feature flags</em>.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z"/></svg> <span><strong>CI/CD:</strong> cada cambio pasa pruebas y se despliega solo.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5"/></svg> <span><strong>Infraestructura como código</strong> (Terraform).</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M7.864 4.243A7.5 7.5 0 0 1 19.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 0 0 4.5 10.5a7.464 7.464 0 0 1-1.15 3.993m1.989 3.559A11.209 11.209 0 0 0 8.25 10.5a3.75 3.75 0 1 1 7.5 0c0 .527-.021 1.049-.064 1.565M12 10.5a14.94 14.94 0 0 1-3.6 9.75m6.633-4.596a18.666 18.666 0 0 1-2.485 5.33"/></svg> <span><strong>Seguridad automatizada:</strong> escaneo de dependencias, secretos y código.</span></li>
+      </ul></div>
+    <div class="card"><h4>Cómo lo medimos</h4>
+      <div class="metric"><span>Despliegues a producción</span><b>diarios</b></div>
+      <div class="metric"><span>Cambios que causan fallos</span><b>&lt; 15%</b></div>
+      <div class="metric"><span>Tiempo para restaurar (MTTR)</span><b>&lt; 1 h</b></div>
+      <div class="metric"><span>Pruebas en flujos críticos*</span><b>100%</b></div>
+      <div class="metric"><span>Tablero de negocio</span><b>diario</b></div>
+      <p class="note">*Registrarse, publicar, buscar cerca, enviar mensaje, reportar y marcar vendido.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 11. ARQUITECTURA -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Arquitectura</span></div>
+  <h2 class="title">Arquitectura objetivo</h2>
+  <p class="lead" style="margin-bottom:12px">Capas de arriba (personas) hacia abajo (datos). El chat usa una conexión en tiempo real aparte; los módulos se comunican por API y eventos.</p>
+  <div class="arch">
+    <div class="layers">
+      <div class="layer"><b><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg> Clientes</b><div class="boxes"><span class="box az">Web (Astro, el diseño actual)</span><span class="box az">App iOS / Android</span><span class="box az">Portal de negocios</span><span class="box az">Backoffice de moderación</span></div></div>
+      <div class="down"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"/></svg></div>
+      <div class="layer"><b><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15a4.5 4.5 0 0 0 4.5 4.5H18a3.75 3.75 0 0 0 1.332-7.257 3 3 0 0 0-3.758-3.848 5.25 5.25 0 0 0-10.233 2.33A4.502 4.502 0 0 0 2.25 15Z"/></svg> Borde</b><div class="boxes"><span class="box">CDN global</span><span class="box">WAF y anti-DDoS</span><span class="box">Optimización de imágenes</span><span class="box">Caché de páginas</span></div></div>
+      <div class="down"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"/></svg></div>
+      <div class="layer"><b><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z"/></svg> Entrada</b><div class="boxes"><span class="box">API Gateway / BFF</span><span class="box">Gateway de tiempo real (WebSockets)</span><span class="box">Sesiones y límites de uso</span></div></div>
+      <div class="down"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"/></svg></div>
+      <div class="layer" style="align-items:start"><b style="margin-top:6px"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/></svg> Módulos</b>
+        <div class="mods">
+          <span class="box vd">Cuentas e identidad</span><span class="box vd">Publicaciones</span><span class="box vd">Búsqueda geográfica</span><span class="box vd">Feed y recomendaciones</span>
+          <span class="box vd">Mensajería</span><span class="box vd">Ofertas</span><span class="box vd">Favoritos y alertas</span><span class="box vd">Reputación</span>
+          <span class="box vd">Notificaciones</span><span class="box vd">Reportes y moderación</span><span class="box vd">Antifraude</span><span class="box vd">Destacados y anuncios</span>
+        </div></div>
+      <div class="down"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"/></svg></div>
+      <div class="layer"><b><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg> Datos</b><div class="boxes"><span class="box am">PostgreSQL + PostGIS</span><span class="box am">Redis (presencia, contadores)</span><span class="box am">Motor de búsqueda (geo)</span><span class="box am">Fotos (S3/R2)</span><span class="box am">Analítica</span><span class="box am">KMS</span></div></div>
+    </div>
+    <div class="side">
+      <div class="bus"><b><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg> Bus de eventos</b><code>mensaje.enviado</code> <code>publicacion.creada</code> <code>reporte.creado</code><br/>Conecta búsqueda, notificaciones, antifraude y analítica sin acoplarlos.</div>
+      <div class="card" style="padding:12px 14px"><h4>Proveedores externos</h4>
+        <ul class="ticks blue sm">
+          <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z"/></svg> KYC (Stripe Identity, Persona o Veriff)</li>
+          <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/></svg> Tiempo real (Ably, Pusher o Supabase)</li>
+          <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg> Push (FCM / APNs)</li>
+          <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg> SMS (Twilio)</li>
+          <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg> Email (SES / Resend)</li>
+          <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/>
+  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg> Moderación de fotos y texto con IA</li>
+        </ul></div>
+    </div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 12. MÓDULOS -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Arquitectura</span></div>
+  <h2 class="title">Módulos: qué hace cada uno</h2>
+  <p class="lead" style="margin-bottom:10px">Empiezan todos dentro de un mismo backend (monolito modular) y se separan en servicios cuando el volumen o el equipo lo pidan.</p>
+  <table class="tbl compact">
+    <tr><th style="width:17%">Módulo</th><th>Responsabilidad</th><th style="width:28%">Tecnología sugerida</th><th style="width:7%">Fase</th></tr>
+    <tr><td>Cuentas e identidad</td><td>Registro, sesión, MFA, perfil público, info privada cifrada, verificación de ID</td><td>Auth administrado (Clerk, Auth0 o Cognito) + KYC</td><td>1</td></tr>
+    <tr><td>Publicaciones</td><td>Artículos, vehículos (año, millaje) y alquileres (cuartos, baños); fotos; estados; renovar</td><td>PostgreSQL + S3/R2 + cola de imágenes</td><td>1</td></tr>
+    <tr><td>Búsqueda geográfica</td><td>Texto con errores y sinónimos boricuas, radio en millas, filtros, orden por cercanía</td><td>Typesense o Meilisearch (geo) → OpenSearch</td><td>1</td></tr>
+    <tr><td>Feed y recomendaciones</td><td>"Selecciones de hoy", cerca de ti, categorías que te interesan</td><td>Reglas → modelos de ranking</td><td>1–3</td></tr>
+    <tr><td>Mensajería</td><td>Chat por publicación, mensajes rápidos, leído/no leído, fotos en el chat</td><td>WebSockets administrado + PostgreSQL</td><td>1</td></tr>
+    <tr><td>Ofertas</td><td>Ofertas y contraofertas dentro del chat</td><td>PostgreSQL + eventos</td><td>2</td></tr>
+    <tr><td>Favoritos y alertas</td><td>Favoritos, "bajó de precio", búsquedas guardadas</td><td>PostgreSQL + tareas programadas</td><td>1–2</td></tr>
+    <tr><td>Reputación</td><td>Reviews tras un encuentro, nivel del vendedor, seguidores</td><td>PostgreSQL</td><td>1</td></tr>
+    <tr><td>Notificaciones</td><td>Push, SMS y email; preferencias y horarios</td><td>FCM/APNs + Twilio + SES/Resend</td><td>1</td></tr>
+    <tr><td>Reportes y moderación</td><td>Reportar, bloquear, revisión de fotos y textos, cola de revisión humana</td><td>Backoffice propio + moderación con IA</td><td>1</td></tr>
+    <tr><td>Antifraude</td><td>Cuentas nuevas, patrones de estafa en el chat, dispositivos repetidos</td><td>Reglas propias + puntuación de riesgo</td><td>1–2</td></tr>
+    <tr><td>Destacados y anuncios</td><td>Destacar publicaciones, planes para negocios, anuncios locales</td><td>Servicio propio + Stripe (cobro a negocios)</td><td>2–3</td></tr>
+    <tr><td>Analítica</td><td>Eventos de uso, tableros, experimentos</td><td>PostHog / RudderStack + BigQuery</td><td>2</td></tr>
+  </table>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 13. DATOS -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Datos</span></div>
+  <h2 class="title">Dónde vive cada dato</h2>
+  <p class="lead" style="margin-bottom:12px">Una sola fuente de verdad (PostgreSQL con PostGIS para ubicaciones). Los datos personales viven aparte y cifrados; la ubicación pública siempre es aproximada.</p>
+  <div class="grid" style="grid-template-columns:1fr 1.15fr;flex:1;min-height:0">
+    <div class="grid g2" style="align-content:start;gap:8px">
+      <div class="card" style="padding:12px 16px"><h3 style="font-size:15px;margin-bottom:4px"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg> PostgreSQL + PostGIS</h3><p class="small">Usuarios, publicaciones, conversaciones, reviews. Cada publicación tiene un punto en el mapa para buscar por radio.</p></div>
+      <div class="card" style="padding:12px 16px"><h3 style="font-size:15px;margin-bottom:4px"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg> Redis</h3><p class="small">Presencia en el chat, mensajes sin leer, sesiones y límites de uso.</p></div>
+      <div class="card" style="padding:12px 16px"><h3 style="font-size:15px;margin-bottom:4px"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg> Motor de búsqueda</h3><p class="small">Índice de publicaciones activas con ubicación. Se reconstruye desde PostgreSQL.</p></div>
+      <div class="card" style="padding:12px 16px"><h3 style="font-size:15px;margin-bottom:4px"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg> Fotos</h3><p class="small">Originales y versiones optimizadas, revisadas por moderación antes de publicarse.</p></div>
+      <div class="card" style="padding:12px 16px"><h3 style="font-size:15px;margin-bottom:4px"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg> Analítica</h3><p class="small">Eventos de uso anonimizados para tableros y experimentos.</p></div>
+      <div class="card" style="padding:12px 16px"><h3 style="font-size:15px;margin-bottom:4px"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z"/></svg> Bóveda (KMS)</h3><p class="small">Llaves de cifrado y secretos. Solo el módulo de Cuentas descifra la info privada.</p></div>
+    </div>
+    <div class="card">
+      <h4>Modelo de datos principal</h4>
+      <div class="grid g2" style="gap:10px">
+        <div><span class="pill rj">Personas</span><p class="mono" style="margin-top:6px;line-height:1.6">usuario<br/>perfil_publico <span class="small">(foto, usuario, pueblo)</span><br/>info_privada <span class="small">(cifrada)</span><br/>verificacion <span class="small">(estado, fecha)</span><br/>seguidor · bloqueo</p></div>
+        <div><span class="pill az">Publicaciones</span><p class="mono" style="margin-top:6px;line-height:1.6">publicacion <span class="small">(tipo, precio, punto geo)</span><br/>foto · categoria<br/>detalle_vehiculo<br/>detalle_alquiler<br/>guardado · busqueda_guardada</p></div>
+        <div><span class="pill vd">Conversaciones</span><p class="mono" style="margin-top:6px;line-height:1.6">conversacion <span class="small">(publicación, comprador, vendedor)</span><br/>mensaje · lectura<br/>oferta<br/>encuentro_confirmado</p></div>
+        <div><span class="pill am">Comunidad y control</span><p class="mono" style="margin-top:6px;line-height:1.6">review · reporte<br/>notificacion · preferencia<br/>destacado · plan_negocio<br/>evento_dominio · auditoria</p></div>
+      </div>
+      <p class="note"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg> <strong>info_privada</strong> se cifra por campo con llaves del KMS y registra cada acceso. <strong>verificacion</strong> guarda solo el resultado, nunca la imagen de la ID. La ubicación pública se muestra por pueblo, nunca la dirección exacta.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 14. FLUJO PRINCIPAL -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Flujos clave</span></div>
+  <h2 class="title">De la publicación al encuentro</h2>
+  <p class="lead" style="margin-bottom:14px">El flujo central, igual que en Facebook Marketplace, con capas de seguridad en cada paso.</p>
+  <div class="flow">
+    <div class="step"><span class="n">1</span><h4>Publicar</h4><p>Foto, precio y pueblo en segundos. Moderación automática de fotos y texto.</p><p style="margin-top:6px"><code>publicacion.creada</code></p></div>
+    <div class="step"><span class="n">2</span><h4>Aparece cerca</h4><p>En el feed y en búsquedas por radio. Aviso a sus seguidores.</p><p style="margin-top:6px"><code>indexada</code></p></div>
+    <div class="step"><span class="n">3</span><h4>Mensaje</h4><p>"¿Sigue disponible?" Chat sin dar el teléfono; detector de estafas.</p><p style="margin-top:6px"><code>mensaje.enviado</code></p></div>
+    <div class="step"><span class="n">4</span><h4>Acuerdo</h4><p>Oferta y contraoferta; lugar y hora en un sitio público sugerido.</p><p style="margin-top:6px"><code>oferta.aceptada</code></p></div>
+    <div class="step"><span class="n">5</span><h4>Encuentro</h4><p>Revisar el artículo y pagar al recibir (efectivo o ATH Móvil en persona).</p><p style="margin-top:6px"><code>encuentro.confirmado</code></p></div>
+    <div class="step"><span class="n">6</span><h4>Vendido + review</h4><p>Sale del feed; ambos se califican y crece la reputación.</p><p style="margin-top:6px"><code>publicacion.vendida</code></p></div>
+  </div>
+  <div class="grid g2" style="margin-top:14px;flex:1;min-height:0">
+    <div class="card">
+      <h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M10.05 4.575a1.575 1.575 0 1 0-3.15 0v3m3.15-3v-1.5a1.575 1.575 0 0 1 3.15 0v1.5m-3.15 0 .075 5.925m3.075.75V4.575m0 0a1.575 1.575 0 0 1 3.15 0V15M6.9 7.575a1.575 1.575 0 1 0-3.15 0v8.175a6.75 6.75 0 0 0 6.75 6.75h2.018a5.25 5.25 0 0 0 3.712-1.538l1.732-1.732a5.25 5.25 0 0 0 1.538-3.712l.003-2.024a.668.668 0 0 1 .198-.471 1.575 1.575 0 1 0-2.228-2.228 3.818 3.818 0 0 0-1.12 2.687M6.9 7.575V12m6.27 4.318A4.49 4.49 0 0 1 16.35 15m.002 0h-.002"/></svg> ¿Algo salió mal?</h3>
+      <ul class="ticks red sm">
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v1.5M3 21v-6m0 0 2.77-.693a9 9 0 0 1 6.208.682l.108.054a9 9 0 0 0 6.086.71l3.114-.732a48.524 48.524 0 0 1-.005-10.499l-3.11.732a9 9 0 0 1-6.085-.711l-.108-.054a9 9 0 0 0-6.208-.682L3 4.5M3 15V4.5"/></svg> <span><strong>Reportar</strong> la publicación o el chat en un toque; <strong>bloquear</strong> a la persona.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/>
+  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg> <span>Moderación revisa el caso, incluido el chat reportado, y puede ocultar la publicación o suspender la cuenta.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.25-8.25-3.286Zm0 13.036h.008v.008H12v-.008Z"/></svg> <span>Cada reporte alimenta el antifraude: patrones, dispositivos y cuentas relacionadas.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0 0 12 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 0 1-2.031.352 5.988 5.988 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971Zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 0 1-2.031.352 5.989 5.989 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971Z"/></svg> <span>Si hubo delito, colaboramos con la Policía según la ley y la política de privacidad.</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"/></svg> El pago es entre personas</h3>
+      <ul class="ticks blue sm">
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Plaza 787 <strong>no toca el dinero</strong> de las ventas entre personas, igual que Facebook Marketplace.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Eso simplifica mucho el arranque: no hacen falta pasarela de pagos ni licencia de transmisor de dinero (validar con abogado).</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Aviso en el chat: "Confirma en tu app de ATH Móvil que el dinero llegó. No confíes en capturas."</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Fase 3, opcional: "Pago protegido + envío" para quien no pueda encontrarse en persona.</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 15. REGISTRO E IDENTIDAD -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Flujos clave</span></div>
+  <h2 class="title">Registro y verificación de identidad</h2>
+  <p class="lead" style="margin-bottom:14px">Como lo pidió el diseño del perfil: la ID se pide al principio, pero no queda registrada en el perfil. La verificación la hace un proveedor especializado.</p>
+  <div class="flow rj">
+    <div class="step"><span class="n">1</span><h4>Perfil público</h4><p>Foto, nombre de usuario, pueblo; seguidores visibles u ocultos.</p></div>
+    <div class="step"><span class="n">2</span><h4>Información privada</h4><p>Nombre de pila, teléfono, fecha de nacimiento (18+), email. Se cifra y no se muestra.</p></div>
+    <div class="step"><span class="n">3</span><h4>Teléfono por SMS</h4><p>Código de 6 dígitos. Con esto ya se puede chatear y comprar.</p></div>
+    <div class="step"><span class="n">4</span><h4>ID con el proveedor</h4><p>Foto de la ID y selfie <strong>dentro del flujo del proveedor</strong>. Obligatorio para vender.</p></div>
+    <div class="step"><span class="n">5</span><h4>Solo el resultado</h4><p>Guardamos <code>verificado</code>, la fecha y la referencia del proveedor. Insignia en el perfil.</p></div>
+    <div class="step"><span class="n">6</span><h4>Imagen fuera</h4><p>El proveedor borra o archiva según la retención mínima que permita la ley.</p></div>
+  </div>
+  <div class="grid g3" style="margin-top:14px;flex:1;min-height:0">
+    <div class="card"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg> ¿Quién verifica qué?</h3><ul class="ticks sm">
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span><strong>Comprar y chatear:</strong> teléfono verificado.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span><strong>Vender:</strong> ID verificada (ya es así en el prototipo).</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span><strong>Vehículos y alquileres:</strong> ID + revisión extra (título del carro, que la propiedad exista).</span></li></ul></div>
+    <div class="card"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0 0 12 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 0 1-2.031.352 5.988 5.988 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971Zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 0 1-2.031.352 5.989 5.989 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971Z"/></svg> Lo que pide la ley</h3><p class="why" style="font-size:13px">La ley federal <strong>INFORM Consumers Act</strong> (2023) obliga a los marketplaces a verificar a los vendedores de <strong>alto volumen</strong> (200+ ventas y $5,000+ en 12 meses). Si exige conservar una copia de la ID, va a la bóveda cifrada del proveedor, no al perfil. <em>Validar con abogado.</em></p></div>
+    <div class="card"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z"/></svg> Proveedores a evaluar</h3><ul class="ticks blue sm">
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Stripe Identity</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Persona</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Veriff u Onfido</span></li></ul>
+      <p class="note">Criterios: acepta licencias de PR y pasaportes, retención configurable, ≈ $1.50–$3 por verificación y SDK móvil.</p></div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 16. BÚSQUEDA Y FEED -->
+<section class="slide big">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Dinamismo</span></div>
+  <h2 class="title">Búsqueda, cercanía y feed: lo que lo hace "vivo"</h2>
+  <p class="lead" style="margin-bottom:12px">En un Marketplace la gente entra a ver qué hay nuevo cerca. Que la portada cambie todos los días y que la búsqueda entienda cómo hablamos es lo que trae a la gente de vuelta.</p>
+  <div class="grid g3 fill">
+    <div class="card"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg> Buscador</h3><ul class="ticks blue sm">
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Tolera errores y no exige tildes ("cafe" encuentra "Café").</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span><strong>Sinónimos boricuas:</strong> guagua, zafacón, mahones, gomas, abanico.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span><strong>Radio en millas</strong> desde tu pueblo o tu ubicación.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Filtros: Gratis, Bajó de precio, condición, fecha de publicación.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Búsquedas guardadas con aviso cuando aparece algo nuevo (fase 2).</span></li></ul></div>
+    <div class="card"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"/></svg> Orden del feed</h3><ul class="ticks sm">
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span><strong>Cercanía</strong> a tu pueblo.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span><strong>Frescura:</strong> lo nuevo primero.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Relevancia según lo que buscas y guardas.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Calidad de la publicación (fotos, descripción).</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Reputación y verificación del vendedor.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Destacados pagados, siempre marcados.</span></li></ul></div>
+    <div class="card"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"/></svg> Portada dinámica</h3><ul class="ticks sm">
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>"Selecciones de hoy" por cercanía.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Vehículos, Alquileres, Gratis.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>"Bajaron de precio" y avisos de guardados.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Lo nuevo de vendedores que sigues.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Temporadas: huracanes, Navidad, clases.</span></li></ul></div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 17. MODELO DE INGRESOS -->
+<section class="slide big">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Dinero</span></div>
+  <h2 class="title">Cómo gana dinero Plaza 787 sin cobrar por vender</h2>
+  <p class="lead" style="margin-bottom:12px">Publicar y vender entre personas es gratis, como en Facebook. Cobramos a quien quiere más visibilidad y a los negocios.</p>
+  <div class="grid g3 fill">
+    <div class="card bar-az"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"/></svg> Destacados</h3><p class="why" style="font-size:16px">Subir una publicación al tope de su categoría y de "cerca de ti" por unos días.</p>
+      <ul class="ticks blue sm" style="margin-top:10px"><li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Propuesta: <strong>$1.99–$4.99</strong> por 3–7 días.</span></li><li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Siempre marcado como "Destacado".</span></li></ul></div>
+    <div class="card bar-vd"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"/></svg> Planes para negocios</h3><p class="why" style="font-size:16px">Dealers, administradores de alquileres, tiendas y artesanos con mucho inventario.</p>
+      <ul class="ticks sm" style="margin-top:10px"><li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Propuesta: <strong>$19–$79/mes</strong>: más publicaciones, panel de estadísticas, insignia y carga automática de inventario.</span></li></ul></div>
+    <div class="card bar-rj"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 1 1 0-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 0 1-1.44-4.282m3.102.069a18.03 18.03 0 0 1-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 0 1 8.835 2.535M10.34 6.66a23.847 23.847 0 0 0 8.835-2.535m0 0A23.74 23.74 0 0 0 18.795 3m.38 1.125a23.91 23.91 0 0 1 1.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 0 0 1.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 0 1 0 3.46"/></svg> Anuncios locales y más</h3><p class="why" style="font-size:16px">Comercios del pueblo que quieren llegar a vecinos (fase 3).</p>
+      <ul class="ticks red sm" style="margin-top:10px"><li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Anuncios marcados y relevantes por ubicación.</span></li><li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>"Pago protegido + envío" opcional con comisión (fase 3).</span></li></ul></div>
+  </div>
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/></svg> Cobro a negocios</h3><p class="why" style="font-size:15px">Tarjeta con Stripe (formularios del procesador, nunca tocamos números de tarjeta) y ATH Móvil Business. Suscripciones y facturas automáticas.</p></div>
+    <div class="card"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 14.25 6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185ZM9.75 9h.008v.008H9.75V9Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm4.125 4.5h.008v.008h-.008V13.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg> Impuestos</h3><p class="why" style="font-size:15px">El <strong>IVU (11.5%)</strong> aplica a lo que Plaza 787 vende: destacados, planes y anuncios. Las ventas entre personas no pasan por la plataforma en el MVP. <em>Validar con CPA.</em></p></div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 18. ENCUENTROS, VEHÍCULOS Y ALQUILERES -->
+<section class="slide big">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Operación</span></div>
+  <h2 class="title">Encuentros, vehículos y alquileres</h2>
+  <p class="lead" style="margin-bottom:12px">Tres situaciones con reglas propias, donde una plataforma local puede hacerlo mejor que una global.</p>
+  <div class="grid g3 fill">
+    <div class="card"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg> Encuentro seguro</h3><ul class="ticks sm">
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Lugares públicos sugeridos por pueblo: centros comerciales y plazas.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Propuesta: alianzas con municipios y la Policía para <strong>zonas de intercambio seguro</strong> con cámaras.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Confirmar el encuentro en la app para habilitar las reviews.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Fase 2: compartir la ubicación en vivo con un contacto de confianza.</span></li></ul></div>
+    <div class="card"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/></svg> Vehículos</h3><ul class="ticks blue sm">
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Campos propios: año, marca, modelo, millaje y transmisión.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Guía de <strong>traspaso en CESCO</strong> y verificación del título.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Fase 2–3: historial del vehículo por número VIN con un proveedor.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Planes para dealers con inventario automático.</span></li></ul></div>
+    <div class="card"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg> Alquileres</h3><ul class="ticks red sm">
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Campos: cuartos, baños, amueblado, servicios incluidos.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Verificación del arrendador y de que la propiedad existe.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Aviso: nunca pagar depósito sin ver la propiedad ni firmar contrato.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Cumplir la <strong>Ley federal de Vivienda Justa</strong>: moderar anuncios discriminatorios.</span></li></ul></div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 19. RESILIENCIA -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Resiliencia</span></div>
+  <h2 class="title">Plan de continuidad: huracanes y apagones</h2>
+  <p class="lead" style="margin-bottom:12px">La plataforma corre fuera de la isla; lo que pasa en la isla es proteger a las personas y sus publicaciones.</p>
+  <div class="grid" style="grid-template-columns:1.25fr 1fr;flex:1;min-height:0">
+    <div class="card">
+      <h4>Estrategia por componente</h4>
+      <table class="tbl">
+        <tr><th>Componente</th><th>Estrategia</th><th class="num">RPO</th><th class="num">RTO</th></tr>
+        <tr><td>Web y CDN</td><td>Red global; sirve páginas en caché si cae el origen</td><td class="num">—</td><td class="num">minutos</td></tr>
+        <tr><td>API</td><td>2+ zonas de disponibilidad; región de respaldo lista</td><td class="num">—</td><td class="num">≤ 1 h</td></tr>
+        <tr><td>Chat</td><td>Servicio administrado multi-región; si cae, push/SMS</td><td class="num">0</td><td class="num">minutos</td></tr>
+        <tr><td>PostgreSQL</td><td>Multi-AZ + respaldo continuo + copia en otra región</td><td class="num">≤ 5 min</td><td class="num">≤ 1 h</td></tr>
+        <tr><td>Fotos</td><td>Replicación entre regiones</td><td class="num">≤ 15 min</td><td class="num">≤ 1 h</td></tr>
+        <tr><td>Búsqueda</td><td>Se reconstruye desde PostgreSQL; mientras, categorías</td><td class="num">—</td><td class="num">≤ 2 h</td></tr>
+        <tr><td>Equipo</td><td>100% remoto, accesos con MFA, guardia rotativa</td><td class="num">—</td><td class="num">—</td></tr>
+      </table>
+      <p class="note">RPO: cuántos datos se podrían perder. RTO: cuánto tarda en volver el servicio.</p>
+    </div>
+    <div class="card"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5"/></svg> Modo emergencia</h3>
+      <p class="small" style="margin-bottom:8px">Se activa cuando hay declaración de emergencia en PR:</p>
+      <ul class="ticks sm">
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Prioriza artículos esenciales: plantas, baterías, agua, placas solares.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Bloquea alzas abusivas de precio en esas categorías.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Pausa y extiende publicaciones de pueblos afectados.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Sección de artículos gratis y donaciones entre vecinos.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Avisos por SMS y página de estado.</span></li>
+      </ul></div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 20. SEGURIDAD -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Seguridad y leyes</span></div>
+  <h2 class="title">Seguridad, privacidad y cumplimiento</h2>
+  <p class="lead" style="margin-bottom:12px">Resumen orientativo para planificar. No es asesoría legal: cada punto se valida con abogado y CPA en Puerto Rico antes de lanzar.</p>
+  <table class="tbl mid">
+    <tr><th style="width:21%">Tema</th><th style="width:36%">Qué exige o qué riesgo cubre</th><th>Cómo lo resolvemos</th></tr>
+    <tr><td>Datos personales</td><td>Confidencialidad de nombre, teléfono, fecha de nacimiento, email</td><td>Cifrado en tránsito y en reposo; cifrado por campo con KMS; acceso mínimo y auditado</td></tr>
+    <tr><td>Mensajes</td><td>Privacidad del chat y evidencia en caso de estafa</td><td>Cifrados en reposo; solo se revisan si alguien reporta; retención limitada</td></tr>
+    <tr><td>Identidad (KYC)</td><td>Saber quién vende; proteger la imagen de la ID</td><td>Proveedor certificado; la ID nunca entra al perfil ni a nuestra base de datos</td></tr>
+    <tr><td>INFORM Consumers Act</td><td>Verificar vendedores de alto volumen; canal de reporte</td><td>KYC + datos de contacto verificados; botón "Reportar" en cada publicación</td></tr>
+    <tr><td>Vivienda justa</td><td>Anuncios de alquiler sin discriminación</td><td>Reglas de moderación para alquileres y guía para arrendadores</td></tr>
+    <tr><td>Pagos</td><td>Datos de tarjeta (solo al cobrar a negocios)</td><td>Formularios del procesador (PCI SAQ A); las ventas entre personas no pasan por nosotros</td></tr>
+    <tr><td>Brechas de seguridad</td><td>Ley 111-2005 de PR y leyes federales de notificación</td><td>Plan de respuesta a incidentes, auditoría y simulacros</td></tr>
+    <tr><td>Contenido</td><td>Artículos prohibidos, estafas, propiedad intelectual</td><td>Políticas claras, moderación con IA + humana, 18+ para vender</td></tr>
+    <tr><td>Cuentas</td><td>Robo de cuentas, bots, cuentas falsas</td><td>MFA, teléfono verificado, límites, WAF, detección de bots</td></tr>
+    <tr><td>Accesibilidad</td><td>ADA / WCAG 2.1 AA</td><td>Contraste, teclado, lectores de pantalla; pruebas automáticas</td></tr>
+  </table>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 21. STACK -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Tecnología</span></div>
+  <h2 class="title">Stack recomendado por fase</h2>
+  <p class="lead" style="margin-bottom:12px">TypeScript de punta a punta (el mismo lenguaje del prototipo) y servicios administrados primero: menos personas operando servidores y más construyendo producto.</p>
+  <table class="tbl mid">
+    <tr><th style="width:15%">Capa</th><th style="width:28%">MVP (meses 0–4)</th><th style="width:29%">Crecimiento (4–12)</th><th>Escala (12+)</th></tr>
+    <tr><td>Frontend</td><td>Astro con render en servidor + el diseño actual</td><td>+ app móvil (React Native / Expo)</td><td>Equipos por área; experimentos en todo</td></tr>
+    <tr><td>Backend</td><td>Node.js + TypeScript, monolito modular</td><td>Se separan mensajería, búsqueda y notificaciones</td><td>Servicios por dominio</td></tr>
+    <tr><td>Base de datos</td><td>PostgreSQL + PostGIS administrado (Neon, Supabase o RDS)</td><td>RDS/Aurora Multi-AZ + réplicas</td><td>Aurora Global</td></tr>
+    <tr><td>Búsqueda</td><td>Typesense o Meilisearch con filtro geo</td><td>OpenSearch administrado</td><td>+ modelos de ranking</td></tr>
+    <tr><td>Tiempo real</td><td>Ably, Pusher o Supabase Realtime</td><td>Igual, o WebSockets propios en AWS</td><td>Multi-región</td></tr>
+    <tr><td>Notificaciones</td><td>FCM/APNs + Twilio + Resend</td><td>+ preferencias y horarios</td><td>+ personalización</td></tr>
+    <tr><td>Fotos</td><td>Cloudflare R2 o S3 + CDN + moderación con IA</td><td>+ cola de procesamiento</td><td>Multi-región</td></tr>
+    <tr><td>Hosting</td><td>Vercel o Cloudflare</td><td>AWS (ECS Fargate) + Cloudflare</td><td>Kubernetes en 2 regiones</td></tr>
+    <tr><td>Observabilidad</td><td>Sentry + monitoreo de disponibilidad</td><td>Grafana o Datadog + OpenTelemetry</td><td>+ guardia SRE 24/7</td></tr>
+    <tr><td>Entrega</td><td>GitHub Actions (ya en uso)</td><td>+ Terraform</td><td>+ entornos por cada cambio</td></tr>
+  </table>
+  <p class="note">Las marcas son opciones de referencia, no compromisos: la regla 2 (adaptadores) permite cambiarlas.</p>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 22. COSTOS -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Inversión</span></div>
+  <h2 class="title">Costos estimados de infraestructura</h2>
+  <p class="lead" style="margin-bottom:12px">Rangos mensuales de referencia en USD (noviembre 2026). No incluyen salarios. Se deben confirmar con cotizaciones reales.</p>
+  <div class="grid" style="grid-template-columns:1.6fr 1fr;flex:1;min-height:0">
+    <table class="tbl compact" style="font-size:12.4px">
+      <tr><th>Partida</th><th class="num">MVP<br/><span style="font-weight:500">≤10k usuarios/mes</span></th><th class="num">Crecimiento<br/><span style="font-weight:500">10k–250k</span></th><th class="num">Escala<br/><span style="font-weight:500">250k+</span></th></tr>
+      <tr><td>Hosting web y API</td><td class="num">$20–80</td><td class="num">$300–1,500</td><td class="num">$4k–15k</td></tr>
+      <tr><td>Base de datos (PostGIS)</td><td class="num">$25–100</td><td class="num">$500–2,000</td><td class="num">$5k–20k</td></tr>
+      <tr><td>Búsqueda geográfica</td><td class="num">$30–100</td><td class="num">$400–1,500</td><td class="num">$3k–12k</td></tr>
+      <tr><td>Chat en tiempo real</td><td class="num">$0–50</td><td class="num">$200–1,500</td><td class="num">$3k–12k</td></tr>
+      <tr><td>Caché y colas</td><td class="num">$10–40</td><td class="num">$120–500</td><td class="num">$1.5k–6k</td></tr>
+      <tr><td>Fotos y CDN</td><td class="num">$5–30</td><td class="num">$100–600</td><td class="num">$1k–6k</td></tr>
+      <tr><td>Push, email y SMS (base)</td><td class="num">$20–60</td><td class="num">$150–800</td><td class="num">$1k–5k</td></tr>
+      <tr><td>Moderación con IA</td><td class="num">$10–50</td><td class="num">$200–1,000</td><td class="num">$2k–8k</td></tr>
+      <tr><td>Observabilidad y seguridad</td><td class="num">$0–50</td><td class="num">$300–1,500</td><td class="num">$3k–12k</td></tr>
+      <tr class="total"><td>Total aproximado</td><td class="num">$150–550</td><td class="num">$2.5k–10k</td><td class="num">$25k–90k+</td></tr>
+    </table>
+    <div class="grid" style="align-content:start;gap:10px">
+      <div class="card"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg> Costos variables</h3><ul class="ticks blue sm">
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span><strong>Verificación de ID:</strong> ≈ $1.50–$3 por persona.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span><strong>SMS:</strong> ≈ $0.01 por mensaje (códigos y avisos).</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span><strong>Cobros a negocios:</strong> ≈2.9% + 30¢ con tarjeta.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span><strong>Moderación humana:</strong> crece con los reportes.</span></li></ul></div>
+      <div class="card"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z"/></svg> Una sola vez (MVP)</h3><ul class="ticks sm">
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Legal: términos, privacidad, políticas de contenido.</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Prueba de seguridad (pentest).</span></li>
+        <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Marca registrada y cuentas de negocio.</span></li></ul></div>
+    </div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 23. EQUIPO -->
+<section class="slide big">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Equipo</span></div>
+  <h2 class="title">El equipo que hace falta</h2>
+  <p class="lead" style="margin-bottom:12px">En un marketplace entre personas, la moderación y la confianza son trabajo diario desde el primer día, no algo que se agrega después.</p>
+  <div class="grid g3 fill">
+    <div class="card bar-az"><span class="pill az">MVP · 3–5 personas</span><ul class="ticks blue sm" style="margin-top:12px">
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg> <span><strong>Líder técnico full-stack</strong> (arquitectura, chat, búsqueda)</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg> <span><strong>1–2 desarrolladores full-stack</strong></span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg> <span><strong>Diseño UX/UI</strong> (parcial)</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg> <span><strong>Moderación y soporte:</strong> los socios fundadores</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z"/></svg> <span>Externos: abogado, CPA, pentest</span></li></ul></div>
+    <div class="card bar-vd"><span class="pill vd">Crecimiento · 8–15</span><ul class="ticks sm" style="margin-top:12px">
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg> <span>+ Desarrollo móvil</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg> <span>+ Backend de tiempo real y antifraude</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg> <span>+ DevOps / SRE y QA</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg> <span>+ Equipo de moderación por turnos</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg> <span>+ Ventas a negocios (dealers, alquileres)</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg> <span>+ Marketing local y datos</span></li></ul></div>
+    <div class="card bar-rj"><span class="pill rj">Escala · 25+</span><ul class="ticks red sm" style="margin-top:12px">
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg> <span>Equipos por dominio: feed y búsqueda, mensajería, confianza y seguridad</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg> <span>Vehículos y alquileres</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg> <span>Negocios y anuncios</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg> <span>Seguridad, infraestructura y machine learning</span></li></ul></div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 24. ROADMAP -->
+<section class="slide big">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Plan</span></div>
+  <h2 class="title">Hoja de ruta por fases</h2>
+  <p class="lead" style="margin-bottom:12px">Cada fase termina con algo que se puede usar y medir. No se pasa a la siguiente sin cumplir sus metas.</p>
+  <div class="timeline">
+    <div class="card phase bar-az"><span class="when" style="color:var(--azul)">Meses 0–4</span><h3>1 · MVP real</h3><ul class="ticks blue sm">
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Cuentas, teléfono por SMS y KYC</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Publicar artículos, vehículos y alquileres</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Búsqueda por radio y feed</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Chat en tiempo real + push</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Reportar, bloquear y moderación</span></li></ul>
+      <p class="note"><strong>Meta:</strong> beta con 200–300 usuarios en 2–3 pueblos.</p></div>
+    <div class="card phase bar-vd"><span class="when" style="color:var(--verde-700)">Meses 4–12</span><h3>2 · Crecimiento</h3><ul class="ticks sm">
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Apps iOS y Android</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Ofertas en el chat y alertas</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Antifraude en el chat</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Destacados pagados</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Planes para negocios</span></li></ul>
+      <p class="note"><strong>Meta:</strong> lanzamiento en toda la isla.</p></div>
+    <div class="card phase bar-am"><span class="when" style="color:var(--amarillo-700)">Meses 12–24</span><h3>3 · Escala</h3><ul class="ticks sm">
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Anuncios locales</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Pago protegido + envío opcional</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Historial de vehículos (VIN)</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Alquileres verificados</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Recomendaciones con ML</span></li></ul>
+      <p class="note"><strong>Meta:</strong> el marketplace de referencia en PR.</p></div>
+    <div class="card phase bar-rj"><span class="when" style="color:var(--rojito-700)">Meses 24+</span><h3>4 · Expansión</h3><ul class="ticks red sm">
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Tiendas para pymes con catálogo</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Servicios (técnicos, mudanzas)</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Diáspora boricua en EE. UU.</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Otras islas del Caribe</span></li></ul>
+      <p class="note"><strong>Meta:</strong> ecosistema local propio.</p></div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 25. MÉTRICAS -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Métricas</span></div>
+  <h2 class="title">Cómo sabremos que va bien</h2>
+  <p class="lead" style="margin-bottom:12px">Un tablero único, revisado cada semana por los socios. En un marketplace local, lo más importante es que las publicaciones reciban mensajes rápido.</p>
+  <div class="grid g2 fill">
+    <div class="card"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 0 0-.12-1.03l-2.268-9.64a3.375 3.375 0 0 0-3.285-2.602H7.923a3.375 3.375 0 0 0-3.285 2.602l-2.268 9.64a4.5 4.5 0 0 0-.12 1.03v.228m19.5 0a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3m19.5 0a3 3 0 0 0-3-3H5.25a3 3 0 0 0-3 3m16.5 0h.008v.008h-.008v-.008Zm-3 0h.008v.008h-.008v-.008Z"/></svg> Técnicas (SLOs)</h3>
+      <div class="metric"><span>Disponibilidad mensual</span><b>≥ 99.9%</b></div>
+      <div class="metric"><span>API p95</span><b>&lt; 300 ms</b></div>
+      <div class="metric"><span>Búsqueda con radio p95</span><b>&lt; 200 ms</b></div>
+      <div class="metric"><span>Mensaje entregado p95</span><b>&lt; 1 s</b></div>
+      <div class="metric"><span>Carga en celular (LCP)</span><b>&lt; 2.5 s</b></div>
+      <div class="metric"><span>RPO / RTO</span><b>5 min / 1 h</b></div>
+      <div class="metric"><span>Despliegues</span><b>diarios</b></div>
+    </div>
+    <div class="card"><h3><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605"/></svg> Negocio (KPIs)</h3>
+      <div class="metric"><span>Publicaciones con un mensaje en 24 h</span><b>&gt; 60%</b></div>
+      <div class="metric"><span>Tiempo hasta el primer mensaje</span><b>&lt; 2 h</b></div>
+      <div class="metric"><span>Vendedores que responden</span><b>&gt; 80%</b></div>
+      <div class="metric"><span>Publicaciones vendidas en 7 días</span><b>↑ mes a mes</b></div>
+      <div class="metric"><span>Usuarios activos semanales</span><b>↑ mes a mes</b></div>
+      <div class="metric"><span>Reportes de estafa / 1,000 chats</span><b>&lt; 2</b></div>
+      <div class="metric"><span>Ingresos por destacados y planes</span><b>↑ mes a mes</b></div>
+    </div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 26. RIESGOS -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Riesgos</span></div>
+  <h2 class="title">Riesgos y cómo los mitigamos</h2>
+  <p class="lead" style="margin-bottom:12px">El mayor reto no es técnico: es que la gente se mude de donde ya vende hoy.</p>
+  <table class="tbl mid">
+    <tr><th style="width:26%">Riesgo</th><th style="width:10%">Impacto</th><th>Mitigación</th></tr>
+    <tr><td>Competir con Facebook Marketplace (gratis y enorme)</td><td>Alto</td><td>Diferenciarse en confianza (verificación, encuentro seguro), lo local (CESCO, alquileres verificados, sinónimos boricuas), soporte en español y cero ruido de red social</td></tr>
+    <tr><td>El huevo y la gallina: pocas publicaciones al inicio</td><td>Alto</td><td>Sembrar oferta antes del lanzamiento: dealers, administradores de alquileres, artesanos y vendedores activos de grupos; publicar en 30 segundos; enfocarse en 2–3 pueblos</td></tr>
+    <tr><td>Estafas en el chat</td><td>Alto</td><td>Regla 1: verificación, detector de estafas, avisos, límites a cuentas nuevas, reportar y bloquear</td></tr>
+    <tr><td>Moderación costosa</td><td>Medio</td><td>IA primero y humanos para los casos dudosos; límites por cuenta; reglas claras de contenido</td></tr>
+    <tr><td>Huracanes y apagones</td><td>Alto</td><td>Regla 4: nube fuera de la isla, multi-zona, modo emergencia, equipo remoto</td></tr>
+    <tr><td>Regulación (INFORM, vivienda justa, privacidad)</td><td>Medio</td><td>Abogado desde el día 1; no tocar el dinero entre personas en el MVP; políticas y reportes</td></tr>
+    <tr><td>Costos de nube y de SMS</td><td>Medio</td><td>Servicios administrados, push antes que SMS, presupuestos y alertas mensuales</td></tr>
+    <tr><td>Fuga de datos personales</td><td>Alto</td><td>Cifrado por campo, mínimo de datos, auditoría, pentest, plan de incidentes</td></tr>
+  </table>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 27. 90 DÍAS -->
+<section class="slide big">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Próximos pasos</span></div>
+  <h2 class="title">Los próximos 90 días</h2>
+  <p class="lead" style="margin-bottom:12px">De prototipo a beta cerrada con vecinos reales.</p>
+  <div class="grid g3 fill">
+    <div class="card bar-az"><span class="pill az">Días 1–30 · Bases</span><ul class="ticks blue sm" style="margin-top:12px">
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Elegir proveedores: auth, KYC, tiempo real, push/SMS, búsqueda</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Constituir la empresa; abogado: términos, privacidad, INFORM, vivienda justa</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Diseñar la API y el modelo de datos</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Backend base e inicio de sesión real</span></li></ul></div>
+    <div class="card bar-vd"><span class="pill vd">Días 31–60 · Núcleo</span><ul class="ticks sm" style="margin-top:12px">
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Publicar con fotos en la nube y moderación</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Búsqueda por radio con sinónimos boricuas</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Chat en tiempo real + push</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>KYC real y panel de moderación</span></li></ul></div>
+    <div class="card bar-rj"><span class="pill rj">Días 61–90 · Beta</span><ul class="ticks red sm" style="margin-top:12px">
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Sembrar 30–50 vendedores (dealers, alquileres, artesanos)</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Beta con 200–300 usuarios en 2–3 pueblos</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Pentest y primer simulacro de recuperación</span></li>
+      <li><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> <span>Medir tiempo al primer mensaje y reportes</span></li></ul></div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 28. APÉNDICE A -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Apéndice A · Para el equipo técnico</span></div>
+  <h2 class="title">Eventos de dominio</h2>
+  <p class="lead" style="margin-bottom:12px">Lo que publica cada módulo en el bus y quién reacciona. Así se agregan funciones sin tocar el código que ya funciona (regla 2).</p>
+  <table class="tbl">
+    <tr><th style="width:26%">Evento</th><th style="width:15%">Lo publica</th><th>Quién reacciona</th></tr>
+    <tr><td class="mono">identidad.verificada</td><td>Cuentas</td><td>Publicaciones (permite vender), reputación (insignia), antifraude</td></tr>
+    <tr><td class="mono">publicacion.creada / actualizada</td><td>Publicaciones</td><td>Búsqueda (indexar), moderación, seguidores (aviso), guardados (bajó de precio)</td></tr>
+    <tr><td class="mono">publicacion.vendida / expirada</td><td>Publicaciones</td><td>Búsqueda (quitar), notificaciones (renovar), reputación (pedir review)</td></tr>
+    <tr><td class="mono">mensaje.enviado</td><td>Mensajería</td><td>Notificaciones (push/SMS), antifraude (patrones de estafa), contadores sin leer</td></tr>
+    <tr><td class="mono">oferta.hecha / aceptada</td><td>Ofertas</td><td>Mensajería (tarjeta en el chat), notificaciones, analítica</td></tr>
+    <tr><td class="mono">encuentro.confirmado</td><td>Mensajería</td><td>Reputación (habilita reviews de ambos lados), analítica</td></tr>
+    <tr><td class="mono">reporte.creado</td><td>Moderación</td><td>Cola de revisión, antifraude, ocultar si se pasa un umbral</td></tr>
+    <tr><td class="mono">usuario.bloqueado</td><td>Cuentas</td><td>Mensajería (cierra chats), búsqueda (oculta publicaciones)</td></tr>
+    <tr><td class="mono">emergencia.activada</td><td>Backoffice</td><td>Feed (esenciales), publicaciones (pausa por pueblo), precios (tope), SMS</td></tr>
+  </table>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 29. APÉNDICE B -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Apéndice B · Para el equipo técnico</span></div>
+  <h2 class="title">API principal (v1)</h2>
+  <p class="lead" style="margin-bottom:12px">Reemplaza las funciones de <code>src/scripts/store.ts</code> del prototipo: misma forma de datos, ahora en el servidor.</p>
+  <div class="grid g2 fill">
+    <div class="card" style="padding:12px 16px">
+      <h4>Cuentas y perfil</h4>
+      <div class="ep"><span class="verb POST">POST</span><span class="mono">/v1/auth/registro · /sesion · /telefono</span></div>
+      <div class="ep"><span class="verb GET">GET</span><span class="mono">/v1/me/perfil · PATCH para editar</span></div>
+      <div class="ep"><span class="verb GET">GET</span><span class="mono">/v1/me/privado <span class="small">(exige MFA reciente)</span></span></div>
+      <div class="ep"><span class="verb POST">POST</span><span class="mono">/v1/me/verificacion <span class="small">(abre sesión KYC)</span></span></div>
+      <div class="ep"><span class="verb PUT">PUT</span><span class="mono">/v1/me/ubicacion <span class="small">(pueblo, radio)</span></span></div>
+      <h4 style="margin-top:12px">Publicaciones</h4>
+      <div class="ep"><span class="verb GET">GET</span><span class="mono">/v1/feed?pueblo=&amp;radio=</span></div>
+      <div class="ep"><span class="verb GET">GET</span><span class="mono">/v1/buscar?q=&amp;radio=&amp;categoria=&amp;gratis=&amp;dias=</span></div>
+      <div class="ep"><span class="verb POST">POST</span><span class="mono">/v1/publicaciones · /{id}/fotos</span></div>
+      <div class="ep"><span class="verb PATCH">PATCH</span><span class="mono">/v1/publicaciones/{id} <span class="small">(vendida, renovar)</span></span></div>
+      <div class="ep"><span class="verb PUT">PUT</span><span class="mono">/v1/guardados/{id}</span></div>
+    </div>
+    <div class="card" style="padding:12px 16px">
+      <h4>Mensajes</h4>
+      <div class="ep"><span class="verb GET">GET</span><span class="mono">/v1/conversaciones?rol=comprando|vendiendo</span></div>
+      <div class="ep"><span class="verb POST">POST</span><span class="mono">/v1/publicaciones/{id}/conversacion</span></div>
+      <div class="ep"><span class="verb POST">POST</span><span class="mono">/v1/conversaciones/{id}/mensajes</span></div>
+      <div class="ep"><span class="verb POST">POST</span><span class="mono">/v1/conversaciones/{id}/ofertas</span></div>
+      <div class="ep"><span class="verb WS">WS</span><span class="mono">/v1/tiempo-real <span class="small">(mensajes, "escribiendo…")</span></span></div>
+      <h4 style="margin-top:12px">Comunidad y seguridad</h4>
+      <div class="ep"><span class="verb PUT">PUT</span><span class="mono">/v1/vendedores/{id}/seguir</span></div>
+      <div class="ep"><span class="verb POST">POST</span><span class="mono">/v1/reviews · /v1/reportes</span></div>
+      <div class="ep"><span class="verb POST">POST</span><span class="mono">/v1/usuarios/{id}/bloquear</span></div>
+      <div class="ep"><span class="verb GET">GET</span><span class="mono">/v1/notificaciones</span></div>
+      <div class="ep"><span class="verb POST">POST</span><span class="mono">/v1/webhooks/kyc · /moderacion · /sms</span></div>
+    </div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 30. GLOSARIO -->
+<section class="slide">
+  <div class="top"><span class="brand"><b class="c1">Plaza</b> <b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span><span class="section">Glosario</span></div>
+  <h2 class="title">Glosario</h2>
+  <p class="lead" style="margin-bottom:12px">Los términos técnicos de este documento, en palabras sencillas.</p>
+  <div class="card fill">
+    <div class="two-col-list" style="font-size:15px;line-height:1.45">
+      <p style="margin-bottom:8px"><strong>API:</strong> la "puerta" por la que la web, la app y otros sistemas piden o envían datos.</p>
+      <p style="margin-bottom:8px"><strong>Tiempo real / WebSockets:</strong> conexión abierta para que los mensajes lleguen al instante.</p>
+      <p style="margin-bottom:8px"><strong>Push:</strong> aviso que aparece en el celular aunque la app esté cerrada.</p>
+      <p style="margin-bottom:8px"><strong>Búsqueda geográfica:</strong> encontrar publicaciones dentro de un radio en millas.</p>
+      <p style="margin-bottom:8px"><strong>PostGIS:</strong> extensión de PostgreSQL para guardar ubicaciones y calcular distancias.</p>
+      <p style="margin-bottom:8px"><strong>KYC:</strong> "conoce a tu cliente"; verificar que una persona es quien dice ser.</p>
+      <p style="margin-bottom:8px"><strong>Moderación:</strong> revisar publicaciones, fotos y reportes para quitar lo prohibido o engañoso.</p>
+      <p style="margin-bottom:8px"><strong>Destacado:</strong> pago para que una publicación aparezca más arriba por unos días.</p>
+      <p style="margin-bottom:8px"><strong>CDN:</strong> red de servidores que entrega fotos y páginas desde el punto más cercano.</p>
+      <p style="margin-bottom:8px"><strong>Monolito modular:</strong> un solo sistema dividido por dentro en partes independientes.</p>
+      <p style="margin-bottom:8px"><strong>Evento de dominio:</strong> aviso de que algo pasó ("llegó un mensaje") para que otras partes reaccionen.</p>
+      <p style="margin-bottom:8px"><strong>Zona de disponibilidad:</strong> centro de datos separado dentro de una región de la nube.</p>
+      <p style="margin-bottom:8px"><strong>SLO:</strong> objetivo medible de calidad del servicio (ej. 99.9% disponible).</p>
+      <p style="margin-bottom:8px"><strong>p95:</strong> el 95% de las respuestas son más rápidas que este tiempo.</p>
+      <p style="margin-bottom:8px"><strong>RPO / RTO:</strong> datos que se podrían perder / tiempo para volver a funcionar.</p>
+      <p style="margin-bottom:8px"><strong>Usuarios activos semanales:</strong> personas distintas que usan la app en una semana.</p>
+      <p style="margin-bottom:8px"><strong>IVU:</strong> Impuesto sobre Ventas y Uso de Puerto Rico (11.5% en general).</p>
+      <p style="margin-bottom:8px"><strong>CI/CD:</strong> pruebas y despliegues automáticos de cada cambio.</p>
+      <p style="margin-bottom:8px"><strong>A/B:</strong> mostrar dos versiones a grupos distintos y medir cuál funciona mejor.</p>
+      <p style="margin-bottom:8px"><strong>PWA:</strong> web que se instala como app y funciona con mala señal.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Infraestructura y arquitectura</span></div>
+</section>
+
+<!-- 31. CIERRE -->
+<section class="slide cover end">
+  <div class="logo" aria-label="Plaza 787">
+    <span class="r1" style="font-size:72px"><b class="c1">P</b><b class="c2">L</b><b class="c3">a</b><b class="c4">Z</b><b class="c1">a</b></span>
+    <span class="r2" style="font-size:92px"><b class="c2">7</b><b class="c3">8</b><b class="c4">7</b></span>
+  </div>
+  <p class="quote" style="margin-top:28px;max-width:640px">Confianza primero, todo es una API, escala sin reescribir, a prueba de huracanes, y medir todo.</p>
+  <p class="sub">Con estas cinco reglas, Plaza 787 puede empezar en dos o tres pueblos y crecer hasta ser el marketplace de toda la isla, sin perder lo que la hace boricua.</p>
+  <div class="tiles" style="top:150px;width:400px">
+    <div class="tile t-az"><img src="../../public/img/productos/carro.svg" alt="" /></div>
+    <div class="tile t-vd"><img src="../../public/img/productos/casa.svg" alt="" /></div>
+    <div class="tile t-rj"><img src="../../public/img/productos/pique.svg" alt="" /></div>
+    <div class="tile t-am"><img src="../../public/img/productos/cajas.svg" alt="" /></div>
+    <div class="tile t-vd"><img src="../../public/img/productos/scooter.svg" alt="" /></div>
+    <div class="tile t-az"><img src="../../public/img/productos/gafas.svg" alt="" /></div>
+  </div>
+  <div class="foot"><span>Plaza 787 · Compra y vende en Puerto Rico · Documento de trabajo v2.0, noviembre 2026</span></div>
+</section>
+
+</body>
+</html>

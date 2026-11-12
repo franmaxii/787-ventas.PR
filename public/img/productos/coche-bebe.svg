@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+<defs><filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter><linearGradient id="cb2" x1="0" y1="0" x2="0" y2="1"><stop offset="0.00" stop-color="#22b3cf"/><stop offset="0.50" stop-color="#0d90ab"/><stop offset="1.00" stop-color="#0b6f88"/></linearGradient><linearGradient id="hood" x1="0" y1="0" x2="1" y2="1"><stop offset="0.00" stop-color="#0b6f88"/><stop offset="1.00" stop-color="#0a5568"/></linearGradient></defs>
+
+<ellipse cx="122" cy="214" rx="86" ry="9" fill="#0f172a" opacity=".22" filter="url(#sh)"/>
+<path d="M98 168L76 196M150 168L170 196" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+<path d="M186 120L212 76" stroke="#334155" stroke-width="7" stroke-linecap="round"/>
+<rect x="200" y="66" width="28" height="12" rx="6" fill="#1e293b" transform="rotate(-30 214 72)"/>
+<path d="M48 120H192C192 154 164 176 120 176C76 176 48 154 48 120Z" fill="url(#cb2)"/>
+<path d="M58 132H182" stroke="#fff" stroke-opacity=".55" stroke-width="5" stroke-linecap="round"/>
+<path d="M50 120A70 70 0 0 1 120 50V120Z" fill="url(#hood)"/>
+<path d="M68 120A52 52 0 0 1 120 68M86 120A34 34 0 0 1 120 86" stroke="#fff" stroke-opacity=".35" stroke-width="3"/>
+<circle cx="150" cy="148" r="7" fill="#ebb549"/>
+<circle cx="76" cy="196" r="18" fill="#1f2937"/><path d="M76 196L89.0 196.0" stroke="#94a3b8" stroke-width="2"/><path d="M76 196L85.2 205.2" stroke="#94a3b8" stroke-width="2"/><path d="M76 196L76.0 209.0" stroke="#94a3b8" stroke-width="2"/><path d="M76 196L66.8 205.2" stroke="#94a3b8" stroke-width="2"/><path d="M76 196L63.0 196.0" stroke="#94a3b8" stroke-width="2"/><path d="M76 196L66.8 186.8" stroke="#94a3b8" stroke-width="2"/><path d="M76 196L76.0 183.0" stroke="#94a3b8" stroke-width="2"/><path d="M76 196L85.2 186.8" stroke="#94a3b8" stroke-width="2"/><circle cx="76" cy="196" r="5" fill="#e5e7eb"/>
+<circle cx="170" cy="196" r="18" fill="#1f2937"/><path d="M170 196L183.0 196.0" stroke="#94a3b8" stroke-width="2"/><path d="M170 196L179.2 205.2" stroke="#94a3b8" stroke-width="2"/><path d="M170 196L170.0 209.0" stroke="#94a3b8" stroke-width="2"/><path d="M170 196L160.8 205.2" stroke="#94a3b8" stroke-width="2"/><path d="M170 196L157.0 196.0" stroke="#94a3b8" stroke-width="2"/><path d="M170 196L160.8 186.8" stroke="#94a3b8" stroke-width="2"/><path d="M170 196L170.0 183.0" stroke="#94a3b8" stroke-width="2"/><path d="M170 196L179.2 186.8" stroke="#94a3b8" stroke-width="2"/><circle cx="170" cy="196" r="5" fill="#e5e7eb"/>
+
+</svg>

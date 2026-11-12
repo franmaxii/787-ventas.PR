@@ -3,80 +3,120 @@ import { url } from '../lib/url';
 import Layout from '../layouts/Layout.astro';
 import HeroVideo from '../components/HeroVideo.astro';
 import SearchBar from '../components/SearchBar.astro';
+import LocationChip from '../components/LocationChip.astro';
 import CategoryRow from '../components/CategoryRow.astro';
 import ProductGrid from '../components/ProductGrid.astro';
 import Icon from '../components/Icon.astro';
 import { activeProducts as products } from '../data/products';
-import { discountPct } from '../lib/format';
+import { getCategory } from '../data/categories';
 
-const featured = products.filter((p) => p.featured);
-const deals = products
-  .filter((p) => discountPct(p.price, p.originalPrice) > 0)
-  .sort((a, b) => discountPct(b.price, b.originalPrice) - discountPct(a.price, a.originalPrice));
-const local = products.filter((p) => p.category === 'hecho-en-pr' || p.category === 'sabores');
+// "Selecciones de hoy": todo lo activo; el navegador lo ordena por cercanía.
+const picks = [...products].sort((a, b) => Number(!!b.featured) - Number(!!a.featured) || a.daysAgo - b.daysAgo);
+const drops = products.filter((p) => p.originalPrice && p.originalPrice > p.price);
+const local = products.filter((p) => p.local);
+
+// Carriles por categoría (en el orden en que salen en la portada)
+const lane = (slug: string) => ({
+  slug,
+  name: getCategory(slug)!.name,
+  items: products.filter((p) => p.category === slug),
+});
+const lanesTop = ['vehiculos', 'alquileres', 'venta-bienes-raices'].map(lane);
+const lanesBottom = ['donaciones', 'renta-articulos'].map(lane);
 ---
 
 <Layout>
   <HeroVideo />
   <SearchBar />
+  <LocationChip />
   <CategoryRow />
 
   <div class="container">
     <section class="section">
       <div class="section__head">
-        <h2 class="section__title">Recomendados para ti</h2>
-        <a class="section__link" href={url('/buscar')}>Ver todo</a>
+        <h2 class="section__title">Selecciones de hoy</h2>
+        <a class="section__link" href={url('/buscar?orden=cerca')}>Cerca de ti</a>
       </div>
-      <ProductGrid products={featured} />
+      <p class="sub">Ordenadas por cercanía a <span data-location-label>tu pueblo</span>.</p>
+      <ProductGrid products={picks.slice(0, 12)} filterable id="picks" />
     </section>
 
-    <section class="section">
-      <div class="section__head">
-        <h2 class="section__title">Ofertas del día</h2>
-        <a class="section__link" href={url('/buscar?ofertas=1')}>Ver ofertas</a>
-      </div>
-      <ProductGrid products={deals} scroller />
-    </section>
+    {
+      lanesTop.map((l) => (
+        <section class="section">
+          <div class="section__head">
+            <h2 class="section__title">{l.name}</h2>
+            <a class="section__link" href={url(`/categoria/${l.slug}`)}>Ver todo</a>
+          </div>
+          <ProductGrid products={l.items} scroller />
+        </section>
+      ))
+    }
 
     <section class="sell-cta">
       <div>
         <h2>¿Tienes algo que vender?</h2>
-        <p>Publica gratis en minutos y véndele a toda la isla.</p>
+        <p>Publica gratis en un minuto. Los interesados te escriben y se encuentran en tu pueblo.</p>
       </div>
       <a href={url('/vender')} class="btn btn--white">
         <Icon name="camera" size={20} /> Vender ahora
       </a>
     </section>
 
+    {
+      lanesBottom.map((l) => (
+        <section class="section">
+          <div class="section__head">
+            <h2 class="section__title">{l.name}</h2>
+            <a class="section__link" href={url(`/categoria/${l.slug}`)}>Ver todo</a>
+          </div>
+          <ProductGrid products={l.items} scroller />
+        </section>
+      ))
+    }
+
+    <section class="section">
+      <div class="section__head">
+        <h2 class="section__title">Bajaron de precio</h2>
+        <a class="section__link" href={url('/buscar?baja=1')}>Ver todo</a>
+      </div>
+      <ProductGrid products={drops} scroller />
+    </section>
+
     <section class="section">
       <div class="section__head">
         <h2 class="section__title">Hecho en Puerto Rico</h2>
-        <a class="section__link" href={url('/categoria/hecho-en-pr')}>Ver más</a>
       </div>
       <ProductGrid products={local} />
     </section>
 
     <ul class="trust">
       <li>
-        <span class="trust__icon"><Icon name="shield" /></span>
-        <strong>Compra protegida</strong>
-        <span>Si no llega, te devolvemos el dinero.</span>
+        <span class="trust__icon"><Icon name="verified" /></span>
+        <strong>Perfiles verificados</strong>
+        <span>Quien vende confirmó su identidad.</span>
       </li>
       <li>
-        <span class="trust__icon"><Icon name="card" /></span>
-        <strong>Paga como quieras</strong>
-        <span>ATH Móvil, tarjeta o en efectivo al recoger.</span>
+        <span class="trust__icon"><Icon name="chat" /></span>
+        <strong>Todo por Mensajes</strong>
+        <span>No tienes que dar tu número para coordinar.</span>
       </li>
       <li>
-        <span class="trust__icon"><Icon name="truck" /></span>
-        <strong>Envíos en toda la isla</strong>
-        <span>De Aguadilla a Fajardo, Vieques y Culebra.</span>
+        <span class="trust__icon"><Icon name="pin" /></span>
+        <strong>Encuentro seguro</strong>
+        <span>Lugar público, de día, y pagas al recibir.</span>
       </li>
     </ul>
   </div>
 </Layout>
 
 <style>
+  .sub {
+    margin: -8px 0 14px;
+    color: var(--tinta-3);
+    font-size: 0.9rem;
+  }
+
   .sell-cta {
     display: flex;
     flex-wrap: wrap;
@@ -139,3 +179,22 @@ const local = products.filter((p) => p.category === 'hecho-en-pr' || p.category 
     color: var(--tinta-2);
   }
 </style>
+
+<script>
+  import { milesBetween } from '../data/pueblos';
+  import { location, onChange } from '../scripts/store';
+
+  // Ordena "Selecciones de hoy" por cercanía al pueblo elegido.
+  const grid = document.getElementById('picks');
+  function sortByDistance() {
+    if (!grid) return;
+    const town = location.get().town;
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>('[data-id]'));
+    cards
+      .map((c) => ({ c, d: milesBetween(town, c.dataset.town ?? '') }))
+      .sort((a, b) => a.d - b.d)
+      .forEach(({ c }) => grid.appendChild(c));
+  }
+  sortByDistance();
+  onChange(sortByDistance);
+</script>

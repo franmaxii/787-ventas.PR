@@ -1,0 +1,172 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import { url } from '../lib/url';
+import { categories } from '../data/categories';
+---
+
+<Layout title="Sobre Plaza 787" description="Plaza 787: la plaza del pueblo en tu celular. Compra, vende, alquila y regala entre vecinos de los 78 pueblos.">
+  <div class="container about">
+    <h1 class="page-title">Sobre Plaza 787</h1>
+    <p class="lead">
+      La plaza del pueblo, pero en tu celular. Un lugar para comprar, vender, alquilar y regalar entre vecinos de los
+      78 pueblos de Puerto Rico.
+    </p>
+
+    <section class="panel">
+      <h2>Cómo funciona</h2>
+      <ol class="steps">
+        <li>
+          <span class="steps__n" aria-hidden="true">1</span>
+          <div>
+            <strong>Publica gratis</strong>
+            <p>Saca fotos, pon el precio y tu pueblo. La publicación dura 30 días y la puedes renovar.</p>
+          </div>
+        </li>
+        <li>
+          <span class="steps__n" aria-hidden="true">2</span>
+          <div>
+            <strong>Conversa por Mensajes</strong>
+            <p>Los interesados te escriben dentro de la app. No tienes que dar tu número de teléfono.</p>
+          </div>
+        </li>
+        <li>
+          <span class="steps__n" aria-hidden="true">3</span>
+          <div>
+            <strong>Encuéntrense en persona</strong>
+            <p>En un lugar público y de día. Se paga al recibir, en efectivo o con ATH Móvil. Plaza 787 no toca tu dinero.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <ul class="values">
+      <li class="panel">
+        <span class="values__icon"><Icon name="verified" size={26} /></span>
+        <strong>Perfiles verificados</strong>
+        <p>Quien vende confirmó su identidad. La foto de la ID se usa solo para verificarte y no se guarda en tu perfil.</p>
+      </li>
+      <li class="panel">
+        <span class="values__icon"><Icon name="lock" size={26} /></span>
+        <strong>Tu información es tuya</strong>
+        <p>En tu perfil solo se ve tu foto, tu usuario, tu pueblo y, si quieres, tus seguidores. Tu nombre, teléfono, fecha de nacimiento y email quedan ocultos.</p>
+      </li>
+      <li class="panel">
+        <span class="values__icon"><Icon name="pin" size={26} /></span>
+        <strong>De aquí</strong>
+        <p>Buscas por pueblo y por millas, y con las palabras de aquí: guagua, mahones, zafacón, blower…</p>
+      </li>
+    </ul>
+
+    <section class="panel">
+      <h2>Lo que encuentras</h2>
+      <ul class="cats">
+        {categories.map((c) => <li><a class="chip" href={url(`/categoria/${c.slug}`)}>{c.name}</a></li>)}
+      </ul>
+    </section>
+
+    <div class="cta">
+      <a href={url('/vender')} class="btn btn--primary"><Icon name="camera" size={20} /> Vender ahora</a>
+      <a href={url('/contacto')} class="btn btn--soft"><Icon name="mail" size={20} /> Contáctanos</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .about {
+    max-width: 820px;
+    display: grid;
+    gap: 16px;
+    padding-bottom: 24px;
+  }
+
+  .about > .page-title {
+    margin-bottom: 0;
+  }
+
+  .lead {
+    margin: 0;
+    font-size: 1.12rem;
+    line-height: 1.5;
+    color: var(--tinta-2);
+  }
+
+  h2 {
+    margin: 0 0 14px;
+    font-size: 1.2rem;
+  }
+
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 14px;
+  }
+
+  .steps li {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+
+  .steps__n {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--azul);
+    color: var(--blanco);
+    font-weight: 800;
+  }
+
+  .steps p,
+  .values p {
+    margin: 4px 0 0;
+    color: var(--tinta-2);
+    line-height: 1.45;
+  }
+
+  .values {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .values__icon {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    margin-bottom: 10px;
+    border-radius: 14px;
+    background: rgba(57, 149, 82, 0.14);
+    color: var(--verde);
+  }
+
+  .cats {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .cats .chip {
+    color: var(--tinta);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+</style>

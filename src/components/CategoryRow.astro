@@ -17,11 +17,12 @@ const { active } = Astro.props;
             href={url(`/categoria/${c.slug}`)}
             class:list={['cat', { 'is-active': active === c.slug }]}
             aria-current={active === c.slug ? 'page' : undefined}
+            title={c.name}
           >
             <span class="cat__circle" aria-hidden="true">
               <img src={url(c.image)} alt="" width="48" height="48" loading="lazy" />
             </span>
-            <span class="cat__name">{c.name}</span>
+            <span class="cat__name">{c.short}</span>
           </a>
         </li>
       ))

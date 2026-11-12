@@ -11,16 +11,16 @@ import { activeProducts as products } from '../data/products';
     <h1 class="page-title">Favoritos</h1>
     <p class="page-sub" data-fav-count></p>
 
-    <!-- Se renderiza todo el catálogo y el navegador muestra solo lo guardado. -->
+    <!-- Se renderiza todo el catálogo y el navegador muestra solo los favoritos. -->
     <div data-fav-grid hidden>
       <ProductGrid products={products} filterable id="fav-grid" />
     </div>
 
     <div class="empty" data-fav-empty hidden>
       <span class="empty__icon"><Icon name="heart" size={40} /></span>
-      <h2>Todavía no tienes favoritos</h2>
-      <p>Toca el corazón en cualquier producto para guardarlo aquí.</p>
-      <a href={url('/')} class="btn btn--primary">Explorar productos</a>
+      <h2>Aún no tienes favoritos</h2>
+      <p>Toca el corazón en cualquier publicación para guardarla aquí. Te avisamos si baja de precio.</p>
+      <a href={url('/')} class="btn btn--primary">Ver publicaciones</a>
     </div>
   </div>
 </Layout>
@@ -46,7 +46,7 @@ import { activeProducts as products } from '../data/products';
     });
     wrap.hidden = ids.length === 0;
     empty.hidden = ids.length > 0;
-    count.textContent = ids.length ? `${ids.length} ${ids.length === 1 ? 'producto guardado' : 'productos guardados'}` : '';
+    count.textContent = ids.length ? `${ids.length} ${ids.length === 1 ? 'favorito' : 'favoritos'}` : '';
   }
 
   render();

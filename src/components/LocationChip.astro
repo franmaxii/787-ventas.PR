@@ -1,0 +1,35 @@
+---
+import Icon from './Icon.astro';
+---
+
+<div class="loc-wrap">
+  <button type="button" class="loc glass-strong" data-location-open aria-haspopup="dialog">
+    <Icon name="pin" solid size={18} />
+    <span data-location-label>San Juan · 25 mi</span>
+    <Icon name="chevronRight" size={16} stroke={2.2} />
+  </button>
+</div>
+
+<style>
+  .loc-wrap {
+    max-width: var(--max);
+    margin-inline: auto;
+    padding: 10px var(--gutter) 0;
+  }
+
+  .loc {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 38px;
+    padding: 0 14px 0 12px;
+    border-radius: 999px;
+    color: var(--tinta);
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  .loc :global(.icon:first-child) {
+    color: var(--rojito);
+  }
+</style>

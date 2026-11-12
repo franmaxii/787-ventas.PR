@@ -1,0 +1,267 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import { url } from '../lib/url';
+
+const sections = [
+  { id: 'resumen', title: 'En resumen' },
+  { id: 'publicar', title: 'Qué puedes publicar' },
+  { id: 'ventas', title: 'Ventas entre personas' },
+  { id: 'categorias', title: 'Vehículos, bienes raíces y rentas' },
+  { id: 'privacidad', title: 'Privacidad' },
+  { id: 'seguridad', title: 'Seguridad y reportes' },
+];
+---
+
+<Layout title="Términos y privacidad" description="Reglas de Plaza 787 y cómo cuidamos tu información personal.">
+  <div class="container legal">
+    <h1 class="page-title">Términos y privacidad</h1>
+    <p class="draft">
+      <Icon name="document" size={20} />
+      <span>
+        <strong>Borrador del prototipo.</strong> Antes de lanzar, un abogado en Puerto Rico debe revisar estos términos y la
+        política de privacidad. En este prototipo todo lo que escribes se guarda solo en tu navegador.
+      </span>
+    </p>
+
+    <nav class="toc panel" aria-label="Contenido">
+      <ol>
+        {sections.map((s) => <li><a href={`#${s.id}`}>{s.title}</a></li>)}
+      </ol>
+    </nav>
+
+    <section id="resumen" class="panel">
+      <h2>En resumen</h2>
+      <ul>
+        <li>Publicar en Plaza 787 es gratis. Para vender necesitas un perfil con identidad verificada y tener 18 años o más.</li>
+        <li>Plaza 787 conecta a quien vende con quien compra. No es parte de la venta ni procesa los pagos.</li>
+        <li>Tu información personal no se ve en tu perfil y la foto de tu ID no se guarda en él.</li>
+      </ul>
+    </section>
+
+    <section id="publicar" class="panel">
+      <h2>Qué puedes publicar</h2>
+      <p>Artículos que son tuyos y que puedes vender legalmente en Puerto Rico, con fotos reales y un precio honesto. No se permite:</p>
+      <ul class="cols">
+        <li>Armas de fuego, municiones y explosivos</li>
+        <li>Drogas, medicamentos con receta, tabaco y vapes</li>
+        <li>Bebidas alcohólicas</li>
+        <li>Animales vivos</li>
+        <li>Artículos robados, falsificados o retirados del mercado</li>
+        <li>Documentos, identificaciones, tarjetas de regalo o dinero</li>
+        <li>Contenido para adultos</li>
+        <li>Préstamos, criptomonedas y esquemas de “invierte y gana”</li>
+      </ul>
+      <p>Podemos quitar publicaciones que rompan estas reglas y suspender perfiles que lo hagan varias veces.</p>
+    </section>
+
+    <section id="ventas" class="panel">
+      <h2>Ventas entre personas</h2>
+      <p>
+        Quien vende y quien compra acuerdan el precio, la entrega y el pago por Mensajes. Plaza 787 no cobra comisión, no
+        guarda tu dinero y no garantiza la condición de lo que se vende. Revisa el artículo antes de pagar.
+      </p>
+    </section>
+
+    <section id="categorias" class="panel">
+      <h2>Vehículos, bienes raíces y rentas</h2>
+      <dl class="rules">
+        <div>
+          <dt>Autos y piezas</dt>
+          <dd>El traspaso se hace en CESCO. Pide ver el título y la licencia antes de pagar.</dd>
+        </div>
+        <div>
+          <dt>Alquiler y venta de bienes raíces</dt>
+          <dd>
+            Se aplica la Ley federal de Vivienda Justa: no se puede discriminar por raza, color, religión, sexo, origen
+            nacional, discapacidad ni por tener hijos. Los corredores deben indicar su licencia.
+          </dd>
+        </div>
+        <div>
+          <dt>Renta de artículos</dt>
+          <dd>Pongan por escrito las fechas, el depósito y el estado del artículo al entregarlo y al devolverlo.</dd>
+        </div>
+        <div>
+          <dt>Donaciones</dt>
+          <dd>Lo que se regala tiene que ser gratis de verdad: no se puede pedir dinero por “separarlo”.</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section id="privacidad" class="panel">
+      <h2>Privacidad</h2>
+      <div class="table">
+        <table>
+          <thead>
+            <tr><th scope="col">Dato</th><th scope="col">¿Quién lo ve?</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Foto, nombre de usuario y pueblo</td><td><span class="tag tag--pub">Público</span></td></tr>
+            <tr><td>Seguidores</td><td><span class="tag tag--pub">Público si lo activas</span></td></tr>
+            <tr><td>Nombre de pila, teléfono, fecha de nacimiento y email</td><td><span class="tag tag--priv">Solo tú</span></td></tr>
+            <tr><td>Foto de tu ID</td><td><span class="tag tag--priv">No se guarda en tu perfil</span></td></tr>
+            <tr><td>Tu ubicación</td><td><span class="tag tag--priv">Solo el pueblo, nunca tu dirección</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>La foto de tu ID se usa una sola vez para confirmar que eres tú. En la versión final la revisará un proveedor de verificación y no quedará registrada en tu perfil.</li>
+        <li>Tus mensajes los ven solo tú y la otra persona. Los revisamos únicamente si alguien los reporta.</li>
+        <li>No vendemos tu información. Puedes ver, corregir o borrar tus datos cuando quieras.</li>
+      </ul>
+    </section>
+
+    <section id="seguridad" class="panel">
+      <h2>Seguridad y reportes</h2>
+      <ul>
+        <li>Encuéntrense en un lugar público y de día. Nunca pagues por adelantado ni compartas códigos de verificación.</li>
+        <li>Usa <strong>Reportar</strong> en cualquier publicación sospechosa. En una emergencia, llama al 911.</li>
+      </ul>
+      <p>¿Dudas sobre estas reglas? <a href={url('/contacto')}>Escríbenos</a>.</p>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .legal {
+    max-width: 820px;
+    display: grid;
+    gap: 14px;
+    padding-bottom: 24px;
+  }
+
+  .legal > .page-title {
+    margin-bottom: 0;
+  }
+
+  .draft {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin: 0;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: rgba(235, 181, 73, 0.22);
+    border: 1px solid rgba(235, 181, 73, 0.6);
+    color: var(--tinta-2);
+    line-height: 1.45;
+  }
+
+  .draft :global(.icon) {
+    flex: none;
+    margin-top: 1px;
+    color: #8a6110;
+  }
+
+  h2 {
+    margin: 0 0 10px;
+    font-size: 1.15rem;
+  }
+
+  section {
+    scroll-margin-top: 90px;
+  }
+
+  p,
+  li,
+  dd {
+    line-height: 1.5;
+    color: var(--tinta-2);
+  }
+
+  section p {
+    margin: 0 0 10px;
+  }
+
+  section p:last-child {
+    margin-bottom: 0;
+  }
+
+  ul {
+    margin: 0 0 10px;
+    padding-left: 20px;
+    display: grid;
+    gap: 6px;
+  }
+
+  ul:last-child {
+    margin-bottom: 0;
+  }
+
+  .cols {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    column-gap: 28px;
+  }
+
+  .toc ol {
+    margin: 0;
+    padding-left: 20px;
+    display: grid;
+    gap: 4px;
+  }
+
+  .toc a {
+    color: var(--azul-700, #0b6f88);
+    font-weight: 600;
+  }
+
+  .rules {
+    margin: 0;
+    display: grid;
+    gap: 12px;
+  }
+
+  .rules dt {
+    font-weight: 700;
+  }
+
+  .rules dd {
+    margin: 2px 0 0;
+  }
+
+  .table {
+    overflow-x: auto;
+    margin-bottom: 12px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+
+  th,
+  td {
+    padding: 10px 8px;
+    text-align: left;
+    border-bottom: 1px solid rgba(74, 56, 22, 0.12);
+    vertical-align: top;
+  }
+
+  th {
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--tinta-3);
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .tag--pub {
+    background: rgba(13, 144, 171, 0.14);
+    color: #08657a;
+  }
+
+  .tag--priv {
+    background: rgba(57, 149, 82, 0.16);
+    color: #23683a;
+    white-space: normal;
+  }
+</style>

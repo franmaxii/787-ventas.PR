@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+<defs><filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter><linearGradient id="sf" x1="0" y1="0" x2="0" y2="1"><stop offset="0.00" stop-color="#f87171"/><stop offset="1.00" stop-color="#dc2626"/></linearGradient></defs>
+
+<ellipse cx="120" cy="198" rx="98" ry="9" fill="#0f172a" opacity=".22" filter="url(#sh)"/>
+<rect x="46" y="170" width="8" height="18" rx="3" fill="#78350f"/><rect x="186" y="170" width="8" height="18" rx="3" fill="#78350f"/>
+<rect x="52" y="78" width="136" height="62" rx="20" fill="#b91c1c"/>
+<rect x="38" y="120" width="164" height="54" rx="16" fill="url(#sf)"/>
+<rect x="62" y="122" width="56" height="24" rx="9" fill="#fb7185"/><rect x="122" y="122" width="56" height="24" rx="9" fill="#fb7185"/>
+<rect x="26" y="102" width="34" height="74" rx="15" fill="url(#sf)"/><rect x="180" y="102" width="34" height="74" rx="15" fill="url(#sf)"/>
+<rect x="60" y="86" width="120" height="6" rx="3" fill="#fff" opacity=".2"/>
+
+</svg>

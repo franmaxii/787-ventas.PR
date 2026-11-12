@@ -624,6 +624,80 @@ button.ltile {
   color: var(--tinta-3);
 }
 
+/* ==========================================================
+ Hojas (diálogos) de vidrio
+ ========================================================== */
+.sheet {
+  width: min(480px, calc(100% - 24px));
+  max-height: calc(100dvh - 40px);
+  margin: auto auto 12px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 28px;
+  color: var(--tinta);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.9), rgba(247, 236, 217, 0.8));
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  backdrop-filter: blur(30px) saturate(180%);
+  box-shadow: 0 30px 70px -20px rgba(0, 0, 0, 0.5);
+}
+
+@media (min-width: 720px) {
+  .sheet {
+    margin: auto;
+  }
+}
+
+.sheet[open] {
+  animation: sheet-in 0.35s var(--ease-spring);
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+}
+
+.sheet::backdrop {
+  background: rgba(28, 26, 22, 0.3);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.sheet form,
+.sheet__body {
+  padding: 22px;
+}
+
+.sheet h2 {
+  font-size: 1.3rem;
+  margin-bottom: 8px;
+}
+
+.sheet .hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.sheet__actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.sheet__list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.sheet .danger {
+  color: var(--rojito-700);
+}
+
 /* Interruptor estilo iOS */
 .switch {
   display: flex;

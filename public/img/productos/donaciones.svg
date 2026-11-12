@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+<defs><filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter><linearGradient id="ht" x1="0" y1="0" x2="0" y2="1"><stop offset="0.00" stop-color="#ff7a6f"/><stop offset="0.50" stop-color="#f64e43"/><stop offset="1.00" stop-color="#c9362c"/></linearGradient></defs>
+
+<ellipse cx="122" cy="210" rx="92" ry="9" fill="#0f172a" opacity=".22" filter="url(#sh)"/>
+<polygon points="58,122 84,103.8 188,103.8 162,122" fill="#e7c393"/><polygon points="162,122 188,103.8 188,185.8 162,204" fill="#b07a45"/><rect x="58" y="122" width="104" height="82" fill="#d4a373"/><rect x="104.0" y="122" width="12" height="18" fill="#f7ecd9" opacity=".85"/><polygon points="104.0,122 130.0,103.8 142.0,103.8 116.0,122" fill="#f7ecd9" opacity=".85"/><path d="M70 182v-12l-5 5m5-5l5 5" stroke="#7c4a1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="80" y="150" width="60" height="36" rx="6" fill="#fff" opacity=".9"/>
+<path d="M110 177.9C94.6 169.1 100.1 157 110 164.15C119.9 157 125.4 169.1 110 177.9Z" fill="#f64e43"/>
+<path d="M124 100.6C76.4 73.4 93.4 36 124 58.1C154.6 36 171.6 73.4 124 100.6Z" fill="url(#ht)"/>
+<path d="M100 58C104 50 112 46 120 48" stroke="#fff" stroke-opacity=".6" stroke-width="5" stroke-linecap="round"/>
+<path d="M186 54l4 9 9 4-9 4-4 9-4-9-9-4 9-4z" fill="#ebb549"/>
+<path d="M58 70l3 6 6 3-6 3-3 6-3-6-6-3 6-3z" fill="#fff"/>
+
+</svg>

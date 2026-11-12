@@ -3,7 +3,23 @@ import { url } from '../lib/url';
 import Icon from './Icon.astro';
 import Logo from './Logo.astro';
 import { categories } from '../data/categories';
-import { site } from '../data/site';
+
+// Marca el enlace de la página actual en el menú
+const here = Astro.url.pathname.replace(/\/$/, '');
+const current = (href: string) => (href.split('?')[0].replace(/\/$/, '') === here ? 'page' : undefined);
+
+const community = [
+  { href: url('/sobre'), icon: 'info', label: 'Sobre Plaza 787' },
+  { href: url('/terminos'), icon: 'shield', label: 'Términos y privacidad' },
+  { href: url('/contacto'), icon: 'mail', label: 'Contáctanos' },
+] as const;
+
+const mine = [
+  { href: url('/cuenta?tab=info'), label: 'Mi cuenta' },
+  { href: url('/favoritos'), label: 'Favoritos' },
+  { href: url('/mensajes'), label: 'Mis compras' },
+  { href: url('/cuenta'), label: 'Mis publicaciones' },
+];
 ---
 
 <header class="header" data-header>
@@ -14,52 +30,64 @@ import { site } from '../data/site';
 
     <Logo />
 
-    <a href={url('/carrito')} class="icon-btn glass-strong cart" aria-label="Carrito">
-      <Icon name="cart" size={28} stroke={1.9} />
-      <span class="cart__badge" data-cart-count data-empty="true" aria-hidden="true">+</span>
-      <span class="sr-only" data-cart-count-sr>vacío</span>
+    <a href={url('/favoritos')} class="icon-btn glass-strong cart" aria-label="Favoritos" title="Favoritos">
+      <Icon name="heart" size={28} stroke={1.9} />
+      <span class="cart__badge" data-saved-count hidden aria-hidden="true">0</span>
+      <span class="sr-only" data-saved-count-sr>sin favoritos</span>
     </a>
   </div>
 </header>
 
-<dialog id="menu" class="drawer" aria-label="Menú principal">
+<dialog id="menu" class="drawer" aria-labelledby="menu-title">
   <div class="drawer__head">
-    <a href={url('/cuenta')} class="drawer__me">
-      <span class="drawer__avatar" data-profile-avatar><Icon name="user" solid size={26} /></span>
-      <span>
-        <strong data-profile-greeting>¡Hola!</strong>
-        <small data-profile-sub>Crea tu perfil para vender</small>
-      </span>
-    </a>
+    <p class="drawer__title" id="menu-title">Tu Plaza</p>
     <button type="button" class="drawer__close" data-menu-close aria-label="Cerrar menú">
-      <Icon name="x" size={20} stroke={2.2} />
+      <Icon name="xCircle" size={40} stroke={1.7} />
     </button>
   </div>
 
-  <nav class="drawer__nav" aria-label="Secciones">
-    <a href={url('/')}><Icon name="home" /> Inicio</a>
-    <a href={url('/buscar?ofertas=1')}><Icon name="tag" /> Ofertas</a>
-    <a href={url('/vender')}><Icon name="camera" /> Vender</a>
-    <a href={url('/compras')}><Icon name="bag" /> Mis compras</a>
-    <a href={url('/favoritos')}><Icon name="heart" /> Favoritos</a>
-    <a href={url('/mensajes')}><Icon name="chat" /> Mensajes</a>
-    <a href={url('/cuenta')}><Icon name="user" /> Mi perfil</a>
-  </nav>
+  <nav class="drawer__body" aria-label="Menú principal">
+    <h2 class="drawer__label">Comunidad y ayuda</h2>
+    <ul class="drawer__list drawer__list--icons">
+      {
+        community.map((l) => (
+          <li>
+            <a href={l.href} aria-current={current(l.href)}>
+              <Icon name={l.icon} size={26} stroke={1.8} />
+              {l.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
 
-  <p class="drawer__label">Categorías</p>
-  <nav class="drawer__cats" aria-label="Categorías">
-    {
-      categories.map((c) => (
-        <a href={url(`/categoria/${c.slug}`)}>
-          <span class:list={['drawer__thumb', 'tile', `tile--${c.color}`]}>
-            <img src={url(c.image)} alt="" loading="lazy" />
-          </span>
-          {c.name}
-        </a>
-      ))
-    }
+    <h2 class="drawer__label">Mi Plaza</h2>
+    <ul class="drawer__list">
+      {
+        mine.map((l) => (
+          <li>
+            <a href={l.href}>{l.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <h2 class="drawer__label">Categorías</h2>
+    <ul class="drawer__list drawer__list--tight">
+      {
+        categories.map((c) => {
+          const href = url(`/categoria/${c.slug}`);
+          return (
+            <li>
+              <a href={href} aria-current={current(href)}>
+                {c.name}
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
   </nav>
-  <p class="drawer__foot">{site.name} · {site.tagline}</p>
 </dialog>
 
 <style>
@@ -125,13 +153,6 @@ import { site } from '../data/site';
     box-shadow: 0 4px 10px -2px rgba(246, 78, 67, 0.6);
   }
 
-  .cart__badge[data-empty='true'] {
-    background: var(--blanco);
-    color: var(--crema-300);
-    font-size: 1.05rem;
-    box-shadow: 0 2px 6px rgba(74, 56, 22, 0.2);
-  }
-
   .cart__badge.bump {
     animation: bump 0.45s var(--ease-spring);
   }
@@ -142,35 +163,33 @@ import { site } from '../data/site';
     }
   }
 
-  /* ---------- Menú lateral de vidrio ---------- */
+  /* ---------- Menú lateral "Tu Plaza" ---------- */
   .drawer {
+    --drawer-bg: #f2e3c6;
+    --drawer-head: #0c8aa6;
+    --drawer-label: #08657a;
     position: fixed;
     inset: 0 auto 0 0;
     margin: 0;
-    width: min(330px, 86vw);
+    width: min(360px, 86vw);
     max-width: none;
     height: 100dvh;
     max-height: none;
-    padding: 0;
+    padding: 0 0 calc(28px + env(safe-area-inset-bottom));
     border: 0;
-    border-right: 1px solid rgba(255, 255, 255, 0.7);
-    border-radius: 0 28px 28px 0;
     color: var(--tinta);
     overflow-y: auto;
-    background: linear-gradient(160deg, rgba(255, 255, 255, 0.78), rgba(247, 236, 217, 0.62));
-    -webkit-backdrop-filter: blur(30px) saturate(180%);
-    backdrop-filter: blur(30px) saturate(180%);
-    box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.35);
+    overscroll-behavior: contain;
+    background: var(--drawer-bg);
+    box-shadow: 18px 0 50px -12px rgba(28, 26, 22, 0.45);
   }
 
   .drawer[open] {
-    animation: slide-in 0.35s var(--ease-spring);
+    animation: slide-in 0.32s var(--ease-spring);
   }
 
   .drawer::backdrop {
-    background: rgba(28, 26, 22, 0.28);
-    -webkit-backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px);
+    background: rgba(28, 26, 22, 0.4);
   }
 
   @keyframes slide-in {
@@ -179,121 +198,112 @@ import { site } from '../data/site';
     }
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    .drawer[open] {
+      animation: none;
+    }
+  }
+
   .drawer__head {
+    position: sticky;
+    top: 0;
+    z-index: 1;
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    padding: calc(22px + env(safe-area-inset-top)) 16px 16px 18px;
-  }
-
-  .drawer__me {
-    display: flex;
-    align-items: center;
     gap: 12px;
-    min-width: 0;
-    color: inherit;
-    text-decoration: none;
+    padding: calc(20px + env(safe-area-inset-top)) 18px 20px 26px;
+    background: var(--drawer-head);
+    color: var(--blanco);
   }
 
-  .drawer__me strong,
-  .drawer__me small {
-    display: block;
-  }
-
-  .drawer__me strong {
-    font-size: 1.15rem;
-    letter-spacing: -0.02em;
-  }
-
-  .drawer__me small {
-    color: var(--tinta-3);
-    font-size: 0.85rem;
-  }
-
-  .drawer__avatar {
-    display: grid;
-    place-items: center;
-    flex: none;
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    overflow: hidden;
-    color: var(--rojito);
-    background: var(--blanco);
-    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04), 0 4px 12px -4px rgba(74, 56, 22, 0.3);
-  }
-
-  .drawer__avatar :global(img) {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  .drawer__title {
+    margin: 0;
+    font-size: clamp(2.1rem, 10vw, 2.7rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
   }
 
   .drawer__close {
     display: grid;
     place-items: center;
     flex: none;
-    width: 38px;
-    height: 38px;
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: 0;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.6);
-    color: var(--tinta-2);
+    background: transparent;
+    color: inherit;
+    transition: transform 0.2s var(--ease-spring), background-color 0.2s ease;
   }
 
-  .drawer__nav,
-  .drawer__cats {
-    display: grid;
-    gap: 2px;
-    padding: 4px 10px;
+  .drawer__close:hover {
+    background: rgba(255, 255, 255, 0.14);
   }
 
-  .drawer__nav a,
-  .drawer__cats a {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 11px 12px;
-    border-radius: 14px;
-    color: var(--tinta);
-    font-weight: 600;
-    text-decoration: none;
+  .drawer__close:active {
+    transform: scale(0.92);
   }
 
-  .drawer__nav a :global(.icon) {
-    color: var(--azul);
-  }
-
-  .drawer__nav a:hover,
-  .drawer__cats a:hover {
-    background: rgba(255, 255, 255, 0.7);
+  .drawer__body {
+    padding: 8px 0 0;
   }
 
   .drawer__label {
-    margin: 14px 22px 4px;
-    font-size: 0.72rem;
+    margin: 22px 26px 6px;
+    font-size: 1.02rem;
     font-weight: 700;
-    letter-spacing: 0.09em;
+    letter-spacing: 0.03em;
     text-transform: uppercase;
-    color: var(--tinta-3);
+    color: var(--drawer-label);
   }
 
-  .drawer__thumb {
-    width: 34px;
-    height: 34px;
+  .drawer__list {
+    list-style: none;
+    margin: 0;
+    padding: 0 12px;
+  }
+
+  .drawer__list a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    padding: 8px 14px 8px 56px;
+    border-radius: 12px;
+    color: var(--tinta);
+    font-size: 0.98rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .drawer__list--icons a {
+    padding-left: 12px;
+  }
+
+  .drawer__list--icons a :global(.icon) {
     flex: none;
-    border-radius: 10px;
+    color: var(--verde);
   }
 
-  .drawer__thumb img {
-    padding: 2px;
+  .drawer__list--tight a {
+    min-height: 38px;
+    padding-block: 6px;
   }
 
-  .drawer__foot {
-    margin: 16px 22px 28px;
-    font-size: 0.78rem;
-    color: var(--tinta-3);
+  .drawer__list a:hover {
+    background: rgba(255, 255, 255, 0.55);
+  }
+
+  .drawer__list a[aria-current='page'] {
+    color: var(--drawer-label);
+    background: rgba(255, 255, 255, 0.7);
   }
 </style>
 

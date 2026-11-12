@@ -1,0 +1,127 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import { url } from '../lib/url';
+---
+
+<Layout title="Notificaciones">
+  <div class="container notif-page">
+    <h1 class="page-title">Notificaciones</h1>
+    <p class="page-sub">Mensajes, bajadas de precio en tus favoritos y novedades de los vendedores que sigues.</p>
+    <ul class="notifs" data-notifs></ul>
+    <!-- Íconos (Heroicons) que usa el script para cada tipo de aviso -->
+    <template data-icon="chat"><Icon name="chat" size={22} /></template>
+    <template data-icon="tag"><Icon name="tag" size={22} /></template>
+    <template data-icon="user"><Icon name="userPlus" size={22} /></template>
+    <template data-icon="clock"><Icon name="clock" size={22} /></template>
+    <template data-icon="id"><Icon name="id" size={22} /></template>
+    <div class="empty" data-notifs-empty hidden>
+      <span class="empty__icon"><Icon name="bell" size={40} /></span>
+      <h2>Estás al día</h2>
+      <p>Guarda publicaciones y sigue vendedores para recibir avisos aquí.</p>
+      <a href={url('/')} class="btn btn--primary">Ver publicaciones</a>
+    </div>
+  </div>
+</Layout>
+
+<style is:global>
+  .notif-page .notifs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+
+  .notif-page .notif {
+    display: grid;
+    grid-template-columns: 46px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    box-shadow: var(--glass-edge), var(--shadow-sm);
+    color: var(--tinta);
+    text-decoration: none;
+  }
+
+  .notif-page .notif.unread {
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.92), rgba(211, 235, 239, 0.75));
+  }
+
+  .notif-page .notif__icon {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    color: #fff;
+  }
+
+  .notif-page .i-chat { background: var(--azul); }
+  .notif-page .i-tag { background: var(--rojito); }
+  .notif-page .i-user { background: var(--verde); }
+  .notif-page .i-clock { background: var(--amarillo); color: var(--tinta); }
+  .notif-page .i-id { background: var(--tinta); }
+
+  .notif-page .notif strong {
+    display: block;
+    font-size: 0.95rem;
+  }
+
+  .notif-page .notif span.body {
+    display: block;
+    color: var(--tinta-2);
+    font-size: 0.88rem;
+    line-height: 1.35;
+  }
+
+  .notif-page .notif small {
+    color: var(--tinta-3);
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .notif-page .new-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-left: 6px;
+    border-radius: 50%;
+    background: var(--rojito);
+  }
+</style>
+
+<script>
+  import { url } from '../lib/url';
+  import { getNotifications } from '../scripts/notifications';
+  import { notifSeen } from '../scripts/store';
+  import { esc } from '../scripts/ui';
+
+  const icon = (name: string) =>
+    document.querySelector<HTMLTemplateElement>(`template[data-icon="${name}"]`)?.innerHTML ?? '';
+
+  const when = (iso: string) => {
+    const days = Math.floor((Date.now() - new Date(iso).getTime()) / 864e5);
+    if (days <= 0) return 'Hoy';
+    if (days === 1) return 'Ayer';
+    return `Hace ${days} días`;
+  };
+
+  const list = getNotifications();
+  document.querySelector<HTMLElement>('[data-notifs-empty]')!.hidden = list.length > 0;
+  document.querySelector<HTMLUListElement>('[data-notifs]')!.innerHTML = list
+    .map(
+      (n) => `<li><a class="notif ${n.unread ? 'unread' : ''}" href="${esc(url(n.href))}">
+        <span class="notif__icon i-${n.icon}">${icon(n.icon)}</span>
+        <span><strong>${esc(n.title)}${n.unread ? '<span class="new-dot" aria-label="nueva"></span>' : ''}</strong><span class="body">${esc(n.body)}</span></span>
+        <small>${when(n.at)}</small>
+      </a></li>`,
+    )
+    .join('');
+
+  // Al abrir la página se marcan como vistas (el contador de la barra se apaga)
+  notifSeen.mark();
+</script>

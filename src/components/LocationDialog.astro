@@ -1,0 +1,103 @@
+---
+import Icon from './Icon.astro';
+import { municipios } from '../data/site';
+import { RADIUS_OPTIONS } from '../data/pueblos';
+---
+
+<dialog class="sheet loc-dialog" data-location-dialog aria-labelledby="loc-title">
+  <form method="dialog" data-location-form>
+    <h2 id="loc-title">¿Dónde estás?</h2>
+    <p class="hint">Verás primero lo que está cerca, como en Facebook Marketplace.</p>
+
+    <button type="button" class="btn btn--soft btn--block" data-geo>
+      <Icon name="pin" size={18} /> Usar mi ubicación
+    </button>
+
+    <div class="field" style="margin-top:14px">
+      <label for="loc-town">Pueblo</label>
+      <select id="loc-town" name="town" class="select">
+        {municipios.map((m) => <option value={m}>{m}</option>)}
+      </select>
+    </div>
+
+    <fieldset class="field">
+      <legend>Radio</legend>
+      <div class="radius">
+        {
+          RADIUS_OPTIONS.map((r) => (
+            <label class="chip chip--toggle">
+              <input type="radio" name="radius" value={r} />
+              {r ? `${r} mi` : 'Toda la isla'}
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <div class="sheet__actions">
+      <button type="button" class="btn btn--soft" data-close>Cancelar</button>
+      <button type="submit" class="btn btn--primary" value="ok">Aplicar</button>
+    </div>
+  </form>
+</dialog>
+
+<style>
+  fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0 0 16px;
+  }
+
+  .radius {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+</style>
+
+<script>
+  import { nearestPueblo } from '../data/pueblos';
+  import { location } from '../scripts/store';
+  import { toast } from '../scripts/ui';
+
+  const dialog = document.querySelector<HTMLDialogElement>('[data-location-dialog]')!;
+  const form = dialog.querySelector<HTMLFormElement>('[data-location-form]')!;
+
+  function fill() {
+    const loc = location.get();
+    (form.elements.namedItem('town') as HTMLSelectElement).value = loc.town;
+    form.querySelectorAll<HTMLInputElement>('input[name="radius"]').forEach((r) => {
+      r.checked = Number(r.value) === loc.radius;
+    });
+  }
+
+  document.addEventListener('click', (e) => {
+    if (!(e.target as HTMLElement).closest('[data-location-open]')) return;
+    fill();
+    dialog.showModal();
+  });
+
+  dialog.querySelector('[data-close]')!.addEventListener('click', () => dialog.close());
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+
+  form.addEventListener('submit', () => {
+    const data = new FormData(form);
+    location.set({ town: String(data.get('town')), radius: Number(data.get('radius') ?? 25) });
+    toast(`Mostrando cerca de ${data.get('town')}`);
+  });
+
+  dialog.querySelector('[data-geo]')!.addEventListener('click', () => {
+    if (!navigator.geolocation) return toast('Tu navegador no comparte ubicación');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const town = nearestPueblo(pos.coords.latitude, pos.coords.longitude);
+        (form.elements.namedItem('town') as HTMLSelectElement).value = town;
+        toast(`Estás cerca de ${town}`);
+      },
+      () => toast('No pudimos obtener tu ubicación'),
+      { timeout: 8000 },
+    );
+  });
+</script>

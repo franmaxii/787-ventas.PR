@@ -5,7 +5,7 @@ import SearchBar from '../../components/SearchBar.astro';
 import Stars from '../../components/Stars.astro';
 import Icon from '../../components/Icon.astro';
 import { productsBySeller, sampleReviews, sellers, statusOf, type Seller } from '../../data/products';
-import { formatMoney } from '../../lib/format';
+import { priceLabel } from '../../lib/format';
 import { url } from '../../lib/url';
 
 export function getStaticPaths() {
@@ -67,7 +67,7 @@ const reviews = [0, 1, 2].map((i) => sampleReviews[(index + i) % sampleReviews.l
                     <img src={url(p.image ?? '')} alt="" loading="lazy" width="240" height="240" />
                   </div>
                   {st !== 'activo' && <span class:list={['status', `status--${st}`]}>{statusLabel[st]}</span>}
-                  <span class="ltile__price">{formatMoney(p.price)}</span>
+                  <span class="ltile__price">{priceLabel(p)}</span>
                 </div>
                 <span class="ltile__title">{p.title}</span>
               </a>

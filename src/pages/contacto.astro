@@ -1,0 +1,191 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import { url } from '../lib/url';
+
+const faqs = [
+  ['¿Cuánto cuesta publicar?', 'Nada. Publicar es gratis y la publicación dura 30 días.'],
+  ['¿Plaza 787 cobra comisión?', 'No. El pago es en persona, entre ustedes, al momento de la entrega.'],
+  ['¿Por qué me piden la ID?', 'Para confirmar que eres una persona real. Se usa solo para verificarte y no se guarda en tu perfil.'],
+  ['¿Quién ve mi teléfono y mi email?', 'Nadie. Esa información es privada y no sale en tu perfil. Todo se coordina por Mensajes.'],
+];
+---
+
+<Layout title="Contáctanos" description="Escríbele al equipo de Plaza 787.">
+  <div class="container contact">
+    <h1 class="page-title">Contáctanos</h1>
+    <p class="page-sub">¿Tienes una duda, una idea o un problema con tu cuenta? Escríbenos y te contestamos por email.</p>
+
+    <div class="contact__grid">
+      <form class="panel" data-contact-form>
+        <div class="field">
+          <label for="c-name">Nombre</label>
+          <input id="c-name" name="name" class="input" autocomplete="given-name" required />
+        </div>
+        <div class="field">
+          <label for="c-email">Email</label>
+          <input id="c-email" name="email" type="email" class="input" autocomplete="email" required />
+        </div>
+        <div class="field">
+          <label for="c-topic">Motivo</label>
+          <select id="c-topic" name="topic" class="select" required>
+            <option value="">Selecciona…</option>
+            <option>Ayuda con mi cuenta</option>
+            <option>Reportar a un usuario o una publicación</option>
+            <option>Seguridad o una posible estafa</option>
+            <option>Negocios y anuncios</option>
+            <option>Sugerencias</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="c-msg">Mensaje</label>
+          <textarea id="c-msg" name="message" class="textarea" maxlength="1000" required></textarea>
+        </div>
+        <button type="submit" class="btn btn--primary btn--block"><Icon name="send" size={18} /> Enviar</button>
+        <p class="hint">Demo: este formulario todavía no envía nada ni guarda lo que escribes.</p>
+      </form>
+
+      <div class="panel done" data-contact-done hidden tabindex="-1">
+        <span class="empty__icon"><Icon name="checkCircle" size={44} /></span>
+        <h2>¡Gracias por escribir!</h2>
+        <p>Te contestaremos al email que nos diste, por lo general en 1 día laborable.</p>
+        <a href={url('/')} class="btn btn--soft">Volver al inicio</a>
+      </div>
+
+      <aside class="aside">
+        <div class="panel tip">
+          <Icon name="flag" size={22} />
+          <p><strong>¿Viste algo sospechoso?</strong> Toca <strong>Reportar</strong> en la publicación: llega directo a moderación.</p>
+        </div>
+        <div class="panel tip tip--red">
+          <Icon name="shieldAlert" size={22} />
+          <p><strong>¿Una emergencia?</strong> Llama al 911.</p>
+        </div>
+
+        <section class="panel faq">
+          <h2>Preguntas frecuentes</h2>
+          {
+            faqs.map(([q, a]) => (
+              <details>
+                <summary>{q}</summary>
+                <p>{a}</p>
+              </details>
+            ))
+          }
+        </section>
+      </aside>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .contact {
+    padding-bottom: 24px;
+  }
+
+  .contact__grid {
+    display: grid;
+    gap: 16px;
+    align-items: start;
+  }
+
+  @media (min-width: 860px) {
+    .contact__grid {
+      grid-template-columns: 1.2fr 1fr;
+    }
+  }
+
+  .contact__grid > * {
+    min-width: 0;
+  }
+
+  form {
+    display: grid;
+    gap: 4px;
+  }
+
+  .textarea {
+    min-height: 140px;
+  }
+
+  .done {
+    text-align: center;
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+  }
+
+  .done h2 {
+    margin: 6px 0 0;
+  }
+
+  .done p {
+    margin: 0 0 10px;
+    color: var(--tinta-2);
+  }
+
+  .aside {
+    display: grid;
+    gap: 12px;
+  }
+
+  .tip {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 16px;
+  }
+
+  .tip p {
+    margin: 0;
+    line-height: 1.45;
+    color: var(--tinta-2);
+  }
+
+  .tip :global(.icon) {
+    flex: none;
+    color: var(--azul);
+  }
+
+  .tip--red :global(.icon) {
+    color: var(--rojito);
+  }
+
+  .faq h2 {
+    margin: 0 0 6px;
+    font-size: 1.1rem;
+  }
+
+  details {
+    border-top: 1px solid rgba(74, 56, 22, 0.12);
+  }
+
+  summary {
+    padding: 12px 0;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  details p {
+    margin: 0 0 12px;
+    color: var(--tinta-2);
+    line-height: 1.45;
+  }
+</style>
+
+<script>
+  import { toast } from '../scripts/ui';
+
+  const form = document.querySelector<HTMLFormElement>('[data-contact-form]')!;
+  const done = document.querySelector<HTMLElement>('[data-contact-done]')!;
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    // Demo: no se envía ni se guarda nada. Con backend, aquí iría el POST al servicio de soporte.
+    form.reset();
+    form.hidden = true;
+    done.hidden = false;
+    done.focus();
+    toast('Mensaje enviado');
+  });
+</script>

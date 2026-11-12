@@ -1,94 +1,472 @@
 ---
-import { url } from '../lib/url';
-import Icon from '../components/Icon.astro';
 import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import { url } from '../lib/url';
 ---
 
 <Layout title="Mensajes">
-  <div class="container msgs-page">
-    <h1 class="page-title">Mensajes</h1>
-    <p class="page-sub">Tus preguntas a los vendedores.</p>
+  <div class="container chat-page" data-chat-page>
+    <section class="inbox" data-inbox aria-labelledby="inbox-title">
+      <h1 class="page-title" id="inbox-title">Mensajes</h1>
+      <div class="tabs glass" role="tablist" aria-label="Tipo de conversación">
+        <button type="button" role="tab" aria-selected="true" data-role-tab="comprando">Comprando <span class="count" data-role-count="comprando"></span></button>
+        <button type="button" role="tab" aria-selected="false" data-role-tab="vendiendo">Vendiendo <span class="count" data-role-count="vendiendo"></span></button>
+      </div>
+      <ul class="convs" data-convs></ul>
+      <div class="empty" data-convs-empty hidden>
+        <span class="empty__icon"><Icon name="chat" size={40} /></span>
+        <h2 data-empty-title>No tienes mensajes</h2>
+        <p data-empty-text>Escríbele a un vendedor desde cualquier publicación: "¿Sigue disponible?"</p>
+        <a href={url('/')} class="btn btn--primary">Ver publicaciones</a>
+      </div>
+    </section>
 
-    <ul class="msgs" data-msgs></ul>
-
-    <div class="empty" data-msgs-empty hidden>
-      <span class="empty__icon"><Icon name="chat" size={40} /></span>
-      <h2>No tienes mensajes</h2>
-      <p>Pregúntale al vendedor desde la página de cualquier producto.</p>
-      <a href={url('/')} class="btn btn--primary">Ver productos</a>
-    </div>
+    <section class="thread glass" data-thread hidden aria-label="Conversación">
+      <header class="thread__head">
+        <button type="button" class="thread__back" data-back aria-label="Volver a mensajes">
+          <Icon name="chevronLeft" size={22} stroke={2.2} />
+        </button>
+        <a class="thread__item" data-thread-link href="#">
+          <span class="thread__img tile" data-thread-img></span>
+          <span class="thread__txt">
+            <strong data-thread-title></strong>
+            <small data-thread-sub></small>
+          </span>
+        </a>
+      </header>
+      <ol class="msgs" data-msgs aria-live="polite"></ol>
+      <div class="quick" data-quick></div>
+      <form class="thread__form" data-thread-form>
+        <label for="chat-input" class="sr-only">Escribe un mensaje</label>
+        <input id="chat-input" name="text" class="input" placeholder="Escribe un mensaje…" autocomplete="off" maxlength="500" />
+        <button type="submit" class="btn btn--primary thread__send" aria-label="Enviar"><Icon name="send" size={20} stroke={2} /></button>
+      </form>
+      <p class="thread__demo">Demo: las respuestas de la otra persona son automáticas.</p>
+    </section>
   </div>
 </Layout>
 
 <style is:global>
-  .msgs-page .msgs {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  .chat-page {
     display: grid;
-    gap: 10px;
+    gap: 16px;
+    align-items: start;
   }
 
-  .msgs-page .msg {
+  .chat-page > * {
+    min-width: 0;
+  }
+
+  @media (min-width: 860px) {
+    .chat-page {
+      grid-template-columns: 360px 1fr;
+    }
+
+    .chat-page .thread {
+      position: sticky;
+      top: 90px;
+      margin-top: 22px;
+    }
+
+    .chat-page .thread__back {
+      display: none !important;
+    }
+  }
+
+  @media (max-width: 859px) {
+    .chat-page.is-thread .inbox {
+      display: none;
+    }
+  }
+
+  .chat-page .tabs .count {
+    font-weight: 600;
+    opacity: 0.75;
+  }
+
+  .chat-page .convs {
+    list-style: none;
+    margin: 14px 0 0;
+    padding: 0;
     display: grid;
-    grid-template-columns: 48px 1fr;
+    gap: 8px;
+  }
+
+  .chat-page .conv {
+    position: relative;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
     gap: 12px;
-    align-items: start;
-    padding: 14px;
-    border-radius: var(--radius-xl);
-    background: var(--glass-bg);
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 20px;
     border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-edge), var(--glass-shadow);
+    background: var(--glass-bg);
+    box-shadow: var(--glass-edge), var(--shadow-sm);
+    color: var(--tinta);
+    text-align: left;
+    font: inherit;
+  }
+
+  .chat-page .conv.is-open {
+    box-shadow: 0 0 0 3px var(--azul), var(--shadow-sm);
+  }
+
+  .chat-page .conv__img,
+  .chat-page .thread__img {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+  }
+
+  .chat-page .conv__img img,
+  .chat-page .thread__img img {
+    padding: 4px;
+  }
+
+  .chat-page .conv strong,
+  .chat-page .conv small,
+  .chat-page .conv span.last {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .chat-page .conv small {
+    color: var(--tinta-3);
+    font-size: 0.8rem;
+  }
+
+  .chat-page .conv .last {
+    font-size: 0.88rem;
+    color: var(--tinta-2);
+  }
+
+  .chat-page .conv.unread .last {
+    color: var(--tinta);
+    font-weight: 700;
+  }
+
+  .chat-page .conv__meta {
+    display: grid;
+    justify-items: end;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--tinta-3);
+  }
+
+  .chat-page .dot-unread {
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--rojito);
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.7rem;
+  }
+
+  .chat-page .thread {
+    display: flex;
+    flex-direction: column;
+    min-height: 60dvh;
+    padding: 12px;
+    border-radius: var(--radius-xl);
+  }
+
+  .chat-page .thread__head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--linea);
+  }
+
+  .chat-page .thread__back {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.7);
+  }
+
+  .chat-page .thread__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
     color: var(--tinta);
     text-decoration: none;
   }
 
-  .msgs-page .msg__avatar {
-    display: grid;
-    place-items: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: var(--azul);
-    color: var(--blanco);
-    font-size: 1.4rem;
+  .chat-page .thread__txt {
+    min-width: 0;
   }
 
-  .msgs-page .msg__title {
+  .chat-page .thread__txt strong,
+  .chat-page .thread__txt small {
     display: block;
-    font-weight: 800;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  .msgs-page .msg__text {
+  .chat-page .thread__txt small {
+    color: var(--tinta-2);
+  }
+
+  .chat-page .msgs {
+    list-style: none;
+    margin: 0;
+    padding: 14px 4px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 260px;
+    max-height: 55dvh;
+    overflow-y: auto;
+  }
+
+  .chat-page .msg {
+    max-width: 80%;
+    padding: 9px 14px;
+    border-radius: 20px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  .chat-page .msg time {
     display: block;
-    margin: 4px 0;
+    margin-top: 2px;
+    font-size: 0.7rem;
+    opacity: 0.7;
   }
 
-  .msgs-page .msg small {
+  .chat-page .msg.yo {
+    align-self: flex-end;
+    color: #fff;
+    background: linear-gradient(180deg, #27adc9, var(--azul));
+    border-bottom-right-radius: 6px;
+  }
+
+  .chat-page .msg.ellos {
+    align-self: flex-start;
+    background: #fff;
+    border-bottom-left-radius: 6px;
+    box-shadow: 0 2px 8px -4px rgba(74, 56, 22, 0.3);
+  }
+
+  .chat-page .msg.typing {
     color: var(--tinta-3);
+    font-style: italic;
+  }
+
+  .chat-page .quick {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 6px 2px 10px;
+    scrollbar-width: none;
+  }
+
+  .chat-page .thread__form {
+    display: flex;
+    gap: 8px;
+  }
+
+  .chat-page .thread__send {
+    flex: none;
+    width: 50px;
+    padding: 0;
+  }
+
+  .chat-page .thread__demo {
+    margin: 8px 0 0;
+    font-size: 0.75rem;
+    color: var(--tinta-3);
+    text-align: center;
   }
 </style>
 
 <script>
-  import { questions } from '../scripts/store';
-  import { base } from '../lib/url';
-  import { esc, formatDate } from '../scripts/ui';
+  import { formatMoney, priceLabel } from '../lib/format';
+  import { url } from '../lib/url';
+  import { chats, onChange, type Conversation } from '../scripts/store';
+  import { esc } from '../scripts/ui';
 
-  const all = questions.all();
-  document.querySelector<HTMLElement>('[data-msgs-empty]')!.hidden = all.length > 0;
-  document.querySelector<HTMLUListElement>('[data-msgs]')!.innerHTML = all
-    .map(
-      (q) => `
-    <li>
-      <a class="msg" href="${base}/producto/${esc(q.productId)}#preguntas">
-        <span class="msg__avatar" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg></span>
-        <span>
-          <span class="msg__title">${esc(q.productTitle)}</span>
-          <span class="msg__text">${esc(q.text)}</span>
-          <small>${formatDate(q.date)} · Esperando respuesta</small>
-        </span>
-      </a>
-    </li>`,
-    )
-    .join('');
+  const page = document.querySelector<HTMLElement>('[data-chat-page]')!;
+  const list = document.querySelector<HTMLUListElement>('[data-convs]')!;
+  const empty = document.querySelector<HTMLElement>('[data-convs-empty]')!;
+  const thread = document.querySelector<HTMLElement>('[data-thread]')!;
+  const msgs = document.querySelector<HTMLOListElement>('[data-msgs]')!;
+  const form = document.querySelector<HTMLFormElement>('[data-thread-form]')!;
+  const input = form.querySelector<HTMLInputElement>('input')!;
+  const quick = document.querySelector<HTMLElement>('[data-quick]')!;
+
+  let role: Conversation['role'] = 'comprando';
+  let openId = new URLSearchParams(window.location.search).get('c');
+  const pending = new Set<string>();
+
+  const time = (iso: string) => new Date(iso).toLocaleTimeString('es-PR', { hour: 'numeric', minute: '2-digit' });
+  const img = (c: Conversation) => (c.image ? `<img src="${esc(c.image)}" alt="" />` : '');
+
+  // ---------- Respuestas automáticas (solo demo) ----------
+  function autoReply(c: Conversation, text: string): string {
+    const t = text.toLowerCase();
+    if (c.role === 'vendiendo') {
+      if (/disponible|sí|si,/.test(t)) return '¡Perfecto! ¿Nos podemos ver mañana en la tarde?';
+      return 'Gracias, te aviso cuando salga para allá.';
+    }
+    if (c.price === 0 && /precio|aceptar/.test(t)) return 'Es gratis, solo tienes que recogerlo.';
+    if (/aceptar[ií]as|\$|precio|oferta/.test(t)) {
+      const counter = Math.round((c.price * 0.92) / 5) * 5;
+      return `Gracias por la oferta. Te lo puedo dejar en ${formatMoney(counter)}. ¿Te sirve?`;
+    }
+    if (/ath/.test(t)) return 'Sí, ATH Móvil al momento de la entrega está perfecto.';
+    if (/ver|visitar/.test(t) && (c.type === 'alquiler' || c.type === 'propiedad')) return 'Claro. ¿Te funciona este sábado a las 10:00 a. m.?';
+    if (/fha|crim/.test(t)) return 'Sí, acepto FHA. El CRIM es de unos $480 al año y está al día.';
+    if (/dep[oó]sito|entrega|s[aá]bado/.test(t) && c.category === 'renta-articulos') return 'Sí está disponible. Se deja un depósito de $50 que te devuelvo al recogerlo, y la entrega es gratis en el área.';
+    if (/encontr|d[oó]nde|recoger|hoy/.test(t)) return 'Podemos vernos en un lugar público, como el centro comercial. ¿Te funciona hoy a las 5:00 p. m.?';
+    if (/disponible/.test(t)) return '¡Hola! Sí, todavía está disponible. ¿Cuándo te gustaría verlo?';
+    if (/camino|llegu/.test(t)) return '¡Perfecto! Ya estoy aquí también.';
+    return '¡Gracias por escribir! Te contesto en un momento.';
+  }
+
+  function scheduleReply(c: Conversation) {
+    const last = c.messages[c.messages.length - 1];
+    if (!last || last.from !== 'yo' || pending.has(c.id)) return;
+    pending.add(c.id);
+    window.setTimeout(() => {
+      pending.delete(c.id);
+      chats.send(c.id, autoReply(c, last.text), 'ellos');
+    }, 1400);
+  }
+
+  // ---------- Lista ----------
+  function renderList() {
+    const all = chats.all();
+    for (const r of ['comprando', 'vendiendo'] as const) {
+      const n = all.filter((c) => c.role === r).length;
+      document.querySelector(`[data-role-count="${r}"]`)!.textContent = n ? String(n) : '';
+    }
+    const mine = all.filter((c) => c.role === role);
+    empty.hidden = mine.length > 0;
+    document.querySelector('[data-empty-title]')!.textContent =
+      role === 'comprando' ? 'No tienes mensajes' : 'Nadie te ha escrito todavía';
+    document.querySelector('[data-empty-text]')!.textContent =
+      role === 'comprando'
+        ? 'Escríbele a un vendedor desde cualquier publicación: "¿Sigue disponible?"'
+        : 'Cuando alguien pregunte por tus publicaciones, la conversación aparecerá aquí.';
+    list.innerHTML = mine
+      .map((c) => {
+        const last = c.messages[c.messages.length - 1];
+        const prefix = last?.from === 'yo' ? 'Tú: ' : '';
+        return `<li><button type="button" class="conv ${c.unread ? 'unread' : ''} ${c.id === openId ? 'is-open' : ''}" data-open="${esc(c.id)}">
+          <span class="conv__img tile tile--${esc(c.color)}">${img(c)}</span>
+          <span style="min-width:0">
+            <strong>${esc(c.withName)}</strong>
+            <small>${esc(c.title)} · ${esc(priceLabel(c))}</small>
+            <span class="last">${esc(prefix + (last?.text ?? ''))}</span>
+          </span>
+          <span class="conv__meta">${last ? time(last.at) : ''}${c.unread ? `<span class="dot-unread">${c.unread}</span>` : ''}</span>
+        </button></li>`;
+      })
+      .join('');
+  }
+
+  // ---------- Hilo ----------
+  function renderThread() {
+    const c = openId ? chats.get(openId) : undefined;
+    thread.hidden = !c;
+    page.classList.toggle('is-thread', !!c);
+    if (!c) return;
+    if (c.unread) chats.markRead(c.id);
+
+    const link = thread.querySelector<HTMLAnchorElement>('[data-thread-link]')!;
+    link.href = c.role === 'comprando' ? url(`/producto/${c.listingId}`) : url('/cuenta');
+    const imgBox = thread.querySelector<HTMLElement>('[data-thread-img]')!;
+    imgBox.className = `thread__img tile tile--${c.color}`;
+    imgBox.innerHTML = img(c);
+    thread.querySelector('[data-thread-title]')!.textContent = c.withName;
+    thread.querySelector('[data-thread-sub]')!.textContent = `${c.title} · ${priceLabel(c)}`;
+
+    scheduleReply(c);
+    const typing = pending.has(c.id) ? `<li class="msg ellos typing">${esc(c.withName)} está escribiendo…</li>` : '';
+    msgs.innerHTML =
+      c.messages
+        .map((m) => `<li class="msg ${m.from}">${esc(m.text)}<time datetime="${m.at}">${time(m.at)}</time></li>`)
+        .join('') + typing;
+    msgs.scrollTop = msgs.scrollHeight;
+
+    const chips =
+      c.role === 'comprando'
+        ? ['¿Dónde nos encontramos?', '¿Aceptas ATH Móvil?', 'Voy en camino', 'Ya llegué']
+        : ['Sí, sigue disponible', '¿Cuándo lo quieres recoger?', 'Nos vemos en un lugar público', 'Ya se vendió, gracias'];
+    quick.innerHTML = chips.map((q) => `<button type="button" class="chip" data-q="${esc(q)}">${esc(q)}</button>`).join('');
+  }
+
+  function render() {
+    renderList();
+    renderThread();
+  }
+
+  // ---------- Eventos ----------
+  document.querySelectorAll<HTMLButtonElement>('[data-role-tab]').forEach((tab) =>
+    tab.addEventListener('click', () => {
+      role = tab.dataset.roleTab as Conversation['role'];
+      document.querySelectorAll('[data-role-tab]').forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
+      renderList();
+    }),
+  );
+
+  list.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-open]');
+    if (!btn) return;
+    openId = btn.dataset.open!;
+    history.replaceState(null, '', `?c=${encodeURIComponent(openId)}`);
+    render();
+    input.focus();
+  });
+
+  thread.querySelector('[data-back]')!.addEventListener('click', () => {
+    openId = null;
+    history.replaceState(null, '', window.location.pathname);
+    render();
+  });
+
+  quick.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-q]');
+    if (!b) return;
+    input.value = b.dataset.q!;
+    form.requestSubmit();
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text || !openId) return;
+    chats.send(openId, text);
+    input.value = '';
+  });
+
+  // abre en la pestaña correcta si llega con ?c=
+  if (openId) {
+    const c = chats.get(openId);
+    if (c) {
+      role = c.role;
+      document.querySelectorAll('[data-role-tab]').forEach((t) =>
+        t.setAttribute('aria-selected', String((t as HTMLElement).dataset.roleTab === role)),
+      );
+    }
+  }
+
+  render();
+  onChange(render);
 </script>

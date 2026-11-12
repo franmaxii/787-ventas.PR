@@ -15,12 +15,12 @@ const center = onProfile
   ? { href: '/', label: 'Inicio', icon: 'home' as IconName }
   : { href: '/cuenta', label: 'Mi perfil', icon: 'user' as IconName };
 
-const items: { href: string; label: string; icon: IconName; main?: boolean }[] = [
+const items: { href: string; label: string; icon: IconName; main?: boolean; badge?: string }[] = [
   { href: '/vender', label: 'Vender', icon: 'camera' },
-  { href: '/mensajes', label: 'Mensajes', icon: 'chat' },
+  { href: '/mensajes', label: 'Mensajes', icon: 'chat', badge: 'mensajes' },
   { ...center, main: true },
-  { href: '/favoritos', label: 'Favoritos', icon: 'heart' },
-  { href: '/compras', label: 'Mis compras', icon: 'bag' },
+  { href: '/buscar?orden=cerca', label: 'Cerca de ti', icon: 'pin' },
+  { href: '/notificaciones', label: 'Notificaciones', icon: 'bell', badge: 'notificaciones' },
 ];
 ---
 
@@ -37,6 +37,7 @@ const items: { href: string; label: string; icon: IconName; main?: boolean }[] =
             aria-current={isActive(item.href) ? 'page' : undefined}
           >
             <Icon name={item.icon} solid size={item.main ? 50 : 26} />
+            {item.badge && <span class="badge" data-badge={item.badge} hidden aria-hidden="true">0</span>}
           </a>
         </li>
       ))
@@ -93,6 +94,24 @@ const items: { href: string; label: string; icon: IconName; main?: boolean }[] =
     border-radius: 999px;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0));
     pointer-events: none;
+  }
+
+  .badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    border: 2px solid #fff;
+    background: var(--rojito);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    line-height: 1;
   }
 
   .dot:hover {

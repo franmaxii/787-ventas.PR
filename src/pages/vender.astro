@@ -19,6 +19,16 @@ import { municipios } from '../data/site';
     </section>
 
     <form class="panel sell" data-sell-form hidden>
+      <fieldset class="field">
+        <legend>¿Qué vas a publicar?</legend>
+        <div class="types">
+          <label class="type"><input type="radio" name="type" value="articulo" checked /><Icon name="tag" size={26} /><span>Artículo</span></label>
+          <label class="type"><input type="radio" name="type" value="vehiculo" /><Icon name="truck" size={26} /><span>Vehículo</span></label>
+          <label class="type"><input type="radio" name="type" value="alquiler" /><Icon name="key" size={26} /><span>Alquiler</span></label>
+          <label class="type"><input type="radio" name="type" value="propiedad" /><Icon name="home" size={26} /><span>Propiedad</span></label>
+        </div>
+      </fieldset>
+
       <fieldset class="field photos">
         <legend>Fotos <small>(hasta 3)</small></legend>
         <div class="photos__row" data-photos>
@@ -32,7 +42,7 @@ import { municipios } from '../data/site';
 
       <div class="field">
         <label for="s-title">Título</label>
-        <input id="s-title" name="title" class="input" maxlength="80" placeholder="Ej. Nevera 18 pies en buen estado" required />
+        <input id="s-title" name="title" class="input" maxlength="80" placeholder="Ej. Nevera 18 pies en buen estado" required data-title-input />
       </div>
 
       <div class="grid2">
@@ -44,10 +54,11 @@ import { municipios } from '../data/site';
           </select>
         </div>
         <div class="field">
-          <label for="s-price">Precio (USD)</label>
+          <label for="s-price" data-price-label>Precio (USD)</label>
           <input id="s-price" name="price" class="input" type="number" min="1" step="0.01" inputmode="decimal" placeholder="0.00" required />
+          <label class="chip chip--toggle free"><input type="checkbox" name="free" value="1" data-free /> <Icon name="gift" size={16} /> Es gratis</label>
         </div>
-        <fieldset class="field cond">
+        <fieldset class="field cond" data-cond>
           <legend>Condición</legend>
           <div class="cond__row">
             <label class="chip chip--toggle"><input type="radio" name="condition" value="nuevo" checked /> Nuevo</label>
@@ -63,15 +74,24 @@ import { municipios } from '../data/site';
         </div>
       </div>
 
+      <div class="grid2 extra" data-extra="vehiculo" hidden>
+        <div class="field"><label for="v-year">Año</label><input id="v-year" name="year" class="input" type="number" min="1950" max="2027" inputmode="numeric" /></div>
+        <div class="field"><label for="v-make">Marca y modelo</label><input id="v-make" name="make" class="input" placeholder="Ej. Toyota Corolla" /></div>
+        <div class="field"><label for="v-miles">Millaje</label><input id="v-miles" name="miles" class="input" type="number" min="0" inputmode="numeric" /></div>
+        <div class="field"><label for="v-trans">Transmisión</label><select id="v-trans" name="transmission" class="select"><option>Automática</option><option>Estándar</option></select></div>
+      </div>
+
+      <div class="grid2 extra" data-extra="alquiler propiedad" hidden>
+        <div class="field"><label for="r-beds">Cuartos</label><input id="r-beds" name="beds" class="input" type="number" min="0" max="10" inputmode="numeric" /></div>
+        <div class="field"><label for="r-baths">Baños</label><input id="r-baths" name="baths" class="input" type="number" min="0" max="10" step="0.5" inputmode="decimal" /></div>
+      </div>
+
       <div class="field">
         <label for="s-desc">Descripción</label>
         <textarea id="s-desc" name="description" class="textarea" maxlength="1000" placeholder="Cuenta el estado, medidas, qué incluye…" required></textarea>
       </div>
 
-      <label class="chip chip--toggle ship">
-        <input type="checkbox" name="freeShipping" value="1" />
-        <Icon name="truck" size={18} /> Ofrezco envío gratis
-      </label>
+      <p class="hint safe"><Icon name="shield" size={16} /> Los compradores te escribirán por Mensajes. Encuéntrense en un lugar público y cobra al entregar.</p>
 
       <button type="submit" class="btn btn--primary btn--block">Publicar</button>
     </form>
@@ -79,7 +99,7 @@ import { municipios } from '../data/site';
     <div class="panel done" data-sell-done hidden>
       <span class="empty__icon"><Icon name="checkCircle" size={44} /></span>
       <h2>¡Tu publicación está activa!</h2>
-      <p>Dura 30 días. La verás en <strong>Mi perfil → Mis publicaciones</strong>.</p>
+      <p>Dura 30 días. Los interesados te escribirán por <strong>Mensajes</strong> y la verás en <strong>Mi perfil → Mis publicaciones</strong>.</p>
       <div class="done__actions">
         <a href={url('/cuenta')} class="btn btn--primary">Ver mi perfil</a>
         <button type="button" class="btn btn--soft" data-sell-again>Publicar otra</button>
@@ -196,8 +216,66 @@ import { municipios } from '../data/site';
     gap: 8px;
   }
 
-  .ship {
-    margin-bottom: 18px;
+  .types {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  @media (max-width: 420px) {
+    .types {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .type {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    padding: 14px 8px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.55);
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .type input {
+    position: absolute;
+    opacity: 0;
+  }
+
+  .type :global(.icon) {
+    color: var(--azul);
+  }
+
+  .type:has(input:checked) {
+    color: #fff;
+    background: linear-gradient(180deg, #27adc9, var(--azul));
+    box-shadow: 0 8px 18px -8px rgba(13, 144, 171, 0.8);
+  }
+
+  .type:has(input:checked) :global(.icon) {
+    color: #fff;
+  }
+
+  .type:has(input:focus-visible) {
+    outline: 3px solid var(--azul);
+    outline-offset: 2px;
+  }
+
+  .free {
+    justify-self: start;
+    margin-top: 4px;
+  }
+
+  .safe {
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+    margin: 0 0 16px;
   }
 
   .done {
@@ -218,7 +296,7 @@ import { municipios } from '../data/site';
 </style>
 
 <script>
-  import { listings, profile, uid } from '../scripts/store';
+  import { chats, listings, profile, uid } from '../scripts/store';
   import { shrinkImage } from '../scripts/image';
   import { toast } from '../scripts/ui';
 
@@ -235,6 +313,84 @@ import { municipios } from '../data/site';
   document.querySelector<HTMLElement>('[data-sell-gate]')!.hidden = !!me;
   form.hidden = !me;
   if (me) (form.elements.namedItem('town') as HTMLSelectElement).value = me.public.town;
+
+  // Tipo de publicación y "gratis"
+  const priceInput = form.elements.namedItem('price') as HTMLInputElement;
+  const priceLabelEl = form.querySelector<HTMLElement>('[data-price-label]')!;
+  const freeBox = form.querySelector<HTMLInputElement>('[data-free]')!;
+  const freeChip = freeBox.closest<HTMLElement>('label')!;
+  const titleInput = form.querySelector<HTMLInputElement>('[data-title-input]')!;
+  const catSelect = form.elements.namedItem('category') as HTMLSelectElement;
+  const condBox = form.querySelector<HTMLElement>('[data-cond]')!;
+  type ListingKind = 'articulo' | 'vehiculo' | 'alquiler' | 'propiedad';
+  const type = () => (form.elements.namedItem('type') as RadioNodeList).value as ListingKind;
+  const TYPE_CATEGORY: Partial<Record<ListingKind, string>> = {
+    vehiculo: 'vehiculos',
+    alquiler: 'alquileres',
+    propiedad: 'venta-bienes-raices',
+  };
+  const PLACEHOLDER: Record<ListingKind, string> = {
+    articulo: 'Ej. Nevera 18 pies en buen estado',
+    vehiculo: 'Ej. Toyota Corolla 2016',
+    alquiler: 'Ej. Apartamento 2 cuartos en Bayamón',
+    propiedad: 'Ej. Casa 3 cuartos en Caguas',
+  };
+
+  function syncPriceLabel() {
+    const t = type();
+    priceLabelEl.textContent =
+      t === 'alquiler'
+        ? 'Renta mensual (USD)'
+        : t === 'propiedad'
+          ? 'Precio de venta (USD)'
+          : catSelect.value === 'renta-articulos'
+            ? 'Precio por día (USD)'
+            : 'Precio (USD)';
+  }
+
+  function syncType() {
+    const t = type();
+    form.querySelectorAll<HTMLElement>('[data-extra]').forEach((el) => (el.hidden = !el.dataset.extra!.split(' ').includes(t)));
+    freeChip.hidden = t !== 'articulo';
+    if (t !== 'articulo') freeBox.checked = false;
+    // Una casa no es "nueva" o "usada" como un artículo
+    condBox.hidden = t === 'alquiler' || t === 'propiedad';
+    titleInput.placeholder = PLACEHOLDER[t];
+    const auto = TYPE_CATEGORY[t];
+    if (auto) catSelect.value = auto;
+    else if (Object.values(TYPE_CATEGORY).includes(catSelect.value)) catSelect.value = '';
+    syncFree();
+  }
+
+  // Lo que se regala va en Donaciones
+  function syncFree() {
+    priceInput.disabled = freeBox.checked;
+    priceInput.required = !freeBox.checked;
+    if (freeBox.checked) {
+      priceInput.value = '';
+      catSelect.value = 'donaciones';
+    } else if (catSelect.value === 'donaciones') {
+      catSelect.value = '';
+    }
+    syncPriceLabel();
+  }
+
+  // Elegir la categoría también ajusta el tipo (y "gratis" si es Donaciones)
+  catSelect.addEventListener('change', () => {
+    const chosen = catSelect.value;
+    const kind = (Object.entries(TYPE_CATEGORY).find(([, c]) => c === chosen)?.[0] as ListingKind | undefined) ?? 'articulo';
+    if (kind !== type()) {
+      form.querySelector<HTMLInputElement>(`input[name="type"][value="${kind}"]`)!.checked = true;
+      syncType();
+      catSelect.value = chosen;
+    }
+    freeBox.checked = kind === 'articulo' && chosen === 'donaciones';
+    syncFree();
+  });
+
+  form.querySelectorAll('input[name="type"]').forEach((r) => r.addEventListener('change', syncType));
+  freeBox.addEventListener('change', syncFree);
+  syncType();
 
   function renderPhotos() {
     row.querySelectorAll('.thumb').forEach((t) => t.remove());
@@ -274,23 +430,49 @@ import { municipios } from '../data/site';
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const data = new FormData(form);
+    const t = type();
+    const extra: Record<string, string> = {};
+    const keys = t === 'vehiculo' ? ['year', 'make', 'miles', 'transmission'] : t === 'alquiler' || t === 'propiedad' ? ['beds', 'baths'] : [];
+    for (const k of keys) {
+      const v = String(data.get(k) ?? '').trim();
+      if (v) extra[k] = v;
+    }
+    const id = uid();
+    const title = String(data.get('title')).trim();
+    const price = freeBox.checked ? 0 : Number(data.get('price'));
+    const category = String(data.get('category'));
     const ok = listings.add({
-      id: uid(),
+      id,
       date: new Date().toISOString(),
-      title: String(data.get('title')).trim(),
-      price: Number(data.get('price')),
-      category: String(data.get('category')),
+      type: t,
+      title,
+      price,
+      category,
       condition: String(data.get('condition')),
       town: String(data.get('town')),
       description: String(data.get('description')).trim(),
-      freeShipping: data.get('freeShipping') === '1',
       photos,
+      extra,
       status: 'activo',
     });
     if (!ok) {
       toast('No hay espacio: prueba con menos fotos');
       return;
     }
+    // Demo: un comprador pregunta enseguida, para ver la pestaña "Vendiendo" en Mensajes.
+    const conv = chats.ensure({
+      id: `venta-${id}`,
+      listingId: id,
+      role: 'vendiendo',
+      title,
+      price,
+      type: t,
+      category,
+      image: photos[0],
+      color: 'azul',
+      withName: 'LUISA_787',
+    });
+    chats.send(conv.id, '¡Hola! ¿Sigue disponible?', 'ellos');
     form.hidden = true;
     done.hidden = false;
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -298,6 +480,8 @@ import { municipios } from '../data/site';
 
   document.querySelector('[data-sell-again]')!.addEventListener('click', () => {
     form.reset();
+    if (me) (form.elements.namedItem('town') as HTMLSelectElement).value = me.public.town;
+    syncType();
     photos = [];
     renderPhotos();
     done.hidden = true;

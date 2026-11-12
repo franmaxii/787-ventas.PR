@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+<defs><filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter><linearGradient id="hw" x1="0" y1="0" x2="0" y2="1"><stop offset="0.00" stop-color="#ffffff"/><stop offset="1.00" stop-color="#e2e8f0"/></linearGradient></defs>
+
+<ellipse cx="124" cy="206" rx="100" ry="9" fill="#0f172a" opacity=".22" filter="url(#sh)"/>
+<path d="M38 204C36 170 40 140 52 116" stroke="#92400e" stroke-width="7" stroke-linecap="round"/>
+<path d="M52 116C40 100 22 100 12 108C26 102 40 108 52 116ZM52 116C46 98 52 82 64 76C58 90 56 102 52 116ZM52 116C66 102 84 102 92 112C78 106 64 108 52 116ZM52 116C38 110 26 120 22 132C32 120 42 116 52 116Z" fill="#22c55e"/>
+<rect x="64" y="104" width="120" height="98" fill="url(#hw)"/>
+<polygon points="52,108 124,52 196,108" fill="#f64e43"/>
+<polygon points="52,108 124,52 196,108 186,108 124,62 62,108" fill="#c9362c"/>
+<rect x="160" y="62" width="14" height="30" fill="#9ca3af"/>
+<rect x="110" y="148" width="28" height="54" rx="4" fill="#0d90ab"/><circle cx="132" cy="176" r="2.5" fill="#fde68a"/>
+<rect x="76" y="122" width="26" height="24" rx="3" fill="#bae6fd"/><path d="M89 122V146M76 134H102" stroke="#fff" stroke-width="2.5"/>
+<rect x="146" y="122" width="26" height="24" rx="3" fill="#bae6fd"/><path d="M159 122V146M146 134H172" stroke="#fff" stroke-width="2.5"/>
+<path d="M210 204V150" stroke="#78350f" stroke-width="5" stroke-linecap="round"/>
+<rect x="170" y="140" width="64" height="28" rx="5" fill="#ebb549" stroke="#a16207" stroke-width="2"/>
+<text x="202" y="158" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="9" fill="#1c1a16">SE ALQUILA</text>
+
+</svg>

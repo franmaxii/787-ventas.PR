@@ -527,4 +527,211 @@ svg('pique', f'''
 <path d="M164 188C158 190 157 196 164 198" stroke="#16a34a" stroke-width="3" stroke-linecap="round"/>
 ''', f'<clipPath id="bt"><path d="{bottle}"/></clipPath>')
 
+
+# 26. Carro (sedán)
+def car_wheel(cx):
+    return (f'<circle cx="{cx}" cy="166" r="21" fill="#111827"/><circle cx="{cx}" cy="166" r="10" fill="#cbd5e1"/>'
+            f'<circle cx="{cx}" cy="166" r="4" fill="#475569"/>')
+svg('carro', f"""
+{shadow(124, 190, 100, 8)}
+<path d="M26 150C26 136 34 128 50 126L78 121L100 97C106 91 114 88 124 88H160C170 88 178 92 184 100L201 121C213 123 222 130 222 142V156C222 161 218 166 212 166H36C30 166 26 161 26 156Z" fill="url(#cb)"/>
+<path d="M107 99L90 121H139V96H125C117 96 111 97 107 99Z" fill="#bae6fd"/>
+<path d="M146 96V121H192L179 103C175 99 168 96 160 96Z" fill="#bae6fd"/>
+<path d="M112 100L100 118" stroke="#fff" stroke-opacity=".7" stroke-width="4" stroke-linecap="round"/>
+<path d="M141 124V160M86 124V158" stroke="#7f1d1d" stroke-opacity=".35" stroke-width="2"/>
+<rect x="148" y="132" width="14" height="4" rx="2" fill="#7f1d1d" opacity=".5"/>
+<rect x="96" y="132" width="14" height="4" rx="2" fill="#7f1d1d" opacity=".5"/>
+<rect x="208" y="133" width="12" height="9" rx="3" fill="#fde68a"/>
+<rect x="26" y="135" width="9" height="11" rx="3" fill="#fecaca"/>
+<rect x="34" y="128" width="170" height="5" rx="2.5" fill="#fff" opacity=".3"/>
+{car_wheel(74)}{car_wheel(180)}
+""", lg('cb', ['#ff7a6f', '#f64e43', '#b91c1c']))
+
+# 27. Casa en alquiler
+svg('casa', f"""
+{shadow(124, 206, 100)}
+<path d="M38 204C36 170 40 140 52 116" stroke="#92400e" stroke-width="7" stroke-linecap="round"/>
+<path d="M52 116C40 100 22 100 12 108C26 102 40 108 52 116ZM52 116C46 98 52 82 64 76C58 90 56 102 52 116ZM52 116C66 102 84 102 92 112C78 106 64 108 52 116ZM52 116C38 110 26 120 22 132C32 120 42 116 52 116Z" fill="#22c55e"/>
+<rect x="64" y="104" width="120" height="98" fill="url(#hw)"/>
+<polygon points="52,108 124,52 196,108" fill="#f64e43"/>
+<polygon points="52,108 124,52 196,108 186,108 124,62 62,108" fill="#c9362c"/>
+<rect x="160" y="62" width="14" height="30" fill="#9ca3af"/>
+<rect x="110" y="148" width="28" height="54" rx="4" fill="#0d90ab"/><circle cx="132" cy="176" r="2.5" fill="#fde68a"/>
+<rect x="76" y="122" width="26" height="24" rx="3" fill="#bae6fd"/><path d="M89 122V146M76 134H102" stroke="#fff" stroke-width="2.5"/>
+<rect x="146" y="122" width="26" height="24" rx="3" fill="#bae6fd"/><path d="M159 122V146M146 134H172" stroke="#fff" stroke-width="2.5"/>
+<path d="M210 204V150" stroke="#78350f" stroke-width="5" stroke-linecap="round"/>
+<rect x="170" y="140" width="64" height="28" rx="5" fill="#ebb549" stroke="#a16207" stroke-width="2"/>
+<text x="202" y="158" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="9" fill="#1c1a16">SE ALQUILA</text>
+""", lg('hw', ['#ffffff', '#e2e8f0']))
+
+# 28. Sofá (Muebles) y sofá con cartel de GRATIS (Donaciones)
+sofa_base = f"""
+{shadow(120, 198, 98)}
+<rect x="46" y="170" width="8" height="18" rx="3" fill="#78350f"/><rect x="186" y="170" width="8" height="18" rx="3" fill="#78350f"/>
+<rect x="52" y="78" width="136" height="62" rx="20" fill="#b91c1c"/>
+<rect x="38" y="120" width="164" height="54" rx="16" fill="url(#sf)"/>
+<rect x="62" y="122" width="56" height="24" rx="9" fill="#fb7185"/><rect x="122" y="122" width="56" height="24" rx="9" fill="#fb7185"/>
+<rect x="26" y="102" width="34" height="74" rx="15" fill="url(#sf)"/><rect x="180" y="102" width="34" height="74" rx="15" fill="url(#sf)"/>
+<rect x="60" y="86" width="120" height="6" rx="3" fill="#fff" opacity=".2"/>
+"""
+free_tag = """
+<path d="M196 104L196 72" stroke="#1c1a16" stroke-width="1.5"/>
+<g transform="translate(-14 4) rotate(10 214 60)"><path d="M190 48H232L240 60L232 72H190Z" fill="#ebb549" stroke="#a16207" stroke-width="2"/>
+<circle cx="196" cy="60" r="3" fill="#a16207"/>
+<text x="216" y="64" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="11" fill="#1c1a16">GRATIS</text></g>
+"""
+svg('sofa', sofa_base, lg('sf', ['#f87171', '#dc2626']))
+svg('sofa-gratis', sofa_base + free_tag, lg('sf', ['#f87171', '#dc2626']))
+
+# 29. Cajas de mudanza
+def box(x, y, w, h, d=20):
+    dy = d * 0.7
+    return (f'<polygon points="{x},{y} {x + d},{y - dy} {x + w + d},{y - dy} {x + w},{y}" fill="#e7c393"/>'
+            f'<polygon points="{x + w},{y} {x + w + d},{y - dy} {x + w + d},{y + h - dy} {x + w},{y + h}" fill="#b07a45"/>'
+            f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="#d4a373"/>'
+            f'<rect x="{x + w / 2 - 6}" y="{y}" width="12" height="18" fill="#f7ecd9" opacity=".85"/>'
+            f'<polygon points="{x + w / 2 - 6},{y} {x + w / 2 - 6 + d},{y - dy} {x + w / 2 + 6 + d},{y - dy} {x + w / 2 + 6},{y}" fill="#f7ecd9" opacity=".85"/>'
+            f'<path d="M{x + 12} {y + h - 22}v-12l-5 5m5-5l5 5" stroke="#7c4a1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>')
+svg('cajas', f"""
+{shadow(124, 206, 100)}
+{box(34, 132, 86, 70)}{box(124, 140, 74, 62)}{box(74, 76, 80, 58)}
+""")
+
+
+# 30. Casa a la venta (techo de concreto, rejas y calentador solar, bien de aquí)
+bars = lambda x: ''.join(f'<path d="M{x + 7 + i * 7} 118V146" stroke="#fff" stroke-width="2.2"/>' for i in range(4))
+svg('casa-venta', f"""
+{shadow(120, 208, 102)}
+<rect x="84" y="68" width="40" height="16" rx="3" fill="#1e3a8a" transform="skewX(-14)"/>
+<path d="M84 72H120" stroke="#93c5fd" stroke-width="2" transform="skewX(-14)"/>
+<rect x="104" y="62" width="34" height="14" rx="7" fill="#e5e7eb"/><rect x="109" y="76" width="4" height="8" fill="#9ca3af"/><rect x="129" y="76" width="4" height="8" fill="#9ca3af"/>
+<rect x="44" y="84" width="152" height="14" rx="3" fill="#ffffff"/>
+<rect x="50" y="96" width="140" height="110" fill="url(#cv)"/>
+<rect x="50" y="96" width="140" height="6" fill="#000" opacity=".06"/>
+<rect x="60" y="114" width="36" height="36" rx="3" fill="#bae6fd"/>{bars(60)}
+<rect x="144" y="114" width="36" height="36" rx="3" fill="#bae6fd"/>{bars(144)}
+<rect x="104" y="146" width="32" height="60" rx="3" fill="#0d90ab"/><circle cx="130" cy="178" r="2.6" fill="#fde68a"/>
+<rect x="100" y="140" width="40" height="8" rx="2" fill="#fff"/>
+<circle cx="56" cy="200" r="14" fill="#22c55e"/><circle cx="74" cy="204" r="11" fill="#16a34a"/>
+<path d="M212 208V138" stroke="#78350f" stroke-width="5" stroke-linecap="round"/>
+<rect x="166" y="126" width="70" height="30" rx="5" fill="#f64e43" stroke="#b91c1c" stroke-width="2"/>
+<text x="201" y="145" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="11" fill="#fff">SE VENDE</text>
+""", lg('cv', ['#fef3c7', '#fcd9a0']))
+
+# 31. Coche de bebé
+spokes = lambda cx, cy: ''.join(
+    f'<path d="M{cx} {cy}L{cx + 13 * math.cos(math.radians(a)):.1f} {cy + 13 * math.sin(math.radians(a)):.1f}" stroke="#94a3b8" stroke-width="2"/>'
+    for a in range(0, 360, 45))
+svg('coche-bebe', f"""
+{shadow(122, 214, 86)}
+<path d="M98 168L76 196M150 168L170 196" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+<path d="M186 120L212 76" stroke="#334155" stroke-width="7" stroke-linecap="round"/>
+<rect x="200" y="66" width="28" height="12" rx="6" fill="#1e293b" transform="rotate(-30 214 72)"/>
+<path d="M48 120H192C192 154 164 176 120 176C76 176 48 154 48 120Z" fill="url(#cb2)"/>
+<path d="M58 132H182" stroke="#fff" stroke-opacity=".55" stroke-width="5" stroke-linecap="round"/>
+<path d="M50 120A70 70 0 0 1 120 50V120Z" fill="url(#hood)"/>
+<path d="M68 120A52 52 0 0 1 120 68M86 120A34 34 0 0 1 120 86" stroke="#fff" stroke-opacity=".35" stroke-width="3"/>
+<circle cx="150" cy="148" r="7" fill="#ebb549"/>
+<circle cx="76" cy="196" r="18" fill="#1f2937"/>{spokes(76, 196)}<circle cx="76" cy="196" r="5" fill="#e5e7eb"/>
+<circle cx="170" cy="196" r="18" fill="#1f2937"/>{spokes(170, 196)}<circle cx="170" cy="196" r="5" fill="#e5e7eb"/>
+""", lg('cb2', ['#22b3cf', '#0d90ab', '#0b6f88']) + lg('hood', ['#0b6f88', '#0a5568'], x2=1, y2=1))
+
+# 32. Mameluco de bebé
+heart = lambda cx, cy, r: (f'M{cx} {cy + r * .9}C{cx - r * 1.4} {cy + r * .1} {cx - r * .9} {cy - r} {cx} {cy - r * .35}'
+                           f'C{cx + r * .9} {cy - r} {cx + r * 1.4} {cy + r * .1} {cx} {cy + r * .9}Z')
+svg('mameluco', f"""
+{shadow(120, 214, 70)}
+<path d="M92 46C100 58 140 58 148 46L178 58L200 92L174 108L164 96V156C164 176 150 190 138 196V206H102V196C90 190 76 176 76 156V96L66 108L40 92L62 58Z" fill="url(#mm)"/>
+<path d="M92 46C100 58 140 58 148 46" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+<path d="M44 94L62 104M196 94L178 104" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+<path d="{heart(120, 112, 14)}" fill="#f64e43"/>
+<circle cx="110" cy="200" r="3" fill="#fff"/><circle cx="120" cy="200" r="3" fill="#fff"/><circle cx="130" cy="200" r="3" fill="#fff"/>
+<path d="M88 70V150" stroke="#fff" stroke-opacity=".3" stroke-width="5" stroke-linecap="round"/>
+""", lg('mm', ['#fef3c7', '#fde68a', '#ebb549']))
+
+# 33. Secadora de pelo ("blower")
+svg('secadora', f"""
+{shadow(118, 214, 78)}
+<path d="M108 196C114 216 148 216 158 202C168 188 190 190 198 208" stroke="#0f172a" stroke-width="4" stroke-linecap="round"/>
+<rect x="88" y="112" width="38" height="88" rx="16" fill="url(#hd)" transform="rotate(10 107 112)"/>
+<rect x="104" y="142" width="10" height="16" rx="3" fill="#ebb549" transform="rotate(10 107 112)"/>
+<rect x="104" y="164" width="10" height="10" rx="3" fill="#399552" transform="rotate(10 107 112)"/>
+<path d="M150 76L196 86V116L150 126Z" fill="#1e293b"/>
+<rect x="34" y="70" width="126" height="60" rx="30" fill="url(#hd)"/>
+<rect x="52" y="78" width="96" height="8" rx="4" fill="#fff" opacity=".28"/>
+<circle cx="48" cy="100" r="30" fill="#334155"/>
+<circle cx="48" cy="100" r="20" fill="none" stroke="#64748b" stroke-width="3"/>
+<path d="M48 82V118M30 100H66M35 87L61 113M61 87L35 113" stroke="#64748b" stroke-width="2"/>
+<path d="M204 90H226M206 101H234M204 112H222" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".9"/>
+""", lg('hd', ['#fb7185', '#e11d48', '#9f1239'], x2=0, y2=1))
+
+# 34. Perfume
+flower = lambda cx, cy, r, c: ''.join(
+    f'<circle cx="{cx + r * math.cos(math.radians(a)):.1f}" cy="{cy + r * math.sin(math.radians(a)):.1f}" r="{r * .85:.1f}" fill="{c}"/>'
+    for a in range(-90, 270, 72)) + f'<circle cx="{cx}" cy="{cy}" r="{r * .55:.1f}" fill="#fde68a"/>'
+svg('perfume', f"""
+{shadow(120, 212, 66)}
+<rect x="96" y="44" width="48" height="38" rx="9" fill="url(#cap)"/>
+<rect x="104" y="50" width="8" height="26" rx="4" fill="#fff" opacity=".4"/>
+<rect x="106" y="80" width="28" height="18" rx="3" fill="#e5e7eb"/>
+<rect x="68" y="96" width="104" height="110" rx="26" fill="#fff" fill-opacity=".55" stroke="#fff" stroke-width="3"/>
+<path d="M72 128H168V180C168 194 158 202 144 202H96C82 202 72 194 72 180Z" fill="url(#liq)"/>
+<rect x="90" y="138" width="60" height="38" rx="7" fill="#fff"/>
+{flower(120, 157, 7, '#f64e43')}
+<rect x="78" y="104" width="8" height="84" rx="4" fill="#fff" opacity=".6"/>
+{flower(190, 186, 11, '#f64e43')}
+<path d="M178 200C186 194 196 196 204 202" stroke="#16a34a" stroke-width="4" stroke-linecap="round"/>
+""", lg('cap', ['#fcd34d', '#d97706', '#92400e'], x2=1, y2=1) + lg('liq', ['#fda4af', '#fb7185', '#e11d48']))
+
+# 35. Cómoda de gavetas
+drawers = ''.join(
+    f'<rect x="{52 + c * 70}" y="{80 + r * 38}" width="64" height="32" rx="4" fill="#d9a066" stroke="#8a5a2b" stroke-width="1.5"/>'
+    f'<circle cx="{84 + c * 70}" cy="{96 + r * 38}" r="4" fill="#fde68a" stroke="#a16207" stroke-width="1.5"/>'
+    for r in range(3) for c in range(2))
+svg('comoda', f"""
+{shadow(120, 214, 92)}
+<rect x="54" y="196" width="10" height="14" rx="2" fill="#5b3a1a"/><rect x="176" y="196" width="10" height="14" rx="2" fill="#5b3a1a"/>
+<rect x="44" y="72" width="152" height="128" rx="6" fill="url(#wd)"/>
+{drawers}
+<rect x="36" y="60" width="168" height="14" rx="5" fill="#8a5a2b"/>
+<rect x="66" y="42" width="22" height="18" rx="3" fill="#f64e43"/>
+<path d="M77 42C70 30 62 28 56 30C64 32 70 36 77 42ZM77 42C78 28 86 20 94 20C88 26 82 32 77 42ZM77 42C86 34 96 34 102 38C94 38 86 40 77 42Z" fill="#22c55e"/>
+<path d="M146 30H176L184 50H138Z" fill="#ebb549"/><rect x="158" y="50" width="6" height="10" fill="#475569"/>
+""", lg('wd', ['#c98b4f', '#a8693a']))
+
+# 36. Donaciones (caja con corazón)
+svg('donaciones', f"""
+{shadow(122, 210, 92)}
+{box(58, 122, 104, 82, 26)}
+<rect x="80" y="150" width="60" height="36" rx="6" fill="#fff" opacity=".9"/>
+<path d="{heart(110, 168, 11)}" fill="#f64e43"/>
+<path d="{heart(124, 70, 34)}" fill="url(#ht)"/>
+<path d="M100 58C104 50 112 46 120 48" stroke="#fff" stroke-opacity=".6" stroke-width="5" stroke-linecap="round"/>
+<path d="M186 54l4 9 9 4-9 4-4 9-4-9-9-4 9-4z" fill="#ebb549"/>
+<path d="M58 70l3 6 6 3-6 3-3 6-3-6-6-3 6-3z" fill="#fff"/>
+""", lg('ht', ['#ff7a6f', '#f64e43', '#c9362c']))
+
+# 37. Brincolín (castillo inflable)
+net = ''.join(f'<path d="M{66 + i * 18} 128V176" stroke="#fff" stroke-opacity=".55" stroke-width="2"/>' for i in range(7))
+net += ''.join(f'<path d="M62 {136 + i * 12}H178" stroke="#fff" stroke-opacity=".55" stroke-width="2"/>' for i in range(4))
+def tower(x):
+    return (f'<rect x="{x}" y="88" width="36" height="104" rx="18" fill="url(#tw)"/>'
+            f'<circle cx="{x + 18}" cy="88" r="20" fill="#f64e43"/>'
+            f'<path d="M{x + 18} 68V46" stroke="#1c1a16" stroke-width="2"/><path d="M{x + 18} 46L{x + 34} 52L{x + 18} 58Z" fill="#399552"/>'
+            f'<rect x="{x + 8}" y="100" width="6" height="70" rx="3" fill="#fff" opacity=".35"/>')
+crenels = ''.join(f'<rect x="{58 + i * 26}" y="98" width="18" height="18" rx="6" fill="#4ade80"/>' for i in range(5))
+svg('brincolin', f"""
+{shadow(120, 214, 104)}
+{crenels}
+<rect x="56" y="108" width="128" height="76" rx="8" fill="url(#bw)"/>
+<rect x="62" y="128" width="116" height="48" rx="6" fill="#0d90ab" fill-opacity=".35"/>
+{net}
+<rect x="28" y="176" width="184" height="30" rx="14" fill="url(#bb)"/>
+<rect x="40" y="182" width="160" height="6" rx="3" fill="#fff" opacity=".35"/>
+<path d="M98 206H142L152 222H88Z" fill="#ebb549"/>
+{tower(26)}{tower(178)}
+<ellipse cx="116" cy="40" rx="12" ry="15" fill="#ebb549"/><path d="M116 55C112 64 120 70 116 80" stroke="#1c1a16" stroke-width="1.2"/>
+<ellipse cx="138" cy="52" rx="10" ry="13" fill="#fff"/><path d="M138 65C134 72 142 78 138 86" stroke="#1c1a16" stroke-width="1.2"/>
+""", lg('tw', ['#fde68a', '#ebb549', '#d39a1f'], x2=1, y2=0) + lg('bw', ['#4ade80', '#399552']) + lg('bb', ['#ff7a6f', '#f64e43', '#c9362c']))
+
 print('\n'.join(sorted(p.name for p in OUT.glob('*.svg'))))

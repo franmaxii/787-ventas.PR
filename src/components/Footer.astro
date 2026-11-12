@@ -11,9 +11,9 @@ const year = new Date().getFullYear();
   <div class="footer__card glass-lite">
     <div class="footer__brand">
       <strong>{site.name}</strong>
-      <p>{site.tagline}. Compra protegida, vendedores verificados y envíos a toda la isla.</p>
+      <p>{site.tagline}. Publica gratis, coordina por Mensajes y encuéntrate de forma segura en tu pueblo.</p>
       <ul class="footer__trust">
-        <li><Icon name="shield" size={18} /> Compra protegida</li>
+        <li><Icon name="shield" size={18} /> Encuentro seguro</li>
         <li><Icon name="verified" size={18} /> Identidad verificada</li>
       </ul>
     </div>
@@ -28,11 +28,16 @@ const year = new Date().getFullYear();
       <ul>
         <li><a href={url('/cuenta')}>Mi perfil</a></li>
         <li><a href={url('/vender')}>Vender</a></li>
-        <li><a href={url('/compras')}>Mis compras</a></li>
+        <li><a href={url('/mensajes')}>Mensajes</a></li>
         <li><a href={url('/favoritos')}>Favoritos</a></li>
       </ul>
     </nav>
   </div>
+  <nav class="footer__links" aria-label="Información">
+    <a href={url('/sobre')}>Sobre Plaza 787</a>
+    <a href={url('/terminos')}>Términos y privacidad</a>
+    <a href={url('/contacto')}>Contáctanos</a>
+  </nav>
   <p class="footer__legal">© {year} {site.name} · Hecho en Puerto Rico</p>
 </footer>
 
@@ -114,9 +119,23 @@ const year = new Date().getFullYear();
   }
 
   .footer__legal {
-    margin: 14px 0 0;
+    margin: 8px 0 0;
     text-align: center;
     font-size: 0.8rem;
     color: var(--tinta-3);
+  }
+
+  .footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 18px;
+    margin-top: 14px;
+    font-size: 0.85rem;
+  }
+
+  .footer__links a {
+    color: var(--tinta-2);
+    font-weight: 600;
   }
 </style>

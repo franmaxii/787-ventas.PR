@@ -117,8 +117,8 @@ import { municipios } from '../data/site';
             Mostrar mis seguidores en el perfil
           </label>
           <nav class="settings__links" aria-label="Accesos">
-            <a href={url('/compras')}><Icon name="bag" /> Mis compras <Icon name="chevronRight" size={18} /></a>
             <a href={url('/favoritos')}><Icon name="heart" /> Favoritos <Icon name="chevronRight" size={18} /></a>
+            <a href={url('/notificaciones')}><Icon name="bell" /> Notificaciones <Icon name="chevronRight" size={18} /></a>
             <a href={url('/mensajes')}><Icon name="chat" /> Mensajes <Icon name="chevronRight" size={18} /></a>
           </nav>
           <button type="button" class="logout" data-logout><Icon name="logout" size={18} /> Cerrar sesión en este dispositivo</button>
@@ -369,78 +369,6 @@ import { municipios } from '../data/site';
     padding: 0;
   }
 
-  /* ---------- Hojas (diálogos) de vidrio ---------- */
-  .sheet {
-    width: min(480px, calc(100% - 24px));
-    max-height: calc(100dvh - 40px);
-    margin: auto auto 12px;
-    padding: 0;
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    border-radius: 28px;
-    color: var(--tinta);
-    background: linear-gradient(160deg, rgba(255, 255, 255, 0.9), rgba(247, 236, 217, 0.8));
-    -webkit-backdrop-filter: blur(30px) saturate(180%);
-    backdrop-filter: blur(30px) saturate(180%);
-    box-shadow: 0 30px 70px -20px rgba(0, 0, 0, 0.5);
-  }
-
-  @media (min-width: 720px) {
-    .sheet {
-      margin: auto;
-    }
-  }
-
-  .sheet[open] {
-    animation: sheet-in 0.35s var(--ease-spring);
-  }
-
-  @keyframes sheet-in {
-    from {
-      transform: translateY(40px);
-      opacity: 0;
-    }
-  }
-
-  .sheet::backdrop {
-    background: rgba(28, 26, 22, 0.3);
-    -webkit-backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px);
-  }
-
-  .sheet form,
-  .sheet__body {
-    padding: 22px;
-  }
-
-  .sheet h2 {
-    font-size: 1.3rem;
-    margin-bottom: 8px;
-  }
-
-  .sheet .hint {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 14px;
-  }
-
-  .sheet__actions {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    margin-top: 8px;
-  }
-
-  .sheet__list {
-    display: grid;
-    gap: 10px;
-    margin-top: 14px;
-  }
-
-  .sheet .danger {
-    color: var(--rojito-700);
-  }
-
   .photo-pick {
     display: grid;
     justify-items: center;
@@ -491,7 +419,7 @@ import { municipios } from '../data/site';
 
 <script>
   import { getCategory } from '../data/categories';
-  import { formatMoney } from '../lib/format';
+  import { priceLabel } from '../lib/format';
   import { url } from '../lib/url';
   import { listingActions, listings, listingState, onChange, profile, type Listing } from '../scripts/store';
   import { initTabs } from '../scripts/tabs';
@@ -506,6 +434,8 @@ import { municipios } from '../data/site';
   const label = { activo: 'Activo', vendido: 'Vendido', expirado: 'Expirado' } as const;
 
   const tabs = initTabs($('[data-tabs]'));
+  // /cuenta?tab=info abre "Información y ajustes" (enlace "Mi cuenta" del menú)
+  if (new URLSearchParams(window.location.search).get('tab') === 'info') tabs.open('tab-info');
   const filter = initListingFilter({
     grid,
     chips: $('[data-status-chips]'),
@@ -578,7 +508,7 @@ import { municipios } from '../data/site';
           <span class="ltile__media">
             <span class="tile tile--${esc(cat?.color ?? 'azul')}" style="aspect-ratio:1;border-radius:20px">${img}</span>
             ${st !== 'activo' ? `<span class="status status--${st}">${label[st]}</span>` : ''}
-            <span class="ltile__price">${formatMoney(l.price)}</span>
+            <span class="ltile__price">${priceLabel(l)}</span>
           </span>
           <span class="ltile__title">${esc(l.title)}</span>
         </button>`;
@@ -696,7 +626,7 @@ import { municipios } from '../data/site';
     if (!current) return;
     const st = listingState(current);
     $('[data-l-title]').textContent = current.title;
-    $('[data-l-meta]').textContent = `${label[st]} · ${formatMoney(current.price)} · publicado el ${formatDate(current.date)}`;
+    $('[data-l-meta]').textContent = `${label[st]} · ${priceLabel(current)} · publicado el ${formatDate(current.date)}`;
     $('[data-l-action="sold"]').hidden = st !== 'activo';
     $('[data-l-action="renew"]').hidden = st === 'activo';
     lDialog.showModal();

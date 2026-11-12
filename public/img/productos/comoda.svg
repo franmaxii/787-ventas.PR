@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+<defs><filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter><linearGradient id="wd" x1="0" y1="0" x2="0" y2="1"><stop offset="0.00" stop-color="#c98b4f"/><stop offset="1.00" stop-color="#a8693a"/></linearGradient></defs>
+
+<ellipse cx="120" cy="214" rx="92" ry="9" fill="#0f172a" opacity=".22" filter="url(#sh)"/>
+<rect x="54" y="196" width="10" height="14" rx="2" fill="#5b3a1a"/><rect x="176" y="196" width="10" height="14" rx="2" fill="#5b3a1a"/>
+<rect x="44" y="72" width="152" height="128" rx="6" fill="url(#wd)"/>
+<rect x="52" y="80" width="64" height="32" rx="4" fill="#d9a066" stroke="#8a5a2b" stroke-width="1.5"/><circle cx="84" cy="96" r="4" fill="#fde68a" stroke="#a16207" stroke-width="1.5"/><rect x="122" y="80" width="64" height="32" rx="4" fill="#d9a066" stroke="#8a5a2b" stroke-width="1.5"/><circle cx="154" cy="96" r="4" fill="#fde68a" stroke="#a16207" stroke-width="1.5"/><rect x="52" y="118" width="64" height="32" rx="4" fill="#d9a066" stroke="#8a5a2b" stroke-width="1.5"/><circle cx="84" cy="134" r="4" fill="#fde68a" stroke="#a16207" stroke-width="1.5"/><rect x="122" y="118" width="64" height="32" rx="4" fill="#d9a066" stroke="#8a5a2b" stroke-width="1.5"/><circle cx="154" cy="134" r="4" fill="#fde68a" stroke="#a16207" stroke-width="1.5"/><rect x="52" y="156" width="64" height="32" rx="4" fill="#d9a066" stroke="#8a5a2b" stroke-width="1.5"/><circle cx="84" cy="172" r="4" fill="#fde68a" stroke="#a16207" stroke-width="1.5"/><rect x="122" y="156" width="64" height="32" rx="4" fill="#d9a066" stroke="#8a5a2b" stroke-width="1.5"/><circle cx="154" cy="172" r="4" fill="#fde68a" stroke="#a16207" stroke-width="1.5"/>
+<rect x="36" y="60" width="168" height="14" rx="5" fill="#8a5a2b"/>
+<rect x="66" y="42" width="22" height="18" rx="3" fill="#f64e43"/>
+<path d="M77 42C70 30 62 28 56 30C64 32 70 36 77 42ZM77 42C78 28 86 20 94 20C88 26 82 32 77 42ZM77 42C86 34 96 34 102 38C94 38 86 40 77 42Z" fill="#22c55e"/>
+<path d="M146 30H176L184 50H138Z" fill="#ebb549"/><rect x="158" y="50" width="6" height="10" fill="#475569"/>
+
+</svg>

@@ -4,7 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import CategoryRow from '../../components/CategoryRow.astro';
 import ProductGrid from '../../components/ProductGrid.astro';
 import Icon from '../../components/Icon.astro';
-import { categories, type Category } from '../../data/categories';
+import { categories, SPECIAL_CATEGORIES, type Category } from '../../data/categories';
 import { activeProducts as products } from '../../data/products';
 
 export function getStaticPaths() {
@@ -34,17 +34,23 @@ const items = products.filter((p) => p.category === category.slug);
   <div class="container">
     <form class="bar" data-filters>
       <p class="count" data-results-count>{items.length} resultados</p>
-      <label class="chip chip--toggle">
-        <input type="checkbox" name="envio" value="1" />
-        <Icon name="truck" size={18} /> Envío gratis
-      </label>
+      <button type="button" class="chip" data-location-open><Icon name="pin" solid size={16} /> <span data-location-label>Ubicación</span></button>
+      {
+        !SPECIAL_CATEGORIES.includes(category.slug) && (
+          <label class="chip chip--toggle">
+            <input type="checkbox" name="gratis" value="1" />
+            <Icon name="gift" size={18} /> Gratis
+          </label>
+        )
+      }
       <label class="sort">
         <span class="sr-only">Ordenar por</span>
         <select name="orden" class="select">
-          <option value="">Más relevantes</option>
+          <option value="">Sugeridos</option>
+          <option value="cerca">Más cerca</option>
+          <option value="recientes">Más recientes</option>
           <option value="menor">Menor precio</option>
           <option value="mayor">Mayor precio</option>
-          <option value="vendidos">Más vendidos</option>
         </select>
       </label>
     </form>
@@ -53,8 +59,9 @@ const items = products.filter((p) => p.category === category.slug);
 
     <div class="empty" data-results-empty hidden>
       <span class="empty__icon"><Icon name="filter" size={40} /></span>
-      <h2>No hay productos con esos filtros</h2>
-      <p>Prueba quitando “Envío gratis”.</p>
+      <h2>No hay publicaciones con esos filtros</h2>
+      <p>Amplía la distancia o quita "Gratis".</p>
+      <button type="button" class="btn btn--primary" data-location-open>Cambiar distancia</button>
     </div>
   </div>
 </Layout>

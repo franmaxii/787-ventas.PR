@@ -4,19 +4,19 @@ import Layout from '../layouts/Layout.astro';
 import SearchBar from '../components/SearchBar.astro';
 import ProductGrid from '../components/ProductGrid.astro';
 import Icon from '../components/Icon.astro';
-import { activeProducts as products, sellers } from '../data/products';
+import LocationChip from '../components/LocationChip.astro';
+import { activeProducts as products } from '../data/products';
 import { categories } from '../data/categories';
-
-const towns = [...new Set(sellers.map((s) => s.town))].sort((a, b) => a.localeCompare(b, 'es'));
 ---
 
-<Layout title="Buscar" description="Busca productos en Plaza 787.">
+<Layout title="Buscar" description="Busca publicaciones cerca de ti en Plaza 787.">
   <SearchBar />
+  <LocationChip />
 
   <div class="container">
     <div class="results-head">
       <div>
-        <h1 class="page-title" data-results-title>Todos los productos</h1>
+        <h1 class="page-title" data-results-title>Todas las publicaciones</h1>
         <p class="page-sub" data-results-count>{products.length} resultados</p>
       </div>
     </div>
@@ -28,21 +28,22 @@ const towns = [...new Set(sellers.map((s) => s.town))].sort((a, b) => a.localeCo
         </button>
 
         <label class="chip chip--toggle">
-          <input type="checkbox" name="envio" value="1" />
-          <Icon name="truck" size={18} /> Envío gratis
+          <input type="checkbox" name="gratis" value="1" />
+          <Icon name="gift" size={18} /> Gratis
         </label>
         <label class="chip chip--toggle">
-          <input type="checkbox" name="ofertas" value="1" />
-          <Icon name="tag" size={18} /> Ofertas
+          <input type="checkbox" name="baja" value="1" />
+          <Icon name="tag" size={18} /> Bajó de precio
         </label>
 
         <label class="sort">
           <span class="sr-only">Ordenar por</span>
           <select name="orden" class="select">
-            <option value="">Más relevantes</option>
+            <option value="">Sugeridos</option>
+            <option value="cerca">Más cerca</option>
+            <option value="recientes">Más recientes</option>
             <option value="menor">Menor precio</option>
             <option value="mayor">Mayor precio</option>
-            <option value="vendidos">Más vendidos</option>
           </select>
         </label>
       </div>
@@ -64,10 +65,12 @@ const towns = [...new Set(sellers.map((s) => s.town))].sort((a, b) => a.localeCo
             </select>
           </div>
           <div class="field">
-            <label for="f-town">Ubicación</label>
-            <select id="f-town" name="municipio" class="select">
-              <option value="">Toda la isla</option>
-              {towns.map((t) => <option value={t}>{t}</option>)}
+            <label for="f-days">Publicado</label>
+            <select id="f-days" name="dias" class="select">
+              <option value="">Cuando sea</option>
+              <option value="1">Últimas 24 horas</option>
+              <option value="7">Últimos 7 días</option>
+              <option value="30">Últimos 30 días</option>
             </select>
           </div>
           <fieldset class="field price">
@@ -88,8 +91,9 @@ const towns = [...new Set(sellers.map((s) => s.town))].sort((a, b) => a.localeCo
     <div class="empty" data-results-empty hidden>
       <span class="empty__icon"><Icon name="search" size={40} /></span>
       <h2>No encontramos publicaciones</h2>
-      <p>Revisa la ortografía o usa palabras más generales.</p>
-      <a href={url('/buscar')} class="btn btn--primary">Ver todos los productos</a>
+      <p>Prueba con otras palabras o amplía la distancia.</p>
+      <button type="button" class="btn btn--primary" data-location-open>Cambiar ubicación o distancia</button>
+      <a href={url('/buscar')} class="btn btn--soft">Quitar filtros</a>
     </div>
   </div>
 </Layout>
@@ -173,15 +177,15 @@ const towns = [...new Set(sellers.map((s) => s.town))].sort((a, b) => a.localeCo
   });
 
   form.addEventListener('filters:applied', (e) => {
-    const s = (e as CustomEvent).detail as { q: string; categoria: string; ofertas: boolean };
+    const s = (e as CustomEvent).detail as { q: string; categoria: string; gratis: boolean };
     const cat = categories.find((c) => c.slug === s.categoria);
     title.textContent = s.q
       ? `“${s.q}”`
-      : s.ofertas
-        ? 'Ofertas'
+      : s.gratis
+        ? 'Gratis'
         : cat
           ? cat.name
-          : 'Todos los productos';
+          : 'Todas las publicaciones';
     document.title = `${title.textContent} | Plaza 787`;
   });
 
