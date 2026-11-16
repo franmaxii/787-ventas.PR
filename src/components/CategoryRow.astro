@@ -1,6 +1,7 @@
 ---
 import { url } from '../lib/url';
 import { categories } from '../data/categories';
+import Icon from './Icon.astro';
 
 interface Props {
   active?: string;
@@ -19,8 +20,8 @@ const { active } = Astro.props;
             aria-current={active === c.slug ? 'page' : undefined}
             title={c.name}
           >
-            <span class="cat__circle" aria-hidden="true">
-              <img src={url(c.image)} alt="" width="48" height="48" loading="lazy" />
+            <span class={`cat__circle cat__circle--${c.color}`} aria-hidden="true">
+              <Icon name={c.icon} size={30} stroke={1.6} />
             </span>
             <span class="cat__name">{c.short}</span>
           </a>
@@ -85,10 +86,25 @@ const { active } = Astro.props;
     transition: transform 0.3s var(--ease-spring);
   }
 
-  .cat__circle img {
-    width: 74%;
-    height: 74%;
-    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.15));
+  /* tonos oscuros de la paleta: el ícono llega a 3:1 o más sobre el vidrio blanco */
+  .cat__circle--azul {
+    color: var(--azul-700);
+  }
+
+  .cat__circle--rojito {
+    color: var(--rojito-700);
+  }
+
+  .cat__circle--amarillo {
+    color: var(--amarillo-700);
+  }
+
+  .cat__circle--verde {
+    color: var(--verde-700);
+  }
+
+  .cat__circle :global(.icon) {
+    filter: drop-shadow(0 2px 2px rgba(74, 56, 22, 0.12));
   }
 
   .cat:hover .cat__circle {

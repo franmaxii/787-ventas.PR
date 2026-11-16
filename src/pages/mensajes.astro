@@ -125,6 +125,11 @@ import { url } from '../lib/url';
     padding: 4px;
   }
 
+  .chat-page .conv__img img.is-photo,
+  .chat-page .thread__img img.is-photo {
+    padding: 0;
+  }
+
   .chat-page .conv strong,
   .chat-page .conv small,
   .chat-page .conv span.last {
@@ -315,7 +320,8 @@ import { url } from '../lib/url';
   const pending = new Set<string>();
 
   const time = (iso: string) => new Date(iso).toLocaleTimeString('es-PR', { hour: 'numeric', minute: '2-digit' });
-  const img = (c: Conversation) => (c.image ? `<img src="${esc(c.image)}" alt="" />` : '');
+  const img = (c: Conversation) =>
+    c.image ? `<img src="${esc(c.image)}" alt=""${c.image.endsWith('.svg') ? '' : ' class="is-photo"'} />` : '';
 
   // ---------- Respuestas automáticas (solo demo) ----------
   function autoReply(c: Conversation, text: string): string {

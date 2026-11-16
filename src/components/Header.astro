@@ -73,13 +73,14 @@ const mine = [
     </ul>
 
     <h2 class="drawer__label">Categorías</h2>
-    <ul class="drawer__list drawer__list--tight">
+    <ul class="drawer__list drawer__list--icons drawer__list--tight">
       {
         categories.map((c) => {
           const href = url(`/categoria/${c.slug}`);
           return (
             <li>
               <a href={href} aria-current={current(href)}>
+                <Icon name={c.icon} size={24} stroke={1.8} />
                 {c.name}
               </a>
             </li>
@@ -272,7 +273,8 @@ const mine = [
     align-items: center;
     gap: 12px;
     min-height: 44px;
-    padding: 8px 14px 8px 56px;
+    /* sin ícono, el texto se alinea con el de las filas que sí tienen (12 + 26 + 12) */
+    padding: 8px 14px 8px 50px;
     border-radius: 12px;
     color: var(--tinta);
     font-size: 0.98rem;
@@ -293,8 +295,13 @@ const mine = [
   }
 
   .drawer__list--tight a {
-    min-height: 38px;
+    min-height: 40px;
     padding-block: 6px;
+  }
+
+  /* los íconos de 24px quedan centrados en la misma columna que los de 26px */
+  .drawer__list--tight a :global(.icon) {
+    margin-inline: 1px;
   }
 
   .drawer__list a:hover {

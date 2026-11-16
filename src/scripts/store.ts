@@ -87,6 +87,15 @@ export interface Conversation {
   unread: number;
 }
 
+/** Colección de favoritos ("Pa' la casa", "Regalos"…). Sus publicaciones también están en Favoritos. */
+export interface Collection {
+  id: string;
+  name: string;
+  /** Ids de publicaciones, la más reciente primero. */
+  ids: string[];
+  createdAt: string;
+}
+
 export interface Location {
   town: string;
   /** Millas. 0 = toda la isla. */
@@ -97,6 +106,7 @@ export interface Location {
 
 const KEYS = {
   favs: 'p787:favs',
+  collections: 'p787:collections',
   listings: 'p787:listings',
   profile: 'p787:profile',
   following: 'p787:following',
@@ -143,12 +153,87 @@ export const uid = () => Date.now().toString(36) + Math.random().toString(36).sl
 export const favs = {
   ids: () => read<string[]>(KEYS.favs, []),
   has: (id: string) => favs.ids().includes(id),
-  /** Devuelve true si quedó guardado. */
+  /** Devuelve true si quedó guardado. Al quitarlo de Favoritos sale también de sus colecciones. */
   toggle(id: string) {
     const ids = favs.ids();
     const next = ids.includes(id) ? ids.filter((x) => x !== id) : [id, ...ids];
     write(KEYS.favs, next);
-    return next.includes(id);
+    const saved = next.includes(id);
+    if (!saved) collections.forget(id);
+    return saved;
+  },
+  add(id: string) {
+    if (!favs.has(id)) write(KEYS.favs, [id, ...favs.ids()]);
+  },
+};
+
+// ---------------------------------------------------------------- Colecciones de favoritos
+
+/** Largo máximo del nombre de una colección. */
+export const COLLECTION_NAME_MAX = 40;
+
+const cleanName = (name: string) => name.replace(/\s+/g, ' ').trim().slice(0, COLLECTION_NAME_MAX);
+
+export const collections = {
+  all: () => read<Collection[]>(KEYS.collections, []),
+  get: (id: string) => collections.all().find((c) => c.id === id),
+  /** Colecciones que tienen esta publicación. */
+  of: (itemId: string) => collections.all().filter((c) => c.ids.includes(itemId)),
+  /**
+   * Crea una colección (opcionalmente con una publicación adentro) y la devuelve.
+   * Si ya hay una con el mismo nombre, usa esa. Devuelve null si el nombre está vacío.
+   */
+  create(name: string, itemId?: string): Collection | null {
+    const clean = cleanName(name);
+    if (!clean) return null;
+    const all = collections.all();
+    let col = all.find((c) => c.name.toLocaleLowerCase('es') === clean.toLocaleLowerCase('es'));
+    if (!col) {
+      col = { id: uid(), name: clean, ids: [], createdAt: new Date().toISOString() };
+      all.push(col);
+    }
+    if (itemId && !col.ids.includes(itemId)) {
+      col.ids = [itemId, ...col.ids];
+      favs.add(itemId);
+    }
+    write(KEYS.collections, all);
+    return col;
+  },
+  rename(id: string, name: string) {
+    const clean = cleanName(name);
+    if (!clean) return false;
+    return write(KEYS.collections, collections.all().map((c) => (c.id === id ? { ...c, name: clean } : c)));
+  },
+  /** Borra la colección; sus publicaciones siguen en Favoritos. Devuelve la borrada (para deshacer). */
+  remove(id: string) {
+    const all = collections.all();
+    const gone = all.find((c) => c.id === id);
+    write(KEYS.collections, all.filter((c) => c.id !== id));
+    return gone;
+  },
+  /** Vuelve a poner una colección borrada (botón "Deshacer"). */
+  restore(col: Collection) {
+    const all = collections.all().filter((c) => c.id !== col.id);
+    write(KEYS.collections, [...all, col].sort((a, b) => a.createdAt.localeCompare(b.createdAt)));
+  },
+  /** Pone o quita la publicación de la colección. Devuelve true si quedó adentro. */
+  toggle(id: string, itemId: string) {
+    let inside = false;
+    const next = collections.all().map((c) => {
+      if (c.id !== id) return c;
+      inside = !c.ids.includes(itemId);
+      return { ...c, ids: inside ? [itemId, ...c.ids] : c.ids.filter((x) => x !== itemId) };
+    });
+    write(KEYS.collections, next);
+    if (inside) favs.add(itemId);
+    return inside;
+  },
+  /** Saca la publicación de todas las colecciones. */
+  forget(itemId: string) {
+    const all = collections.all();
+    if (all.some((c) => c.ids.includes(itemId))) {
+      write(KEYS.collections, all.map((c) => ({ ...c, ids: c.ids.filter((x) => x !== itemId) })));
+    }
   },
 };
 

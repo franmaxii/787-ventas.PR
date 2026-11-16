@@ -7,8 +7,8 @@ export const site = {
    * Video del hero de la portada. Pon tu archivo en `public/video/` y escribe la ruta,
    * por ejemplo: '/video/promo.mp4'. Si se deja vacío, el botón de play muestra un aviso.
    */
-  heroVideo: '',
-  heroPoster: '',
+  heroVideo: '/video/promo.mp4',
+  heroPoster: '/video/poster.webp',
   /**
    * Logo. Si pones tu archivo (PNG/SVG) en `public/` y escribes la ruta aquí
    * (por ejemplo '/logo.png'), se usa en lugar del logo de texto.

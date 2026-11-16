@@ -8,12 +8,14 @@ interface Props {
   id?: string;
   /** Fila con scroll horizontal en vez de cuadrícula. */
   scroller?: boolean;
+  /** Botón de colección en cada tarjeta. */
+  collect?: boolean;
 }
-const { products, filterable = false, id, scroller = false } = Astro.props;
+const { products, filterable = false, id, scroller = false, collect = false } = Astro.props;
 ---
 
 <div class:list={['grid', { 'grid--scroller': scroller }]} id={id}>
-  {products.map((p) => <ProductCard product={p} filterable={filterable} />)}
+  {products.map((p) => <ProductCard product={p} filterable={filterable} collect={collect} />)}
 </div>
 
 <style>

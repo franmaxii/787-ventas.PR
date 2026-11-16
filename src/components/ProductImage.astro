@@ -53,7 +53,7 @@ const isPhoto = !!product.image && !product.image.endsWith('.svg');
     transition: transform 0.35s var(--ease-spring);
   }
 
-  .pimg--large img {
+  .pimg--large img:not(.is-photo) {
     padding: 10%;
   }
 

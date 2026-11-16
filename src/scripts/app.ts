@@ -52,6 +52,14 @@ document.addEventListener('click', (e) => {
   const favBtn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-fav]');
   if (!favBtn) return;
   e.preventDefault();
-  const saved = favs.toggle(favBtn.dataset.fav!);
-  toast(saved ? 'Añadido a favoritos' : 'Quitado de favoritos');
+  const id = favBtn.dataset.fav!;
+  const saved = favs.toggle(id);
+  if (saved) {
+    toast('Añadido a favoritos', {
+      label: 'Añadir a colección',
+      run: () => window.dispatchEvent(new CustomEvent('p787:collect', { detail: { id } })),
+    });
+  } else {
+    toast('Quitado de favoritos');
+  }
 });

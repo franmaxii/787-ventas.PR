@@ -7,6 +7,7 @@ import ProductImage from '../../components/ProductImage.astro';
 import ProductGrid from '../../components/ProductGrid.astro';
 import { activeProducts, getSeller, products, statusOf, townOf, type Product } from '../../data/products';
 import { getCategory } from '../../data/categories';
+import { licenseLabel, photoCredit, sourceLabel } from '../../data/fotos';
 import { formatMiles, formatMoney, priceLabel, timeAgo } from '../../lib/format';
 
 export function getStaticPaths() {
@@ -19,6 +20,7 @@ interface Props {
 const { product: p } = Astro.props;
 const seller = getSeller(p.sellerId)!;
 const category = getCategory(p.category);
+const credit = photoCredit(p.id);
 const town = townOf(p);
 const status = statusOf(p);
 const isActive = status === 'activo';
@@ -74,6 +76,16 @@ const quick =
         <button type="button" class="pdp__fav" hidden={!isActive} data-fav={p.id} aria-pressed="false" aria-label={`Añadir ${p.title} a favoritos`}>
           <Icon name="heart" size={24} stroke={2} />
         </button>
+        {
+          credit && (
+            <p class="pdp__credit">
+              Foto de ejemplo:{' '}
+              {credit.creatorUrl ? <a href={credit.creatorUrl}>{credit.creator}</a> : credit.creator} ·{' '}
+              <a href={credit.url}>{sourceLabel(credit)}</a> ·{' '}
+              {credit.licenseUrl ? <a href={credit.licenseUrl}>{licenseLabel(credit)}</a> : licenseLabel(credit)}
+            </p>
+          )
+        }
       </div>
 
       <div class="pdp__info">
@@ -130,6 +142,7 @@ const quick =
 
         <div class="actions" hidden={!isActive}>
           <button type="button" class="act" data-fav={p.id} aria-pressed="false"><Icon name="heart" size={20} /> Favorito</button>
+          <button type="button" class="act" data-collect={p.id} aria-haspopup="dialog"><Icon name="folderPlus" size={20} /> Colección</button>
           <button type="button" class="act" data-offer><Icon name="currency" size={20} /> Hacer oferta</button>
           <button type="button" class="act" data-share><Icon name="share" size={20} /> Compartir</button>
           <button type="button" class="act" data-report><Icon name="flag" size={20} /> Reportar</button>
@@ -293,6 +306,18 @@ const quick =
     position: relative;
   }
 
+  .pdp__credit {
+    margin: 8px 6px 0;
+    font-size: 0.74rem;
+    line-height: 1.4;
+    color: var(--tinta-3);
+    overflow-wrap: anywhere;
+  }
+
+  .pdp__credit a {
+    color: inherit;
+  }
+
   /* los hijos de un grid no se encogen solos: sin esto la fila de mensajes rápidos ensancha la página */
   .pdp > *,
   .pdp__info > * {
@@ -412,8 +437,8 @@ const quick =
 
   .actions {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
   }
 
   .act {
@@ -426,8 +451,9 @@ const quick =
     background: var(--glass-bg-strong);
     box-shadow: var(--glass-edge), var(--shadow-sm);
     color: var(--tinta);
-    font-size: 0.78rem;
+    font-size: 0.74rem;
     font-weight: 700;
+    line-height: 1.15;
   }
 
   .act :global(.icon) {

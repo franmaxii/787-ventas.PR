@@ -1,5 +1,4 @@
 ---
-import { url } from '../../lib/url';
 import Layout from '../../layouts/Layout.astro';
 import CategoryRow from '../../components/CategoryRow.astro';
 import ProductGrid from '../../components/ProductGrid.astro';
@@ -21,7 +20,7 @@ const items = products.filter((p) => p.category === category.slug);
 <Layout title={category.name} description={`${category.name} en Plaza 787. ${category.blurb}`}>
   <div class="container">
     <header class:list={['banner', 'tile', `tile--${category.color}`, { dark: category.color === 'amarillo' }]}>
-      <span class="banner__art" aria-hidden="true"><img src={url(category.image)} alt="" width="120" height="120" /></span>
+      <span class="banner__art" aria-hidden="true"><Icon name={category.icon} size={44} stroke={1.5} /></span>
       <div>
         <h1>{category.name}</h1>
         <p>{category.blurb}</p>
@@ -111,10 +110,8 @@ const items = products.filter((p) => p.category === category.slug);
     border: 1px solid rgba(255, 255, 255, 0.6);
   }
 
-  .banner__art img {
-    width: 82%;
-    height: 82%;
-    padding: 0;
+  .banner__art :global(.icon) {
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.18));
   }
 
   .bar {

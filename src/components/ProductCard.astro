@@ -10,8 +10,10 @@ interface Props {
   product: Product;
   /** Atributos de datos para filtrar y ordenar en el navegador (búsqueda). */
   filterable?: boolean;
+  /** Botón para guardar en una colección (página de Favoritos). */
+  collect?: boolean;
 }
-const { product: p, filterable = false } = Astro.props;
+const { product: p, filterable = false, collect = false } = Astro.props;
 const town = townOf(p);
 const dropped = !!p.originalPrice && p.originalPrice > p.price;
 
@@ -46,6 +48,19 @@ const data = filterable
   >
     <Icon name="heart" size={19} stroke={2} />
   </button>
+  {
+    collect && (
+      <button
+        type="button"
+        class="card__fav card__collect"
+        data-collect={p.id}
+        aria-haspopup="dialog"
+        aria-label={`Guardar ${p.title} en una colección`}
+      >
+        <Icon name="folderPlus" size={19} stroke={1.9} />
+      </button>
+    )
+  }
 
   <div class="card__body">
     <p class="card__price">
@@ -81,6 +96,11 @@ const data = filterable
 
   .card:hover :global(.pimg img) {
     transform: scale(1.07) rotate(-2deg);
+  }
+
+  /* una foto no se gira: solo un acercamiento suave */
+  .card:hover :global(.pimg img.is-photo) {
+    transform: scale(1.05);
   }
 
   .card__media {
@@ -127,6 +147,10 @@ const data = filterable
     backdrop-filter: blur(12px);
     box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.25);
     transition: transform 0.2s var(--ease-spring);
+  }
+
+  .card__collect {
+    top: 62px;
   }
 
   .card__fav:active {

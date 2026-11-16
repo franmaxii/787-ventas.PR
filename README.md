@@ -7,7 +7,11 @@ Diseño "Liquid Glass" (vidrio esmerilado estilo iPhone) con la paleta de la mar
 **Azul DTMF**, **Rojito**, **Crema**, **Amarillo**, **Verde** y **Blanco**.
 
 - Íconos: [Heroicons](https://heroicons.com) de Tailwind Labs (MIT), leídos del paquete `heroicons` al compilar.
-- Imágenes de productos: ilustraciones SVG ficticias en `public/img/productos/`.
+- Imágenes de productos: **fotos reales con licencia libre** (CC0, dominio público, CC BY y CC BY-SA:
+  todas permiten uso comercial y cambios), encontradas con [Openverse](https://openverse.org) en Flickr y
+  Wikimedia Commons. Están recortadas en cuadrado (800 px, WebP) en `public/img/productos/fotos/` y sus
+  créditos en `src/data/fotos.json`: salen debajo de la foto de cada publicación y en `/creditos`.
+  Las publicaciones que todavía no tienen foto usan las ilustraciones SVG de `public/img/productos/`.
 
 ## Comandos
 
@@ -28,7 +32,7 @@ Diseño "Liquid Glass" (vidrio esmerilado estilo iPhone) con la paleta de la mar
 | `/categoria/[slug]`      | Publicaciones de una de las 12 categorías (ver abajo)              |
 | `/producto/[id]`         | Publicación: mensaje al vendedor, ofertas, favorito, compartir, reportar, encuentro seguro |
 | `/mensajes`              | Chat: pestañas Comprando / Vendiendo, mensajes rápidos (respuestas demo automáticas) |
-| `/favoritos`             | Publicaciones marcadas con el corazón                              |
+| `/favoritos`             | Favoritos y **colecciones** (crear, renombrar, eliminar con deshacer; enlace `?c=`) |
 | `/notificaciones`        | Mensajes, bajadas de precio, publicaciones de quien sigues, publicaciones por vencer |
 | `/vender`                | Publicar artículo, vehículo, alquiler o propiedad en venta (requiere perfil verificado) |
 | `/registro`              | Crear perfil: público → info privada → verificación de ID          |
@@ -37,6 +41,7 @@ Diseño "Liquid Glass" (vidrio esmerilado estilo iPhone) con la paleta de la mar
 | `/sobre`                 | Sobre Plaza 787: cómo funciona, perfiles verificados, privacidad   |
 | `/terminos`              | Términos y privacidad (**borrador**: debe revisarlo un abogado)    |
 | `/contacto`              | Contáctanos: formulario (demo, no envía nada) y preguntas frecuentes |
+| `/creditos`              | Créditos y licencias de las fotos de las publicaciones de ejemplo  |
 
 ## Menú "Tu Plaza" (diseño de la socia)
 
@@ -49,10 +54,22 @@ El botón ☰ abre un menú con tres secciones:
   Bebés y maternidad, Electrónica / Tecnología, Deportes y playa, Salud y belleza, Muebles, Moda,
   Donaciones y Renta de artículos.
 
+Cada categoría tiene un ícono de Heroicons (campo `icon` en `src/data/categories.ts`): sale en el
+menú, en los círculos de la portada, en los títulos de sus secciones y en el encabezado de la categoría.
+
 Reglas de las categorías: lo que se marca como **gratis** va a *Donaciones*; *Renta de artículos*
 muestra el precio **por día**; *Venta bienes raíces* usa el tipo `propiedad` (cuartos y baños, sin
 "Nuevo/Usado"). Las artesanías y sabores de la isla viven en *Hogar y vida* con `local: true` y
 salen en la sección "Hecho en Puerto Rico" de la portada.
+
+## Favoritos y colecciones
+
+- El corazón guarda en **Favoritos**. El aviso que sale ofrece **Añadir a colección**.
+- **Colección** en una publicación, o la carpeta en cada tarjeta de Favoritos, abre "Guardar en
+  colección": marca una o varias colecciones o crea una nueva ("Pa' la casa", "Regalos"…).
+- Lo que está en una colección también está en Favoritos; si le quitas el corazón, sale de sus colecciones.
+- En `/favoritos` cada colección tiene portada con sus últimas fotos y se puede renombrar o eliminar
+  (con **Deshacer**). Se guardan en `localStorage` (`p787:collections`), igual que los favoritos.
 
 ## Perfil (diseño de la socia)
 
@@ -69,12 +86,15 @@ salen en la sección "Hecho en Puerto Rico" de la portada.
 - **Colores y tipografía:** `src/styles/global.css` (variables `--azul`, `--rojito`, `--crema`…).
 - **Logo:** por defecto es un logo de texto (`src/components/Logo.astro`). Para usar tu archivo,
   ponlo en `public/` (ej. `public/logo.png`) y escribe `logo: '/logo.png'` en `src/data/site.ts`.
-- **Video de portada:** pon el video en `public/video/promo.mp4` y escribe
-  `heroVideo: '/video/promo.mp4'` en `src/data/site.ts`.
+- **Video de portada:** está en `public/video/promo.mp4` (hecho con Google Flow / Veo, 8 s con audio) y su
+  imagen de portada en `public/video/poster.webp`; las rutas van en `heroVideo` y `heroPoster` de
+  `src/data/site.ts`. Para cambiarlo, comprímelo antes:
+  `ffmpeg -i video.mp4 -c:v libx264 -crf 25 -preset slow -c:a aac -b:a 128k -movflags +faststart public/video/promo.mp4`.
 - **Publicaciones, vendedores y categorías:** `src/data/products.ts` y `src/data/categories.ts`.
 - **Pueblos y distancias:** `src/data/pueblos.ts` (centro aproximado de los 78 municipios).
-  Cada producto tiene `image: '/img/productos/....svg'`; cámbialo por una foto real
-  (por ejemplo `'/fotos/nevera.jpg'`) y se mostrará llenando el cuadro.
+  Cada producto tiene `image: foto('<id>')` (foto real) o `image: img('<nombre>')` (ilustración SVG).
+  Para cambiar una foto, reemplaza `public/img/productos/fotos/<id>.webp` (cuadrada) y actualiza su
+  crédito en `src/data/fotos.json`; si es una foto tuya, borra su entrada para que no salga crédito.
 - **Ilustraciones:** se generan con `python3 scripts/generar-ilustraciones.py public/img/productos`;
   también puedes editar cada SVG a mano.
 - **Íconos:** `src/components/Icon.astro` mapea nombres cortos a archivos de Heroicons.

@@ -1,0 +1,211 @@
+---
+/*
+ * "Guardar en colección": se abre con cualquier botón [data-collect="<id de la publicación>"]
+ * o con el evento `p787:collect` (detail: { id }). Una publicación puede estar en varias colecciones.
+ */
+import Icon from './Icon.astro';
+import { url } from '../lib/url';
+import { products } from '../data/products';
+import { COLLECTION_NAME_MAX } from '../scripts/store';
+
+// Índice mínimo del catálogo para las portadas de las colecciones (título, imagen y color).
+const index = Object.fromEntries(
+  products.map((p) => [p.id, { t: p.title, i: p.image ? url(p.image) : '', c: p.color }]),
+);
+---
+
+<dialog class="sheet col-dialog" data-collect-dialog aria-labelledby="col-title">
+  <div class="sheet__body">
+    <h2 id="col-title">Guardar en colección</h2>
+    <p class="hint" data-collect-item></p>
+
+    <ul class="col-list" data-collect-list></ul>
+    <p class="hint col-none" data-collect-none hidden>Aún no tienes colecciones. Crea la primera, por ejemplo “Pa’ la casa” o “Regalos”.</p>
+
+    <form class="col-new" data-collect-new>
+      <label for="col-name" class="sr-only">Nombre de la colección nueva</label>
+      <input
+        id="col-name"
+        name="name"
+        class="input"
+        maxlength={COLLECTION_NAME_MAX}
+        placeholder="Nueva colección"
+        autocomplete="off"
+        required
+      />
+      <button type="submit" class="btn btn--soft"><Icon name="plus" size={18} /> Crear</button>
+    </form>
+
+    <div class="sheet__actions">
+      <a class="btn btn--soft" href={url("/favoritos")}>Ver colecciones</a>
+      <button type="button" class="btn btn--primary" data-close>Listo</button>
+    </div>
+  </div>
+</dialog>
+
+<script type="application/json" data-catalog-index set:html={JSON.stringify(index)} />
+
+<style>
+  .col-list {
+    list-style: none;
+    margin: 0 0 14px;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+    max-height: min(46vh, 340px);
+    overflow-y: auto;
+  }
+
+  .col-list :global(.col-row) {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 56px;
+    padding: 6px 12px 6px 6px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    cursor: pointer;
+  }
+
+  .col-list :global(.col-row:has(input:checked)) {
+    background: rgba(13, 144, 171, 0.1);
+    border-color: rgba(13, 144, 171, 0.35);
+  }
+
+  .col-list :global(.col-row__cover) {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    color: var(--azul-700);
+    background: var(--azul-100);
+  }
+
+  .col-list :global(.col-row__cover img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .col-list :global(.col-row__name) {
+    flex: 1;
+    min-width: 0;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  .col-list :global(.col-row__name small) {
+    display: block;
+    font-weight: 500;
+    color: var(--tinta-3);
+  }
+
+  .col-list :global(input[type='checkbox']) {
+    flex: none;
+    width: 22px;
+    height: 22px;
+    accent-color: var(--azul);
+  }
+
+  .col-none {
+    margin-bottom: 12px;
+  }
+
+  .col-new {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding: 0;
+  }
+
+  .col-new .input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .col-new .btn {
+    flex: none;
+  }
+</style>
+
+<script>
+  import { collections, onChange } from '../scripts/store';
+  import { catalogItem, coverHtml } from '../scripts/catalog';
+  import { esc, toast } from '../scripts/ui';
+
+  const dialog = document.querySelector<HTMLDialogElement>('[data-collect-dialog]')!;
+  const list = dialog.querySelector<HTMLElement>('[data-collect-list]')!;
+  const none = dialog.querySelector<HTMLElement>('[data-collect-none]')!;
+  const itemLabel = dialog.querySelector<HTMLElement>('[data-collect-item]')!;
+  const form = dialog.querySelector<HTMLFormElement>('[data-collect-new]')!;
+  const input = form.querySelector<HTMLInputElement>('input')!;
+  let itemId = '';
+
+  const plural = (n: number) => `${n} ${n === 1 ? 'publicación' : 'publicaciones'}`;
+
+  function render() {
+    if (!itemId) return;
+    const all = collections.all();
+    none.hidden = all.length > 0;
+    list.hidden = all.length === 0;
+    list.innerHTML = all
+      .map(
+        (c) => `
+        <li>
+          <label class="col-row">
+            <span class="col-row__cover">${coverHtml(c.ids[0])}</span>
+            <span class="col-row__name">${esc(c.name)}<small>${plural(c.ids.length)}</small></span>
+            <input type="checkbox" data-col="${esc(c.id)}" ${c.ids.includes(itemId) ? 'checked' : ''} />
+          </label>
+        </li>`,
+      )
+      .join('');
+  }
+
+  function open(id: string) {
+    itemId = id;
+    const item = catalogItem(id);
+    itemLabel.textContent = item ? item.t : '';
+    form.reset();
+    render();
+    dialog.showModal();
+    // Sin colecciones, lo primero es escribir el nombre de una
+    if (!collections.all().length) input.focus();
+  }
+
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-collect]');
+    if (!btn) return;
+    e.preventDefault();
+    open(btn.dataset.collect!);
+  });
+  window.addEventListener('p787:collect', (e) => open((e as CustomEvent<{ id: string }>).detail.id));
+
+  list.addEventListener('change', (e) => {
+    const box = e.target as HTMLInputElement;
+    const col = collections.get(box.dataset.col!);
+    if (!col) return;
+    const inside = collections.toggle(col.id, itemId);
+    toast(inside ? `Guardado en “${col.name}”` : `Quitado de “${col.name}”`);
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const col = collections.create(input.value, itemId);
+    if (!col) return;
+    form.reset();
+    toast(`Guardado en “${col.name}”`);
+  });
+
+  dialog.querySelector('[data-close]')!.addEventListener('click', () => dialog.close());
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+
+  // Mantener la lista al día (otra pestaña, o quitar el favorito mientras está abierta)
+  onChange(() => dialog.open && render());
+</script>

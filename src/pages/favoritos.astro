@@ -4,6 +4,7 @@ import Icon from '../components/Icon.astro';
 import Layout from '../layouts/Layout.astro';
 import ProductGrid from '../components/ProductGrid.astro';
 import { activeProducts as products } from '../data/products';
+import { COLLECTION_NAME_MAX } from '../scripts/store';
 ---
 
 <Layout title="Favoritos">
@@ -11,43 +12,358 @@ import { activeProducts as products } from '../data/products';
     <h1 class="page-title">Favoritos</h1>
     <p class="page-sub" data-fav-count></p>
 
+    <section class="cols" data-cols-section hidden aria-labelledby="cols-title">
+      <h2 class="cols__title" id="cols-title">Colecciones</h2>
+      <!-- Se llena desde el navegador: "Todos", cada colección y "Nueva colección" -->
+      <ul class="cols__row" data-cols></ul>
+    </section>
+
+    <div class="colbar" data-colbar hidden>
+      <h2 class="colbar__name" data-colbar-name></h2>
+      <div class="colbar__actions">
+        <button type="button" class="chip" data-col-rename><Icon name="pencil" size={16} /> Renombrar</button>
+        <button type="button" class="chip" data-col-delete><Icon name="trash" size={16} /> Eliminar</button>
+      </div>
+    </div>
+
     <!-- Se renderiza todo el catálogo y el navegador muestra solo los favoritos. -->
     <div data-fav-grid hidden>
-      <ProductGrid products={products} filterable id="fav-grid" />
+      <ProductGrid products={products} filterable collect id="fav-grid" />
+    </div>
+
+    <div class="empty" data-col-empty hidden>
+      <span class="empty__icon"><Icon name="stack" size={40} /></span>
+      <h2>Esta colección está vacía</h2>
+      <p>Toca la carpeta <Icon name="folderPlus" size={18} /> en uno de tus favoritos, o “Colección” en cualquier publicación.</p>
     </div>
 
     <div class="empty" data-fav-empty hidden>
       <span class="empty__icon"><Icon name="heart" size={40} /></span>
       <h2>Aún no tienes favoritos</h2>
-      <p>Toca el corazón en cualquier publicación para guardarla aquí. Te avisamos si baja de precio.</p>
+      <p>Toca el corazón en cualquier publicación para guardarla aquí. Luego puedes ordenarlas en colecciones.</p>
       <a href={url('/')} class="btn btn--primary">Ver publicaciones</a>
     </div>
   </div>
+
+  <dialog class="sheet" data-name-dialog aria-labelledby="name-title">
+    <form method="dialog" data-name-form>
+      <h2 id="name-title" data-name-title>Nueva colección</h2>
+      <div class="field">
+        <label for="name-input">Nombre</label>
+        <input
+          id="name-input"
+          name="name"
+          class="input"
+          maxlength={COLLECTION_NAME_MAX}
+          placeholder="Ej. Pa’ la casa, Regalos, Playa"
+          autocomplete="off"
+          required
+        />
+      </div>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--soft" data-name-cancel>Cancelar</button>
+        <button type="submit" class="btn btn--primary">Guardar</button>
+      </div>
+    </form>
+  </dialog>
 </Layout>
 
-<script>
-  import { favs, onChange } from '../scripts/store';
+<style>
+  .cols {
+    margin: 4px 0 18px;
+  }
 
-  const wrap = document.querySelector<HTMLElement>('[data-fav-grid]')!;
+  .cols__title {
+    margin: 0 0 10px;
+    font-size: 1.1rem;
+  }
+
+  .cols__row {
+    list-style: none;
+    margin: 0 calc(-1 * var(--gutter));
+    padding: 4px var(--gutter) 10px;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 132px;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+  }
+
+  .cols__row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cols__row :global(.colcard) {
+    display: grid;
+    gap: 6px;
+    width: 100%;
+    padding: 6px 6px 10px;
+    border: 1px solid var(--glass-border);
+    border-radius: 22px;
+    background: var(--glass-bg-strong);
+    box-shadow: var(--glass-edge), var(--shadow-sm);
+    color: var(--tinta);
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+    scroll-snap-align: start;
+    transition: transform 0.25s var(--ease-spring);
+  }
+
+  .cols__row :global(.colcard:active) {
+    transform: scale(0.96);
+  }
+
+  .cols__row :global(.colcard[aria-pressed='true']) {
+    border-color: var(--azul);
+    box-shadow: 0 0 0 2px var(--azul), var(--shadow-sm);
+  }
+
+  /* Portada: mosaico de 2×2 con las últimas publicaciones */
+  .cols__row :global(.colcard__cover) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 16px;
+    background: var(--azul-100);
+  }
+
+  .cols__row :global(.colcard__cover > *) {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    object-fit: cover;
+    background: rgba(255, 255, 255, 0.5);
+  }
+
+  .cols__row :global(.colcard__cover img.is-art) {
+    object-fit: contain;
+    padding: 8%;
+  }
+
+  .cols__row :global(.colcard__cover--one > *) {
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+  }
+
+  .cols__row :global(.colcard__cover--empty) {
+    place-items: center;
+    color: var(--azul-700);
+  }
+
+  .cols__row :global(.colcard__cover--empty > *) {
+    width: 34px;
+    height: 34px;
+    background: none;
+  }
+
+  .cols__row :global(.colcard--new .colcard__cover) {
+    border: 2px dashed rgba(13, 144, 171, 0.45);
+    background: rgba(255, 255, 255, 0.5);
+  }
+
+  .cols__row :global(.colcard__name) {
+    padding-inline: 4px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow-wrap: anywhere;
+  }
+
+  .cols__row :global(.colcard__count) {
+    padding-inline: 4px;
+    font-size: 0.8rem;
+    color: var(--tinta-3);
+  }
+
+  .colbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 12px;
+    margin: 0 0 14px;
+  }
+
+  .colbar__name {
+    margin: 0;
+    font-size: 1.25rem;
+    overflow-wrap: anywhere;
+  }
+
+  .colbar__actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .empty p :global(.icon) {
+    vertical-align: -3px;
+    color: var(--azul-700);
+  }
+</style>
+
+<script>
+  import { collections, favs, onChange, type Collection } from '../scripts/store';
+  import { catalogItem, stackIconHtml } from '../scripts/catalog';
+  import { esc, toast } from '../scripts/ui';
+
+  const $ = <T extends HTMLElement>(sel: string) => document.querySelector<T>(sel)!;
+  const wrap = $('[data-fav-grid]');
   const grid = document.getElementById('fav-grid')!;
-  const empty = document.querySelector<HTMLElement>('[data-fav-empty]')!;
-  const count = document.querySelector<HTMLElement>('[data-fav-count]')!;
+  const empty = $('[data-fav-empty]');
+  const colEmpty = $('[data-col-empty]');
+  const count = $('[data-fav-count]');
+  const section = $('[data-cols-section]');
+  const row = $('[data-cols]');
+  const bar = $('[data-colbar]');
+  const barName = $('[data-colbar-name]');
+  const nameDialog = $<HTMLDialogElement>('[data-name-dialog]');
+  const nameForm = $<HTMLFormElement>('[data-name-form]');
+  const nameTitle = $('[data-name-title]');
+  const nameInput = nameForm.querySelector<HTMLInputElement>('input')!;
+
   const cards = new Map(
     Array.from(grid.querySelectorAll<HTMLElement>('[data-id]')).map((c) => [c.dataset.id!, c]),
   );
 
-  function render() {
-    const ids = favs.ids().filter((id) => cards.has(id));
-    cards.forEach((card) => (card.hidden = true));
-    ids.forEach((id) => {
-      const card = cards.get(id)!;
-      card.hidden = false;
-      grid.appendChild(card);
-    });
-    wrap.hidden = ids.length === 0;
-    empty.hidden = ids.length > 0;
-    count.textContent = ids.length ? `${ids.length} ${ids.length === 1 ? 'favorito' : 'favoritos'}` : '';
+  /** 'all' o el id de una colección. Se guarda en la URL (?c=…) para poder compartir el enlace. */
+  let current = new URLSearchParams(window.location.search).get('c') || 'all';
+  /** Colección a renombrar; vacío = crear una nueva. */
+  let renaming = '';
+
+  const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+
+  function cover(ids: string[]) {
+    const imgs = ids
+      .map((id) => catalogItem(id))
+      .filter((it) => it?.i)
+      .slice(0, 4)
+      .map((it) => `<img src="${esc(it!.i)}" alt="" loading="lazy" class="tile--${esc(it!.c)}${it!.i.endsWith('.svg') ? ' is-art' : ''}" />`);
+    if (!imgs.length) return `<span class="colcard__cover colcard__cover--empty">${stackIconHtml}</span>`;
+    const mod = imgs.length === 1 ? ' colcard__cover--one' : '';
+    // Con 2 o 3 fotos, el resto del mosaico queda en blanco
+    while (imgs.length > 1 && imgs.length < 4) imgs.push('<span></span>');
+    return `<span class="colcard__cover${mod}">${imgs.join('')}</span>`;
   }
+
+  function card(id: string, name: string, ids: string[]) {
+    return `
+      <li>
+        <button type="button" class="colcard" data-col="${esc(id)}" aria-pressed="${current === id}">
+          ${cover(ids)}
+          <span class="colcard__name">${esc(name)}</span>
+          <span class="colcard__count">${plural(ids.length, 'publicación', 'publicaciones')}</span>
+        </button>
+      </li>`;
+  }
+
+  function render() {
+    const saved = favs.ids().filter((id) => cards.has(id));
+    const cols: Collection[] = collections.all().map((c) => ({ ...c, ids: c.ids.filter((id) => cards.has(id)) }));
+    if (current !== 'all' && !cols.some((c) => c.id === current)) current = 'all';
+    const col = cols.find((c) => c.id === current);
+    const shown = col ? col.ids : saved;
+
+    // Colecciones
+    section.hidden = saved.length === 0 && cols.length === 0;
+    row.innerHTML =
+      card('all', 'Todos los favoritos', saved) +
+      cols.map((c) => card(c.id, c.name, c.ids)).join('') +
+      `<li>
+        <button type="button" class="colcard colcard--new" data-col-new>
+          <span class="colcard__cover colcard__cover--empty">${stackIconHtml}</span>
+          <span class="colcard__name">Nueva colección</span>
+          <span class="colcard__count">Agrupa tus favoritos</span>
+        </button>
+      </li>`;
+
+    // Encabezado de la colección elegida
+    bar.hidden = !col;
+    if (col) barName.textContent = col.name;
+
+    // Tarjetas
+    cards.forEach((c) => (c.hidden = true));
+    shown.forEach((id) => {
+      const c = cards.get(id)!;
+      c.hidden = false;
+      grid.appendChild(c);
+    });
+    wrap.hidden = shown.length === 0;
+    empty.hidden = saved.length > 0 || cols.length > 0;
+    colEmpty.hidden = !(col && col.ids.length === 0);
+    count.textContent = saved.length
+      ? `${plural(saved.length, 'favorito', 'favoritos')}${cols.length ? ` · ${plural(cols.length, 'colección', 'colecciones')}` : ''}`
+      : '';
+
+    const params = new URLSearchParams(window.location.search);
+    if (current === 'all') params.delete('c');
+    else params.set('c', current);
+    const qs = params.toString();
+    history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}`);
+  }
+
+  function askName(col?: Collection) {
+    renaming = col?.id ?? '';
+    nameTitle.textContent = col ? 'Renombrar colección' : 'Nueva colección';
+    nameInput.value = col?.name ?? '';
+    nameDialog.showModal();
+    nameInput.select();
+  }
+
+  row.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('[data-col-new]')) return askName();
+    const btn = target.closest<HTMLElement>('[data-col]');
+    if (!btn) return;
+    current = btn.dataset.col!;
+    render();
+    row.querySelector<HTMLElement>(`[data-col="${CSS.escape(current)}"]`)?.focus();
+  });
+
+  $('[data-col-rename]').addEventListener('click', () => askName(collections.get(current)));
+
+  $('[data-col-delete]').addEventListener('click', () => {
+    const gone = collections.remove(current);
+    if (!gone) return;
+    current = 'all';
+    render();
+    toast(`Colección “${gone.name}” eliminada`, {
+      label: 'Deshacer',
+      run: () => {
+        collections.restore(gone);
+        current = gone.id;
+        render();
+      },
+    });
+  });
+
+  nameForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const value = nameInput.value;
+    if (renaming) {
+      if (collections.rename(renaming, value)) toast('Nombre cambiado');
+    } else {
+      const col = collections.create(value);
+      if (!col) return;
+      current = col.id;
+      toast(`Colección “${col.name}” creada`);
+    }
+    nameDialog.close();
+    render();
+  });
+  $('[data-name-cancel]').addEventListener('click', () => nameDialog.close());
+  nameDialog.addEventListener('click', (e) => {
+    if (e.target === nameDialog) nameDialog.close();
+  });
 
   render();
   onChange(render);

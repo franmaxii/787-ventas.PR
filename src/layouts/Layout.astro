@@ -5,6 +5,7 @@ import Header from '../components/Header.astro';
 import BottomNav from '../components/BottomNav.astro';
 import Footer from '../components/Footer.astro';
 import LocationDialog from '../components/LocationDialog.astro';
+import CollectionDialog from '../components/CollectionDialog.astro';
 import { site } from '../data/site';
 
 interface Props {
@@ -46,6 +47,7 @@ const fullTitle = title ? `${title} | ${site.name}` : `${site.name} — ${site.t
     <Footer />
     <BottomNav />
     <LocationDialog />
+    <CollectionDialog />
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
   </body>
 </html>
@@ -92,6 +94,32 @@ const fullTitle = title ? `${title} | ${site.name}` : `${site.name} — ${site.t
   .toast.is-visible {
     opacity: 1;
     transform: translate(-50%, 0) scale(1);
+  }
+
+  .toast.has-action {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: max-content;
+    padding: 6px 6px 6px 20px;
+  }
+
+  .toast.has-action.is-visible {
+    pointer-events: auto;
+  }
+
+  .toast :global(.toast__action) {
+    flex: none;
+    min-height: 36px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 999px;
+    color: var(--tinta);
+    background: var(--blanco);
+    font: inherit;
+    font-weight: 800;
+    font-size: 0.88rem;
+    cursor: pointer;
   }
 </style>
 

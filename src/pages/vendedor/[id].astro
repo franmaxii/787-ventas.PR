@@ -64,7 +64,14 @@ const reviews = [0, 1, 2].map((i) => sampleReviews[(index + i) % sampleReviews.l
               >
                 <div class="ltile__media">
                   <div class:list={['tile', `tile--${p.color}`]}>
-                    <img src={url(p.image ?? '')} alt="" loading="lazy" width="240" height="240" />
+                    <img
+                      src={url(p.image ?? '')}
+                      alt=""
+                      class:list={{ 'is-photo': !!p.image && !p.image.endsWith('.svg') }}
+                      loading="lazy"
+                      width="240"
+                      height="240"
+                    />
                   </div>
                   {st !== 'activo' && <span class:list={['status', `status--${st}`]}>{statusLabel[st]}</span>}
                   <span class="ltile__price">{priceLabel(p)}</span>

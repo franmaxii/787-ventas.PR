@@ -16,11 +16,10 @@ const drops = products.filter((p) => p.originalPrice && p.originalPrice > p.pric
 const local = products.filter((p) => p.local);
 
 // Carriles por categoría (en el orden en que salen en la portada)
-const lane = (slug: string) => ({
-  slug,
-  name: getCategory(slug)!.name,
-  items: products.filter((p) => p.category === slug),
-});
+const lane = (slug: string) => {
+  const c = getCategory(slug)!;
+  return { slug, name: c.name, icon: c.icon, color: c.color, items: products.filter((p) => p.category === slug) };
+};
 const lanesTop = ['vehiculos', 'alquileres', 'venta-bienes-raices'].map(lane);
 const lanesBottom = ['donaciones', 'renta-articulos'].map(lane);
 ---
@@ -45,7 +44,12 @@ const lanesBottom = ['donaciones', 'renta-articulos'].map(lane);
       lanesTop.map((l) => (
         <section class="section">
           <div class="section__head">
-            <h2 class="section__title">{l.name}</h2>
+            <h2 class="section__title lane-title">
+              <span class={`lane-title__icon lane-title__icon--${l.color}`} aria-hidden="true">
+                <Icon name={l.icon} size={22} stroke={1.8} />
+              </span>
+              {l.name}
+            </h2>
             <a class="section__link" href={url(`/categoria/${l.slug}`)}>Ver todo</a>
           </div>
           <ProductGrid products={l.items} scroller />
@@ -67,7 +71,12 @@ const lanesBottom = ['donaciones', 'renta-articulos'].map(lane);
       lanesBottom.map((l) => (
         <section class="section">
           <div class="section__head">
-            <h2 class="section__title">{l.name}</h2>
+            <h2 class="section__title lane-title">
+              <span class={`lane-title__icon lane-title__icon--${l.color}`} aria-hidden="true">
+                <Icon name={l.icon} size={22} stroke={1.8} />
+              </span>
+              {l.name}
+            </h2>
             <a class="section__link" href={url(`/categoria/${l.slug}`)}>Ver todo</a>
           </div>
           <ProductGrid products={l.items} scroller />
@@ -111,6 +120,29 @@ const lanesBottom = ['donaciones', 'renta-articulos'].map(lane);
 </Layout>
 
 <style>
+  .lane-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .lane-title__icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: var(--glass-bg-strong);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-edge), var(--shadow-sm);
+  }
+
+  .lane-title__icon--azul { color: var(--azul-700); }
+  .lane-title__icon--rojito { color: var(--rojito-700); }
+  .lane-title__icon--amarillo { color: var(--amarillo-700); }
+  .lane-title__icon--verde { color: var(--verde-700); }
+
   .sub {
     margin: -8px 0 14px;
     color: var(--tinta-3);

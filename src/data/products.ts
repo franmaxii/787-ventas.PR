@@ -88,7 +88,10 @@ export const sellers: Seller[] = [
   { id: 'moda-787', name: 'Moda 787', username: 'MODA787', town: 'San Juan', kind: 'negocio', sales: 300, rating: 4.5, star: false, since: 2022, followers: 990, responds: 'en unas horas' },
 ];
 
+/** Ilustración SVG (respaldo mientras no haya foto). */
 const img = (name: string) => `/img/productos/${name}.svg`;
+/** Foto real recortada en cuadrado (créditos en fotos.json y en /creditos). */
+const foto = (id: string) => `/img/productos/fotos/${id}.webp`;
 
 export const products: Product[] = [
   // Autos y piezas
@@ -98,7 +101,7 @@ export const products: Product[] = [
     details: ['Marbete al día', 'Gomas nuevas', 'Cámara de reversa', 'Título limpio'],
     vehicle: { year: 2016, make: 'Toyota', model: 'Corolla', miles: 78000, transmission: 'Automática' },
     price: 11500, originalPrice: 12500, category: 'vehiculos', condition: 'usado', sellerId: 'nando-autos',
-    daysAgo: 2, emoji: '🚗', color: 'azul', image: img('carro'), featured: true,
+    daysAgo: 2, emoji: '🚗', color: 'azul', image: foto('toyota-corolla-2016'), featured: true,
   },
   {
     id: 'jeep-wrangler-2012', title: 'Jeep Wrangler 2012 4x4', type: 'vehiculo',
@@ -106,7 +109,7 @@ export const products: Product[] = [
     details: ['4x4', 'Capota nueva', 'Aros de 17"', 'Inspección al día'],
     vehicle: { year: 2012, make: 'Jeep', model: 'Wrangler', miles: 112000, transmission: 'Estándar' },
     price: 18900, category: 'vehiculos', condition: 'usado', sellerId: 'nando-autos',
-    daysAgo: 6, emoji: '🚙', color: 'amarillo', image: img('carro'),
+    daysAgo: 6, emoji: '🚙', color: 'amarillo', image: foto('jeep-wrangler-2012'),
   },
   {
     id: 'scooter-electrico-plegable', title: 'Scooter eléctrico plegable',
@@ -120,14 +123,14 @@ export const products: Product[] = [
     description: 'Incluye montura y balanceo en Mayagüez.',
     details: ['265/70R17', 'All-terrain', 'Montura y balanceo incluidos'],
     price: 560, originalPrice: 640, category: 'vehiculos', condition: 'nuevo', sellerId: 'gomera-del-oeste',
-    daysAgo: 4, emoji: '🛞', color: 'amarillo', image: img('gomas'),
+    daysAgo: 4, emoji: '🛞', color: 'amarillo', image: foto('gomas-all-terrain-265-70r17'),
   },
   {
     id: 'camara-reversa-pantalla', title: 'Cámara de reversa con pantalla de 5″',
     description: 'Visión nocturna y líneas guía. Te la instalo si la recoges en el taller.',
     details: ['Pantalla de 5″', 'Visión nocturna', 'Líneas guía', 'Resistente al agua'],
     price: 45, category: 'vehiculos', condition: 'nuevo', sellerId: 'gomera-del-oeste',
-    daysAgo: 9, emoji: '🚗', color: 'azul', image: img('camara-reversa'),
+    daysAgo: 9, emoji: '🚗', color: 'azul', image: foto('camara-reversa-pantalla'),
   },
 
   // Alquiler de bienes raíces
@@ -137,7 +140,7 @@ export const products: Product[] = [
     details: ['2 cuartos, 1 baño', 'Agua incluida', 'Estacionamiento', 'Cerca del Tren Urbano'],
     rental: { beds: 2, baths: 1, furnished: false },
     price: 950, category: 'alquileres', condition: 'usado', sellerId: 'alquileres-isla', town: 'San Juan',
-    daysAgo: 1, emoji: '🏠', color: 'azul', image: img('casa'), featured: true,
+    daysAgo: 1, emoji: '🏠', color: 'azul', image: foto('apartamento-rio-piedras'), featured: true,
   },
   {
     id: 'casa-dorado-3-cuartos', title: 'Casa 3 cuartos con marquesina en Dorado', type: 'alquiler',
@@ -145,7 +148,7 @@ export const products: Product[] = [
     details: ['3 cuartos, 2 baños', 'Placas solares', 'Cisterna', 'Marquesina para 2 carros'],
     rental: { beds: 3, baths: 2, furnished: false },
     price: 1600, category: 'alquileres', condition: 'usado', sellerId: 'alquileres-isla', town: 'Dorado',
-    daysAgo: 5, emoji: '🏡', color: 'verde', image: img('casa'),
+    daysAgo: 5, emoji: '🏡', color: 'verde', image: foto('casa-dorado-3-cuartos'),
   },
   {
     id: 'cuarto-estudiante-mayaguez', title: 'Cuarto amueblado para estudiante en Mayagüez', type: 'alquiler',
@@ -153,7 +156,7 @@ export const products: Product[] = [
     details: ['1 cuarto amueblado', 'Baño compartido', 'Luz, agua e internet incluidos'],
     rental: { beds: 1, baths: 1, furnished: true },
     price: 400, category: 'alquileres', condition: 'usado', sellerId: 'alquileres-isla', town: 'Mayagüez',
-    daysAgo: 3, emoji: '🛏️', color: 'rojito', image: img('casa'),
+    daysAgo: 3, emoji: '🛏️', color: 'rojito', image: foto('cuarto-estudiante-mayaguez'),
   },
 
   // Donaciones (gratis)
@@ -162,14 +165,14 @@ export const products: Product[] = [
     description: 'Me mudo y no cabe. Está en buenas condiciones. Hay que recogerlo este fin de semana.',
     details: ['3 plazas', 'Tela lavable', 'Hay que recogerlo'],
     price: 0, category: 'donaciones', condition: 'usado', sellerId: 'yari-pr',
-    daysAgo: 0, emoji: '🛋️', color: 'verde', image: img('sofa-gratis'), featured: true,
+    daysAgo: 0, emoji: '🛋️', color: 'verde', image: foto('sofa-gratis-carolina'), featured: true,
   },
   {
     id: 'cajas-mudanza-gratis', title: 'Cajas de mudanza (gratis)',
     description: 'Unas 15 cajas en buen estado. Paso por el pueblo de Arecibo en las tardes.',
     details: ['~15 cajas', 'Varios tamaños'],
     price: 0, category: 'donaciones', condition: 'usado', sellerId: 'josemiguel787',
-    daysAgo: 1, emoji: '📦', color: 'amarillo', image: img('cajas'),
+    daysAgo: 1, emoji: '📦', color: 'amarillo', image: foto('cajas-mudanza-gratis'),
   },
 
   // Electrónica / Tecnología
@@ -178,21 +181,21 @@ export const products: Product[] = [
     description: 'Hasta 40 horas de batería, carga rápida y sonido envolvente.',
     details: ['Bluetooth 5.3', 'Batería de 40 h', 'Cancelación activa de ruido', 'Estuche incluido'],
     price: 59.99, originalPrice: 89.99, category: 'tecnologia', condition: 'nuevo', sellerId: 'tecnoisla',
-    daysAgo: 2, emoji: '🎧', color: 'azul', image: img('audifonos'), featured: true,
+    daysAgo: 2, emoji: '🎧', color: 'azul', image: foto('audifonos-cancelacion-ruido'), featured: true,
   },
   {
     id: 'celular-128gb-reacondicionado', title: 'Celular 128 GB desbloqueado',
     description: 'Lo usé un año, siempre con cover y protector. Funciona con todas las compañías.',
     details: ['128 GB', 'Desbloqueado', 'Batería al 90%', 'Cargador incluido'],
     price: 219, originalPrice: 260, category: 'tecnologia', condition: 'usado', sellerId: 'yari-pr',
-    daysAgo: 3, emoji: '📱', color: 'rojito', image: img('celular'), featured: true,
+    daysAgo: 3, emoji: '📱', color: 'rojito', image: foto('celular-128gb-reacondicionado'), featured: true,
   },
   {
     id: 'bocina-bluetooth-agua', title: 'Bocina Bluetooth a prueba de agua',
     description: 'Ideal pa’ la playa o el río. Resiste salpicones y arena.',
     details: ['Resistencia IP67', '12 h de batería', 'Flota en el agua'],
     price: 30, category: 'tecnologia', condition: 'usado', sellerId: 'josemiguel787',
-    daysAgo: 8, emoji: '🔊', color: 'amarillo', image: img('bocina'),
+    daysAgo: 8, emoji: '🔊', color: 'amarillo', image: foto('bocina-bluetooth-agua'),
   },
 
   // Energía (en Hogar y vida; la estación portátil en Electrónica)
@@ -201,7 +204,7 @@ export const products: Product[] = [
     description: 'Arranque eléctrico, bajo consumo y segura para equipos sensibles.',
     details: ['4,500 W pico / 3,700 W continuos', 'Arranque eléctrico', '58 dB', 'Ruedas incluidas'],
     price: 749, originalPrice: 899, category: 'hogar', condition: 'nuevo', sellerId: 'energia-boricua',
-    daysAgo: 1, emoji: '⚡', color: 'amarillo', image: img('planta-electrica'), featured: true,
+    daysAgo: 1, emoji: '⚡', color: 'amarillo', image: foto('planta-electrica-inverter-4500w'), featured: true,
   },
   {
     id: 'estacion-energia-1000wh', title: 'Estación de energía portátil 1000 Wh',
@@ -215,7 +218,7 @@ export const products: Product[] = [
     description: 'Liviana y portátil. Compatible con estaciones de energía.',
     details: ['200 W', 'Plegable en 4 paneles', 'Patas ajustables', 'Cable MC4 incluido'],
     price: 189, category: 'hogar', condition: 'nuevo', sellerId: 'energia-boricua',
-    daysAgo: 12, emoji: '☀️', color: 'azul', image: img('placa-solar'),
+    daysAgo: 12, emoji: '☀️', color: 'azul', image: foto('placa-solar-plegable-200w'),
   },
 
   // Hogar y vida
@@ -224,28 +227,28 @@ export const products: Product[] = [
     description: '52 pulgadas, 6 velocidades. Lo quité porque puse aire.',
     details: ['52 pulgadas', '6 velocidades', 'Luz LED', 'Control remoto'],
     price: 45, originalPrice: 60, category: 'hogar', condition: 'usado', sellerId: 'yari-pr',
-    daysAgo: 4, emoji: '🌀', color: 'azul', image: img('abanico'), featured: true,
+    daysAgo: 4, emoji: '🌀', color: 'azul', image: foto('abanico-techo-control'), featured: true,
   },
   {
     id: 'greca-aluminio-6-tazas', title: 'Greca de aluminio para 6 tazas',
     description: 'El cafecito de siempre, como lo hacía abuela.',
     details: ['6 tazas', 'Aluminio', 'Estufa de gas o eléctrica'],
     price: 18.5, category: 'hogar', condition: 'nuevo', sellerId: 'casa-criolla',
-    daysAgo: 7, emoji: '🫖', color: 'rojito', image: img('greca'),
+    daysAgo: 7, emoji: '🫖', color: 'rojito', image: foto('greca-aluminio-6-tazas'),
   },
   {
     id: 'pilon-madera-capa', title: 'Pilón de madera para mofongo',
     description: 'Tallado a mano. Perfecto pa’ mofongo y ajo machacado.',
     details: ['Madera dura', 'Mazo incluido'],
     price: 32, category: 'hogar', condition: 'nuevo', sellerId: 'casa-criolla',
-    daysAgo: 10, emoji: '🥘', color: 'amarillo', image: img('pilon'),
+    daysAgo: 10, emoji: '🥘', color: 'amarillo', image: foto('pilon-madera-capa'),
   },
   {
     id: 'sabanas-algodon-queen', title: 'Juego de sábanas de algodón Queen',
     description: 'Frescas para el calor. 4 piezas, 400 hilos. En su empaque.',
     details: ['Queen', '100% algodón', '4 piezas'],
     price: 35, category: 'hogar', condition: 'nuevo', sellerId: 'casa-criolla',
-    daysAgo: 14, emoji: '🛏️', color: 'verde', image: img('sabanas'),
+    daysAgo: 14, emoji: '🛏️', color: 'verde', image: foto('sabanas-algodon-queen'),
   },
 
   // Moda
@@ -254,21 +257,21 @@ export const products: Product[] = [
     description: '100% algodón, estampado que no se despega con el lavado.',
     details: ['100% algodón', 'Tallas S a 2XL', 'Unisex'],
     price: 22, category: 'moda', condition: 'nuevo', sellerId: 'moda-787',
-    daysAgo: 2, emoji: '👕', color: 'rojito', image: img('camiseta'),
+    daysAgo: 2, emoji: '👕', color: 'rojito', image: foto('camiseta-bandera-pr'),
   },
   {
     id: 'chancletas-playa-unisex', title: 'Chancletas de playa unisex',
     description: 'Suela antideslizante y secado rápido.',
     details: ['Tallas 6 a 12', 'Antideslizantes'],
     price: 15, category: 'moda', condition: 'nuevo', sellerId: 'moda-787',
-    daysAgo: 9, emoji: '🩴', color: 'amarillo', image: img('chancletas'),
+    daysAgo: 9, emoji: '🩴', color: 'amarillo', image: foto('chancletas-playa-unisex'),
   },
   {
     id: 'gafas-sol-polarizadas', title: 'Gafas de sol polarizadas',
     description: 'Protección UV400 y estuche rígido incluido.',
     details: ['Polarizadas', 'UV400', 'Estuche'],
     price: 27, originalPrice: 35, category: 'moda', condition: 'nuevo', sellerId: 'moda-787',
-    daysAgo: 5, emoji: '🕶️', color: 'azul', image: img('gafas'),
+    daysAgo: 5, emoji: '🕶️', color: 'azul', image: foto('gafas-sol-polarizadas'),
   },
 
   // Hecho en PR (Hogar y vida, marcadas local)
@@ -277,7 +280,7 @@ export const products: Product[] = [
     description: 'Tallada en coco y pintada a mano. Pieza única.',
     details: ['Hecha a mano', 'Coco y pintura acrílica', 'Lista para colgar'],
     price: 65, category: 'hogar', condition: 'nuevo', sellerId: 'artesanias-mediania',
-    daysAgo: 3, emoji: '🎭', local: true, color: 'rojito', image: img('vejigante'), featured: true,
+    daysAgo: 3, emoji: '🎭', local: true, color: 'rojito', image: foto('careta-vejigante-loiza'), featured: true,
   },
   {
     id: 'cuatro-puertorriqueno', title: 'Cuatro puertorriqueño artesanal',
@@ -291,7 +294,7 @@ export const products: Product[] = [
     description: 'El cantito de la isla pa’ tu casa o tu oficina.',
     details: ['Cerámica', '10 cm de alto', 'Pintado a mano'],
     price: 24, category: 'hogar', condition: 'nuevo', sellerId: 'artesanias-mediania',
-    daysAgo: 6, emoji: '🐸', local: true, color: 'verde', image: img('coqui'),
+    daysAgo: 6, emoji: '🐸', local: true, color: 'verde', image: foto('coqui-ceramica'),
   },
 
   // Deportes y playa
@@ -300,21 +303,21 @@ export const products: Product[] = [
     description: 'Mantiene el hielo hasta 5 días. Lo usé dos veces.',
     details: ['60 cuartos', 'Ruedas todo terreno', 'Portavasos'],
     price: 40, originalPrice: 55, category: 'playa', condition: 'usado', sellerId: 'josemiguel787',
-    daysAgo: 2, emoji: '🧊', color: 'azul', image: img('cooler'), featured: true,
+    daysAgo: 2, emoji: '🧊', color: 'azul', image: foto('cooler-ruedas-60'), featured: true,
   },
   {
     id: 'tabla-surf-funboard', title: 'Tabla de surf funboard 7′2″',
     description: 'Usada, en buenas condiciones. Ideal para aprender en Rincón.',
     details: ['7′2″', 'Quillas incluidas', 'Leash incluido'],
     price: 380, category: 'playa', condition: 'usado', sellerId: 'playa-y-mas',
-    daysAgo: 8, emoji: '🏄', color: 'verde', image: img('tabla-surf'),
+    daysAgo: 8, emoji: '🏄', color: 'verde', image: foto('tabla-surf-funboard'),
   },
   {
     id: 'bicicleta-montana-29', title: 'Bicicleta de montaña aro 29',
     description: '21 cambios, frenos de disco y suspensión delantera.',
     details: ['Aro 29', '21 velocidades', 'Frenos de disco'],
     price: 220, originalPrice: 260, category: 'playa', condition: 'usado', sellerId: 'yari-pr',
-    daysAgo: 5, emoji: '🚲', color: 'rojito', image: img('bicicleta'),
+    daysAgo: 5, emoji: '🚲', color: 'rojito', image: foto('bicicleta-montana-29'),
   },
 
   // Sabores de PR (Hogar y vida, marcadas local)
@@ -323,21 +326,21 @@ export const products: Product[] = [
     description: 'Tueste medio, molido para greca. Entrego en el pueblo los sábados.',
     details: ['1 libra', 'Tueste medio', 'Molido para greca'],
     price: 14, category: 'hogar', condition: 'nuevo', sellerId: 'hacienda-cafetal',
-    daysAgo: 1, emoji: '☕', local: true, color: 'verde', image: img('cafe'),
+    daysAgo: 1, emoji: '☕', local: true, color: 'verde', image: foto('cafe-altura-yauco-1lb'),
   },
   {
     id: 'sofrito-casero', title: 'Sofrito casero (pack de 4)',
     description: 'Ají dulce, recao y cilantrillo frescos. Congelado.',
     details: ['4 envases de 12 oz', 'Ingredientes del país'],
     price: 12, category: 'hogar', condition: 'nuevo', sellerId: 'hacienda-cafetal',
-    daysAgo: 4, emoji: '🌿', local: true, color: 'verde', image: img('sofrito'),
+    daysAgo: 4, emoji: '🌿', local: true, color: 'verde', image: foto('sofrito-casero'),
   },
   {
     id: 'pique-botella-artesanal', title: 'Pique de botella artesanal',
     description: 'Ají caballero, vinagre y especias. Pica rico.',
     details: ['375 ml', 'Ají caballero'],
     price: 9.5, category: 'hogar', condition: 'nuevo', sellerId: 'hacienda-cafetal',
-    daysAgo: 13, emoji: '🌶️', local: true, color: 'rojito', image: img('pique'),
+    daysAgo: 13, emoji: '🌶️', local: true, color: 'rojito', image: foto('pique-botella-artesanal'),
   },
 
   // Venta de bienes raíces
@@ -347,7 +350,7 @@ export const products: Product[] = [
     details: ['3 cuartos, 2 baños', 'Solar de 400 m²', 'Marquesina doble', 'Cisterna de 1,000 galones'],
     rental: { beds: 3, baths: 2, furnished: false },
     price: 145000, category: 'venta-bienes-raices', condition: 'usado', sellerId: 'josemiguel787',
-    daysAgo: 3, emoji: '🏡', color: 'azul', image: img('casa-venta'), featured: true,
+    daysAgo: 3, emoji: '🏡', color: 'azul', image: foto('casa-arecibo-venta'), featured: true,
   },
   {
     id: 'apartamento-guaynabo-venta', title: 'Apartamento 2 cuartos con piscina en Guaynabo', type: 'propiedad',
@@ -355,7 +358,7 @@ export const products: Product[] = [
     details: ['2 cuartos, 2 baños', 'Piscina y gimnasio', 'Control de acceso', '2 estacionamientos'],
     rental: { beds: 2, baths: 2, furnished: false },
     price: 189000, originalPrice: 199000, category: 'venta-bienes-raices', condition: 'usado', sellerId: 'alquileres-isla', town: 'Guaynabo',
-    daysAgo: 8, emoji: '🏢', color: 'verde', image: img('casa-venta'),
+    daysAgo: 8, emoji: '🏢', color: 'verde', image: foto('apartamento-guaynabo-venta'),
   },
 
   // Bebés y maternidad
@@ -364,14 +367,14 @@ export const products: Product[] = [
     description: 'Lo usamos poco, sin manchas. Incluye la base del car seat para el carro.',
     details: ['Car seat con base', 'Se dobla con una mano', 'Canasta grande', 'Lavado y desinfectado'],
     price: 90, originalPrice: 120, category: 'bebes', condition: 'usado', sellerId: 'yari-pr',
-    daysAgo: 2, emoji: '👶', color: 'amarillo', image: img('coche-bebe'), featured: true,
+    daysAgo: 2, emoji: '👶', color: 'amarillo', image: foto('coche-bebe-travel-system'), featured: true,
   },
   {
     id: 'ropa-bebe-lote', title: 'Lote de ropa de bebé 0–6 meses (40 piezas)',
     description: 'Mamelucos, medias y gorritos. Todo lavado. Para nena o nene.',
     details: ['40 piezas', 'Tallas 0–6 meses', 'Lavado'],
     price: 35, category: 'bebes', condition: 'usado', sellerId: 'josemiguel787',
-    daysAgo: 5, emoji: '🍼', color: 'azul', image: img('mameluco'),
+    daysAgo: 5, emoji: '🍼', color: 'azul', image: foto('ropa-bebe-lote'),
   },
 
   // Salud y belleza
@@ -380,14 +383,14 @@ export const products: Product[] = [
     description: 'Nueva en caja. El “blower” que usan en los salones: seca rápido y deja el pelo sin frizz.',
     details: ['1875 W', 'Iónica', 'Boquilla y difusor', 'Garantía de 1 año'],
     price: 38, category: 'salud-belleza', condition: 'nuevo', sellerId: 'moda-787',
-    daysAgo: 1, emoji: '💇', color: 'verde', image: img('secadora'),
+    daysAgo: 1, emoji: '💇', color: 'verde', image: foto('secadora-pelo-profesional'),
   },
   {
     id: 'perfume-coco-playa', title: 'Perfume de coco y vainilla (100 ml)',
     description: 'Hecho en la isla en pequeños lotes. Huele a playa.',
     details: ['100 ml', 'Hecho en PR', 'Sellado'],
     price: 28, category: 'salud-belleza', condition: 'nuevo', sellerId: 'artesanias-mediania',
-    daysAgo: 6, emoji: '🌺', local: true, color: 'amarillo', image: img('perfume'),
+    daysAgo: 6, emoji: '🌺', local: true, color: 'amarillo', image: foto('perfume-coco-playa'),
   },
 
   // Muebles
@@ -396,14 +399,14 @@ export const products: Product[] = [
     description: 'En buen estado, sin roturas. Se puede ver en Ponce. Necesitas pickup o guagua para llevártelo.',
     details: ['Tela lavable', '2.6 × 1.7 m', 'Chaise reversible'],
     price: 350, originalPrice: 420, category: 'muebles', condition: 'usado', sellerId: 'casa-criolla',
-    daysAgo: 2, emoji: '🛋️', color: 'amarillo', image: img('sofa'),
+    daysAgo: 2, emoji: '🛋️', color: 'amarillo', image: foto('sofa-seccional-l'),
   },
   {
     id: 'comoda-6-gavetas', title: 'Cómoda de 6 gavetas en madera',
     description: 'Madera sólida, gavetas corren bien. Ideal para el cuarto de los nenes.',
     details: ['6 gavetas', 'Madera sólida', '1.4 m de ancho'],
     price: 90, category: 'muebles', condition: 'usado', sellerId: 'josemiguel787',
-    daysAgo: 4, emoji: '🗄️', color: 'verde', image: img('comoda'),
+    daysAgo: 4, emoji: '🗄️', color: 'verde', image: foto('comoda-6-gavetas'),
   },
 
   // Renta de artículos (precio por día)
@@ -412,7 +415,7 @@ export const products: Product[] = [
     description: 'Para cumpleaños y actividades. Lo montamos y lo recogemos. Reserva con tiempo los fines de semana.',
     details: ['4 × 4 m', 'Montaje y soplador incluidos', 'Edades de 3 a 10', 'Entrega en el área este'],
     price: 120, category: 'renta-articulos', condition: 'usado', sellerId: 'fiestas-del-este',
-    daysAgo: 1, emoji: '🎈', color: 'azul', image: img('brincolin'), featured: true,
+    daysAgo: 1, emoji: '🎈', color: 'azul', image: foto('brincolin-castillo-renta'), featured: true,
   },
   {
     id: 'planta-electrica-renta', title: 'Planta eléctrica 7,500 W en renta',
@@ -427,47 +430,47 @@ export const products: Product[] = [
     id: 'honda-civic-2014', title: 'Honda Civic 2014', type: 'vehiculo', description: 'Vendido. Gracias por la confianza.',
     details: ['Automático'], vehicle: { year: 2014, make: 'Honda', model: 'Civic', miles: 96000, transmission: 'Automática' },
     price: 9800, category: 'vehiculos', condition: 'usado', sellerId: 'nando-autos', daysAgo: 30,
-    emoji: '🚗', color: 'rojito', image: img('carro'), status: 'vendido',
+    emoji: '🚗', color: 'rojito', image: foto('honda-civic-2014'), status: 'vendido',
   },
   {
     id: 'audifonos-gaming-microfono', title: 'Audífonos gaming con micrófono', description: 'Sonido 7.1 y luces RGB.',
     details: ['Micrófono desmontable'], price: 45, category: 'tecnologia', condition: 'usado', sellerId: 'tecnoisla',
-    daysAgo: 21, emoji: '🎧', color: 'azul', image: img('audifonos'), status: 'vendido',
+    daysAgo: 21, emoji: '🎧', color: 'azul', image: foto('audifonos-gaming-microfono'), status: 'vendido',
   },
   {
     id: 'celular-64gb-usado', title: 'Celular 64 GB usado', description: 'Funciona bien, pantalla con detalle.',
     details: ['64 GB'], price: 120, category: 'tecnologia', condition: 'usado', sellerId: 'tecnoisla',
-    daysAgo: 45, emoji: '📱', color: 'rojito', image: img('celular'), status: 'expirado',
+    daysAgo: 45, emoji: '📱', color: 'rojito', image: foto('celular-64gb-usado'), status: 'expirado',
   },
   {
     id: 'placa-solar-100w', title: 'Placa solar 100 W', description: 'Rígida, ideal para techo o balcón.',
     details: ['100 W'], price: 95, category: 'hogar', condition: 'nuevo', sellerId: 'energia-boricua',
-    daysAgo: 18, emoji: '☀️', color: 'verde', image: img('placa-solar'), status: 'vendido',
+    daysAgo: 18, emoji: '☀️', color: 'verde', image: foto('placa-solar-100w'), status: 'vendido',
   },
   {
     id: 'greca-3-tazas', title: 'Greca de 3 tazas', description: 'Para el cafecito de uno.',
     details: ['3 tazas'], price: 14, category: 'hogar', condition: 'nuevo', sellerId: 'casa-criolla',
-    daysAgo: 25, emoji: '🫖', color: 'azul', image: img('greca'), status: 'vendido',
+    daysAgo: 25, emoji: '🫖', color: 'azul', image: foto('greca-3-tazas'), status: 'vendido',
   },
   {
     id: 'careta-vejigante-mediana', title: 'Careta de vejigante mediana', description: 'Pintada a mano en Loíza.',
     details: ['Coco'], price: 45, category: 'hogar', condition: 'nuevo', sellerId: 'artesanias-mediania',
-    daysAgo: 16, emoji: '🎭', local: true, color: 'azul', image: img('vejigante'), status: 'vendido',
+    daysAgo: 16, emoji: '🎭', local: true, color: 'azul', image: foto('careta-vejigante-mediana'), status: 'vendido',
   },
   {
     id: 'coqui-ceramica-set-3', title: 'Coquís de cerámica (set de 3)', description: 'Tres tamaños, pintados a mano.',
     details: ['Set de 3'], price: 60, category: 'hogar', condition: 'nuevo', sellerId: 'artesanias-mediania',
-    daysAgo: 40, emoji: '🐸', local: true, color: 'amarillo', image: img('coqui'), status: 'expirado',
+    daysAgo: 40, emoji: '🐸', local: true, color: 'amarillo', image: foto('coqui-ceramica-set-3'), status: 'expirado',
   },
   {
     id: 'mesa-comedor-gratis', title: 'Mesa de comedor (gratis)', description: 'Ya se la llevaron.',
     details: ['4 sillas'], price: 0, category: 'donaciones', condition: 'usado', sellerId: 'yari-pr',
-    daysAgo: 20, emoji: '🪑', color: 'verde', image: img('sofa-gratis'), status: 'vendido',
+    daysAgo: 20, emoji: '🪑', color: 'verde', image: foto('mesa-comedor-gratis'), status: 'vendido',
   },
   {
     id: 'cafe-altura-2lb', title: 'Café de altura de Yauco (2 lb)', description: 'Tueste oscuro, en grano.',
     details: ['2 libras'], price: 26, category: 'hogar', condition: 'nuevo', sellerId: 'hacienda-cafetal',
-    daysAgo: 22, emoji: '☕', local: true, color: 'amarillo', image: img('cafe'), status: 'vendido',
+    daysAgo: 22, emoji: '☕', local: true, color: 'amarillo', image: foto('cafe-altura-2lb'), status: 'vendido',
   },
 ];
 
