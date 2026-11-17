@@ -4,6 +4,7 @@
  * todas tienen licencias que permiten uso comercial y modificación (CC0, dominio público, CC BY, CC BY-SA).
  */
 import data from './fotos.json';
+import adsData from './fotos-anuncios.json';
 
 export interface PhotoCredit {
   /** Título original de la foto */
@@ -21,6 +22,9 @@ export interface PhotoCredit {
 }
 
 export const photoCredits = data as Record<string, PhotoCredit>;
+
+/** Fotos de los anuncios de ejemplo (clave = id del anuncio en ads.ts). */
+export const adPhotoCredits = adsData as Record<string, PhotoCredit>;
 
 export const photoCredit = (productId: string): PhotoCredit | undefined => photoCredits[productId];
 

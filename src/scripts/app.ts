@@ -6,6 +6,7 @@ import { distanceLabel, milesBetween } from '../data/pueblos';
 import { chats, favs, location, onChange } from './store';
 import { unreadNotifications } from './notifications';
 import { toast } from './ui';
+import { initAds } from './ads';
 
 function setBadge(selector: string, count: number) {
   document.querySelectorAll<HTMLElement>(selector).forEach((el) => {
@@ -47,6 +48,7 @@ function renderAll() {
 
 renderAll();
 onChange(renderAll);
+initAds();
 
 document.addEventListener('click', (e) => {
   const favBtn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-fav]');

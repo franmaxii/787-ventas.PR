@@ -3,6 +3,7 @@ import { url } from '../lib/url';
 import Layout from '../layouts/Layout.astro';
 import SearchBar from '../components/SearchBar.astro';
 import ProductGrid from '../components/ProductGrid.astro';
+import { adFor } from '../data/ads';
 import Icon from '../components/Icon.astro';
 import LocationChip from '../components/LocationChip.astro';
 import { activeProducts as products } from '../data/products';
@@ -86,7 +87,7 @@ import { categories } from '../data/categories';
       </div>
     </form>
 
-    <ProductGrid products={products} filterable id="results" />
+    <ProductGrid products={products} filterable id="results" ad={adFor()} adSlot={6} />
 
     <div class="empty" data-results-empty hidden>
       <span class="empty__icon"><Icon name="search" size={40} /></span>

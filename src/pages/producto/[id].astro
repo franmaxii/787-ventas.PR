@@ -8,6 +8,9 @@ import ProductGrid from '../../components/ProductGrid.astro';
 import { activeProducts, getSeller, products, statusOf, townOf, type Product } from '../../data/products';
 import { getCategory } from '../../data/categories';
 import { licenseLabel, photoCredit, sourceLabel } from '../../data/fotos';
+import AdBanner from '../../components/AdBanner.astro';
+import { smallSrc } from '../../lib/img';
+import { adFor } from '../../data/ads';
 import { formatMiles, formatMoney, priceLabel, timeAgo } from '../../lib/format';
 
 export function getStaticPaths() {
@@ -123,7 +126,7 @@ const quick =
           data-price={p.price}
           data-type={p.type ?? 'articulo'}
           data-category={p.category}
-          data-image={p.image ? url(p.image) : ''}
+          data-image={p.image ? url(smallSrc(p.image)) : ''}
           data-color={p.color}
           data-seller-name={seller.username}
           data-seller-id={seller.id}
@@ -210,6 +213,8 @@ const quick =
         </section>
       </div>
     </div>
+
+    <AdBanner ad={adFor(p.category)} />
 
     {
       fromSeller.length > 0 && (

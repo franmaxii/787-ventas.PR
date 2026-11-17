@@ -1,0 +1,220 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import AdCard from '../components/AdCard.astro';
+import AdBanner from '../components/AdBanner.astro';
+import { url } from '../lib/url';
+import { ads, getAd } from '../data/ads';
+import { getCategory } from '../data/categories';
+import { smallSrc } from '../lib/img';
+---
+
+<Layout title="Anúnciate" description="Espacios publicitarios en Plaza 787: anuncios nativos, banners y anuncios por categoría para negocios de Puerto Rico.">
+  <div class="container promo">
+    <p class="from panel" data-from hidden>
+      <Icon name="info" size={20} />
+      <span>Llegaste desde un <strong>anuncio de ejemplo</strong> de <strong data-from-name></strong>. Ese negocio es inventado: así se vería el tuyo.</span>
+    </p>
+
+    <h1 class="page-title">Anúnciate en Plaza 787</h1>
+    <p class="lead">
+      Llega a la gente de tu pueblo justo cuando está comprando, vendiendo o mudándose, con anuncios que se ven como parte de la
+      plaza y no como un estorbo.
+    </p>
+
+    <section class="formats" aria-labelledby="formats-title">
+      <h2 id="formats-title">Formatos</h2>
+      <div class="formats__grid">
+        <div class="panel format">
+          <div class="format__demo format__demo--card" data-ad-demo aria-hidden="true" inert>
+            <AdCard ad={getAd('cafe')} after={0} />
+          </div>
+          <h3>Tarjeta en el catálogo</h3>
+          <p>Va entre las publicaciones, con la misma forma que ellas. Una por cuadrícula como máximo.</p>
+        </div>
+        <div class="panel format">
+          <div class="format__demo" data-ad-demo aria-hidden="true" inert>
+            <AdBanner ad={getAd('ferreteria')} />
+          </div>
+          <h3>Banner entre secciones</h3>
+          <p>En la portada y debajo de cada publicación. Foto, una oferta y tu botón.</p>
+        </div>
+        <div class="panel format">
+          <ul class="contexts">
+            {
+              ads.filter((a) => a.id !== 'cafe').map((a) => (
+                <li>
+                  <img src={url(smallSrc(a.image))} alt="" width="40" height="40" loading="lazy" />
+                  <span><strong>{a.advertiser}</strong> en {a.categories.map((c) => getCategory(c)?.short).join(', ')}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <h3>Por categoría</h3>
+          <p>Sales donde tu negocio tiene sentido: el car wash en Autos, la mudanza en Muebles, el surf en Playa.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel rules" aria-labelledby="rules-title">
+      <h2 id="rules-title"><Icon name="shield" size={22} /> Anuncios que no molestan</h2>
+      <ul>
+        <li><Icon name="tag" size={18} /> Siempre dicen <strong>Patrocinado</strong>: nadie los confunde con una publicación.</li>
+        <li><Icon name="grid" size={18} /> Máximo un anuncio por sección y dos por página.</li>
+        <li><Icon name="x" size={18} /> Cualquiera los puede ocultar con la ✕.</li>
+        <li><Icon name="chat" size={18} /> Nunca salen en Mensajes, Vender, Favoritos ni en tu perfil.</li>
+        <li><Icon name="lock" size={18} /> No usamos tu información personal para anunciarte nada.</li>
+      </ul>
+    </section>
+
+    <div class="cta">
+      <a href={url('/contacto?motivo=anuncios')} class="btn btn--primary"><Icon name="mail" size={20} /> Quiero anunciar mi negocio</a>
+      <a href={url('/')} class="btn btn--soft">Volver a la plaza</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .promo {
+    max-width: 900px;
+    display: grid;
+    gap: 18px;
+    padding-bottom: 24px;
+  }
+
+  .promo > .page-title {
+    margin-bottom: 0;
+  }
+
+  .from {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin: 0;
+    padding: 14px 16px;
+    line-height: 1.45;
+    color: var(--tinta-2);
+  }
+
+  .from :global(.icon) {
+    flex: none;
+    color: var(--azul-700);
+  }
+
+  .lead {
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    color: var(--tinta-2);
+  }
+
+  h2 {
+    margin: 0 0 12px;
+    font-size: 1.2rem;
+  }
+
+  .formats__grid {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+
+  .format {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .format h3 {
+    margin: 8px 0 0;
+    font-size: 1.05rem;
+  }
+
+  .format p {
+    margin: 0;
+    color: var(--tinta-2);
+    line-height: 1.45;
+  }
+
+  .format__demo {
+    pointer-events: none;
+  }
+
+  .format__demo :global(.adb) {
+    margin: 0;
+  }
+
+  .format__demo--card {
+    width: min(220px, 100%);
+    margin-inline: auto;
+  }
+
+  .contexts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+
+  .contexts li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.86rem;
+    color: var(--tinta-2);
+  }
+
+  .contexts img {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    object-fit: cover;
+  }
+
+  .rules ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+
+  .rules li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    color: var(--tinta-2);
+    line-height: 1.4;
+  }
+
+  .rules li :global(.icon),
+  .rules h2 :global(.icon) {
+    flex: none;
+    color: var(--verde-700);
+  }
+
+  .rules h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+</style>
+
+<script>
+  import { ads } from '../data/ads';
+
+  const from = new URLSearchParams(window.location.search).get('desde');
+  const ad = ads.find((a) => a.id === from);
+  if (ad) {
+    document.querySelector<HTMLElement>('[data-from-name]')!.textContent = ad.advertiser;
+    document.querySelector<HTMLElement>('[data-from]')!.hidden = false;
+  }
+</script>

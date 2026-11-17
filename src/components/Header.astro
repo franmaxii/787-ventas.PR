@@ -15,11 +15,11 @@ const community = [
 ] as const;
 
 const mine = [
-  { href: url('/cuenta?tab=info'), label: 'Mi cuenta' },
-  { href: url('/favoritos'), label: 'Favoritos' },
-  { href: url('/mensajes'), label: 'Mis compras' },
-  { href: url('/cuenta'), label: 'Mis publicaciones' },
-];
+  { href: url('/cuenta?tab=info'), icon: 'user', label: 'Mi cuenta' },
+  { href: url('/favoritos'), icon: 'heart', label: 'Favoritos' },
+  { href: url('/mensajes'), icon: 'cart', label: 'Mis compras' },
+  { href: url('/cuenta'), icon: 'tag', label: 'Mis publicaciones' },
+] as const;
 ---
 
 <header class="header" data-header>
@@ -62,11 +62,14 @@ const mine = [
     </ul>
 
     <h2 class="drawer__label">Mi Plaza</h2>
-    <ul class="drawer__list">
+    <ul class="drawer__list drawer__list--icons">
       {
         mine.map((l) => (
           <li>
-            <a href={l.href}>{l.label}</a>
+            <a href={l.href}>
+              <Icon name={l.icon} size={26} stroke={1.8} />
+              {l.label}
+            </a>
           </li>
         ))
       }

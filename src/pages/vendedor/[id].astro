@@ -7,6 +7,7 @@ import Icon from '../../components/Icon.astro';
 import { productsBySeller, sampleReviews, sellers, statusOf, type Seller } from '../../data/products';
 import { priceLabel } from '../../lib/format';
 import { url } from '../../lib/url';
+import { smallSrc } from '../../lib/img';
 
 export function getStaticPaths() {
   return sellers.map((seller) => ({ params: { id: seller.id }, props: { seller } }));
@@ -65,7 +66,7 @@ const reviews = [0, 1, 2].map((i) => sampleReviews[(index + i) % sampleReviews.l
                 <div class="ltile__media">
                   <div class:list={['tile', `tile--${p.color}`]}>
                     <img
-                      src={url(p.image ?? '')}
+                      src={url(smallSrc(p.image ?? ''))}
                       alt=""
                       class:list={{ 'is-photo': !!p.image && !p.image.endsWith('.svg') }}
                       loading="lazy"

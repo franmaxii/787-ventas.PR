@@ -1,6 +1,8 @@
 ---
 import type { Product } from '../data/products';
 import ProductCard from './ProductCard.astro';
+import AdCard from './AdCard.astro';
+import type { Ad } from '../data/ads';
 
 interface Props {
   products: Product[];
@@ -10,12 +12,25 @@ interface Props {
   scroller?: boolean;
   /** Botón de colección en cada tarjeta. */
   collect?: boolean;
+  /** Anuncio nativo dentro de la cuadrícula (uno como máximo). */
+  ad?: Ad;
+  /** Cuántas publicaciones van antes del anuncio. */
+  adSlot?: number;
 }
-const { products, filterable = false, id, scroller = false, collect = false } = Astro.props;
+const { products, filterable = false, id, scroller = false, collect = false, ad, adSlot = 4 } = Astro.props;
+const slot = Math.min(adSlot, products.length);
 ---
 
 <div class:list={['grid', { 'grid--scroller': scroller }]} id={id}>
-  {products.map((p) => <ProductCard product={p} filterable={filterable} collect={collect} />)}
+  {
+    products.map((p, i) => (
+      <Fragment>
+        {ad && i === slot && <AdCard ad={ad} after={adSlot} />}
+        <ProductCard product={p} filterable={filterable} collect={collect} />
+      </Fragment>
+    ))
+  }
+  {ad && slot === products.length && products.length > 0 && <AdCard ad={ad} after={adSlot} />}
 </div>
 
 <style>

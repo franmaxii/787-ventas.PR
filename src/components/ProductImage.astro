@@ -1,6 +1,7 @@
 ---
 import type { Product } from '../data/products';
 import { url } from '../lib/url';
+import { smallSrc } from '../lib/img';
 
 interface Props {
   product: Pick<Product, 'title' | 'emoji' | 'color' | 'image'>;
@@ -10,13 +11,18 @@ interface Props {
 const { product, size = 'card', loading = 'lazy' } = Astro.props;
 // Las ilustraciones SVG se muestran completas; una foto real llena el cuadro.
 const isPhoto = !!product.image && !product.image.endsWith('.svg');
+const small = product.image ? smallSrc(product.image) : '';
+const hasSmall = isPhoto && small !== product.image;
+const sizes = { card: '(min-width: 720px) 220px, 46vw', large: '(min-width: 900px) 560px, 92vw', thumb: '96px' }[size];
 ---
 
 <div class:list={['pimg', `pimg--${size}`, 'tile', `tile--${product.color}`]}>
   {
     product.image ? (
       <img
-        src={url(product.image)}
+        src={url(size === 'large' ? product.image : small)}
+        srcset={hasSmall ? `${url(small)} 400w, ${url(product.image)} 800w` : undefined}
+        sizes={hasSmall ? sizes : undefined}
         alt={size === 'large' ? product.title : ''}
         class:list={{ 'is-photo': isPhoto }}
         loading={loading}

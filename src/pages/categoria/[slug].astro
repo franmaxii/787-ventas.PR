@@ -5,6 +5,7 @@ import ProductGrid from '../../components/ProductGrid.astro';
 import Icon from '../../components/Icon.astro';
 import { categories, SPECIAL_CATEGORIES, type Category } from '../../data/categories';
 import { activeProducts as products } from '../../data/products';
+import { adFor } from '../../data/ads';
 
 export function getStaticPaths() {
   return categories.map((category) => ({ params: { slug: category.slug }, props: { category } }));
@@ -54,7 +55,7 @@ const items = products.filter((p) => p.category === category.slug);
       </label>
     </form>
 
-    <ProductGrid products={items} filterable id="results" />
+    <ProductGrid products={items} filterable id="results" ad={adFor(category.slug)} adSlot={6} />
 
     <div class="empty" data-results-empty hidden>
       <span class="empty__icon"><Icon name="filter" size={40} /></span>

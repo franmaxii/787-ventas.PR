@@ -5,12 +5,13 @@
  */
 import Icon from './Icon.astro';
 import { url } from '../lib/url';
+import { smallSrc } from '../lib/img';
 import { products } from '../data/products';
 import { COLLECTION_NAME_MAX } from '../scripts/store';
 
 // Índice mínimo del catálogo para las portadas de las colecciones (título, imagen y color).
 const index = Object.fromEntries(
-  products.map((p) => [p.id, { t: p.title, i: p.image ? url(p.image) : '', c: p.color }]),
+  products.map((p) => [p.id, { t: p.title, i: p.image ? url(smallSrc(p.image)) : '', c: p.color }]),
 );
 ---
 

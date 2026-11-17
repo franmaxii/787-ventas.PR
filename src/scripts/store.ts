@@ -107,6 +107,7 @@ export interface Location {
 const KEYS = {
   favs: 'p787:favs',
   collections: 'p787:collections',
+  adsHidden: 'p787:ads-hidden',
   listings: 'p787:listings',
   profile: 'p787:profile',
   following: 'p787:following',
@@ -235,6 +236,14 @@ export const collections = {
       write(KEYS.collections, all.map((c) => ({ ...c, ids: c.ids.filter((x) => x !== itemId) })));
     }
   },
+};
+
+// ---------------------------------------------------------------- Anuncios ocultos
+
+export const adsHidden = {
+  ids: () => read<string[]>(KEYS.adsHidden, []),
+  add: (id: string) => write(KEYS.adsHidden, [...new Set([...adsHidden.ids(), id])]),
+  remove: (id: string) => write(KEYS.adsHidden, adsHidden.ids().filter((x) => x !== id)),
 };
 
 // ---------------------------------------------------------------- Mis publicaciones

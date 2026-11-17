@@ -179,6 +179,11 @@ const faqs = [
   const form = document.querySelector<HTMLFormElement>('[data-contact-form]')!;
   const done = document.querySelector<HTMLElement>('[data-contact-done]')!;
 
+  // /contacto?motivo=anuncios (desde "Anúnciate") deja elegido el motivo
+  const TOPICS: Record<string, string> = { anuncios: 'Negocios y anuncios' };
+  const topic = TOPICS[new URLSearchParams(window.location.search).get('motivo') ?? ''];
+  if (topic) (form.elements.namedItem('topic') as HTMLSelectElement).value = topic;
+
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     // Demo: no se envía ni se guarda nada. Con backend, aquí iría el POST al servicio de soporte.

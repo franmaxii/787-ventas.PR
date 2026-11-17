@@ -5,6 +5,7 @@
  */
 import { milesBetween } from '../data/pueblos';
 import { location, onChange } from './store';
+import { placeAd } from './ads';
 
 interface Options {
   form: HTMLFormElement;
@@ -126,6 +127,7 @@ export function initFilters({ form, grid, queryInput, count, empty, syncUrl = fa
       }
     };
     [...cards].sort((a, b) => key(a) - key(b)).forEach((c) => grid.appendChild(c));
+    placeAd(grid);
 
     if (count) {
       const where = loc.radius ? ` a ${loc.radius} mi de ${loc.town}` : ' en toda la isla';

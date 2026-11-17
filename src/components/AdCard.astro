@@ -1,0 +1,159 @@
+---
+/*
+ * Anuncio nativo: una tarjeta con la misma forma que las publicaciones, marcada "Patrocinado".
+ * ProductGrid la pone después de `after` publicaciones; scripts/ads.ts la mantiene ahí al filtrar u ordenar.
+ */
+import type { Ad } from '../data/ads';
+import { url } from '../lib/url';
+import { smallSrc } from '../lib/img';
+import Icon from './Icon.astro';
+
+interface Props {
+  ad: Ad;
+  /** Cuántas publicaciones van antes del anuncio. */
+  after: number;
+}
+const { ad, after } = Astro.props;
+---
+
+<aside class="ad card glass-lite" data-ad={ad.id} data-ad-slot={after} aria-label={`Anuncio de ${ad.advertiser}`}>
+  <div class="ad__media">
+    <img src={url(smallSrc(ad.image))} alt="" class="is-photo" width="240" height="240" loading="lazy" decoding="async" />
+    <span class="ad__badge">Patrocinado</span>
+  </div>
+  <button type="button" class="ad__hide" data-ad-hide aria-label={`Ocultar el anuncio de ${ad.advertiser}`}>
+    <Icon name="x" size={16} stroke={2.2} />
+  </button>
+  <div class="ad__body">
+    <p class="ad__brand">{ad.advertiser}</p>
+    <h3 class="ad__title">
+      <a href={url(`/anunciate?desde=${ad.id}`)}>{ad.headline}</a>
+    </h3>
+    <p class="ad__cta">{ad.cta} <Icon name="arrowRight" size={14} stroke={2.2} /></p>
+    <p class="ad__note">Anuncio de ejemplo</p>
+  </div>
+</aside>
+
+<style>
+  .ad {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    border-radius: 28px;
+    text-align: center;
+    transition: transform 0.3s var(--ease-spring), box-shadow 0.3s ease;
+  }
+
+  .ad:hover {
+    transform: translateY(-4px);
+  }
+
+  .ad__media {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 22px;
+    background: var(--crema-300);
+  }
+
+  .ad__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s var(--ease-spring);
+  }
+
+  .ad:hover .ad__media img {
+    transform: scale(1.05);
+  }
+
+  /* Discreto pero siempre visible: nadie debe confundir un anuncio con una publicación */
+  .ad__badge {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: var(--tinta);
+    background: rgba(255, 255, 255, 0.88);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+  }
+
+  .ad__hide {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    color: var(--tinta-2);
+    background: rgba(255, 255, 255, 0.78);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
+  .ad__body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 10px 6px 4px;
+  }
+
+  .ad__brand {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--tinta-3);
+  }
+
+  .ad__title {
+    font-size: clamp(0.95rem, 3.4vw, 1.05rem);
+    font-weight: 700;
+    line-height: 1.22;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .ad__title a {
+    color: var(--tinta);
+    text-decoration: none;
+  }
+
+  .ad__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+  }
+
+  .ad__cta {
+    margin: 4px 0 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--azul-700);
+  }
+
+  .ad__note {
+    margin: 0;
+    font-size: 0.7rem;
+    color: var(--tinta-3);
+  }
+</style>

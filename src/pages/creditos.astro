@@ -2,12 +2,17 @@
 import Layout from '../layouts/Layout.astro';
 import { url } from '../lib/url';
 import { products } from '../data/products';
-import { licenseLabel, photoCredits, sourceLabel } from '../data/fotos';
+import { adPhotoCredits, licenseLabel, photoCredits, sourceLabel } from '../data/fotos';
+import { ads } from '../data/ads';
+import { smallSrc } from '../lib/img';
 
 const rows = products
   .filter((p) => photoCredits[p.id] && p.image)
   .map((p) => ({ p, c: photoCredits[p.id] }))
   .sort((a, b) => a.p.title.localeCompare(b.p.title, 'es'));
+
+// Anuncios de ejemplo (negocios inventados)
+const adRows = ads.filter((a) => adPhotoCredits[a.id]).map((a) => ({ a, c: adPhotoCredits[a.id] }));
 ---
 
 <Layout title="Créditos de fotos" description="Fotógrafos y licencias de las fotos de las publicaciones de ejemplo de Plaza 787.">
@@ -24,10 +29,33 @@ const rows = products
         rows.map(({ p, c }) => (
           <li class="panel row">
             <a href={url(`/producto/${p.id}`)} class="row__img">
-              <img src={url(p.image!)} alt="" width="72" height="72" loading="lazy" />
+              <img src={url(smallSrc(p.image!))} alt="" width="72" height="72" loading="lazy" />
             </a>
             <div class="row__text">
               <a href={url(`/producto/${p.id}`)} class="row__product">{p.title}</a>
+              <span>
+                “<a href={c.url}>{c.title}</a>” de {c.creatorUrl ? <a href={c.creatorUrl}>{c.creator}</a> : c.creator}
+              </span>
+              <span class="row__meta">
+                {sourceLabel(c)} · {c.licenseUrl ? <a href={c.licenseUrl}>{licenseLabel(c)}</a> : licenseLabel(c)}
+              </span>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+
+    <h2 class="sub">Anuncios de ejemplo</h2>
+    <p class="note">Los negocios de los anuncios son inventados; las fotos son reales y con licencia libre.</p>
+    <ul class="list">
+      {
+        adRows.map(({ a, c }) => (
+          <li class="panel row">
+            <span class="row__img">
+              <img src={url(smallSrc(a.image))} alt="" width="72" height="72" loading="lazy" />
+            </span>
+            <div class="row__text">
+              <span class="row__product">{a.advertiser} (anuncio de ejemplo)</span>
               <span>
                 “<a href={c.url}>{c.title}</a>” de {c.creatorUrl ? <a href={c.creatorUrl}>{c.creator}</a> : c.creator}
               </span>
@@ -71,6 +99,11 @@ const rows = products
     padding: 0;
     display: grid;
     gap: 10px;
+  }
+
+  .sub {
+    margin: 8px 0 -6px;
+    font-size: 1.2rem;
   }
 
   .row {

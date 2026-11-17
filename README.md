@@ -11,7 +11,9 @@ Diseño "Liquid Glass" (vidrio esmerilado estilo iPhone) con la paleta de la mar
   todas permiten uso comercial y cambios), encontradas con [Openverse](https://openverse.org) en Flickr y
   Wikimedia Commons. Están recortadas en cuadrado (800 px, WebP) en `public/img/productos/fotos/` y sus
   créditos en `src/data/fotos.json`: salen debajo de la foto de cada publicación y en `/creditos`.
-  Las publicaciones que todavía no tienen foto usan las ilustraciones SVG de `public/img/productos/`.
+  Cada foto tiene además una versión de 400 px (`<id>-400.webp`) para tarjetas y miniaturas; el navegador
+  elige con `srcset` (`src/lib/img.ts`). Las publicaciones sin foto usan las ilustraciones SVG de
+  `public/img/productos/`.
 
 ## Comandos
 
@@ -42,6 +44,7 @@ Diseño "Liquid Glass" (vidrio esmerilado estilo iPhone) con la paleta de la mar
 | `/terminos`              | Términos y privacidad (**borrador**: debe revisarlo un abogado)    |
 | `/contacto`              | Contáctanos: formulario (demo, no envía nada) y preguntas frecuentes |
 | `/creditos`              | Créditos y licencias de las fotos de las publicaciones de ejemplo  |
+| `/anunciate`             | Para negocios: formatos de anuncio y reglas; los anuncios de ejemplo llevan aquí |
 
 ## Menú "Tu Plaza" (diseño de la socia)
 
@@ -61,6 +64,20 @@ Reglas de las categorías: lo que se marca como **gratis** va a *Donaciones*; *R
 muestra el precio **por día**; *Venta bienes raíces* usa el tipo `propiedad` (cuartos y baños, sin
 "Nuevo/Usado"). Las artesanías y sabores de la isla viven en *Hogar y vida* con `local: true` y
 salen en la sección "Hecho en Puerto Rico" de la portada.
+
+## Espacios publicitarios (ejemplo)
+
+Anuncios **de ejemplo** con negocios inventados (`src/data/ads.ts`, fotos en `public/img/anuncios/`):
+
+- **Tarjeta nativa** dentro de la cuadrícula (`AdCard`): misma forma que una publicación, después de
+  4 publicaciones en la portada y de 6 en categorías y búsqueda. Al filtrar u ordenar se queda en su lugar
+  (`scripts/ads.ts`) y no cuenta en "N resultados".
+- **Banner** entre secciones (`AdBanner`): en la portada y debajo de cada publicación.
+- **Por contexto:** car wash en Autos, mudanza en Muebles y Donaciones, ferretería en Hogar, surf en Playa,
+  inspección en Venta de bienes raíces, salón en Salud y Moda; si no hay uno propio, el café.
+- **Para que no molesten:** siempre dicen *Patrocinado*, máximo dos por página, se ocultan con la ✕
+  (con *Deshacer*, se recuerda en `p787:ads-hidden`) y nunca salen en Mensajes, Vender, Favoritos,
+  Notificaciones ni el perfil.
 
 ## Favoritos y colecciones
 

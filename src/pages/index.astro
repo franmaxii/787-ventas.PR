@@ -9,6 +9,8 @@ import ProductGrid from '../components/ProductGrid.astro';
 import Icon from '../components/Icon.astro';
 import { activeProducts as products } from '../data/products';
 import { getCategory } from '../data/categories';
+import AdBanner from '../components/AdBanner.astro';
+import { adFor, getAd } from '../data/ads';
 
 // "Selecciones de hoy": todo lo activo; el navegador lo ordena por cercanía.
 const picks = [...products].sort((a, b) => Number(!!b.featured) - Number(!!a.featured) || a.daysAgo - b.daysAgo);
@@ -37,7 +39,7 @@ const lanesBottom = ['donaciones', 'renta-articulos'].map(lane);
         <a class="section__link" href={url('/buscar?orden=cerca')}>Cerca de ti</a>
       </div>
       <p class="sub">Ordenadas por cercanía a <span data-location-label>tu pueblo</span>.</p>
-      <ProductGrid products={picks.slice(0, 12)} filterable id="picks" />
+      <ProductGrid products={picks.slice(0, 12)} filterable id="picks" ad={adFor()} adSlot={4} />
     </section>
 
     {
@@ -83,6 +85,8 @@ const lanesBottom = ['donaciones', 'renta-articulos'].map(lane);
         </section>
       ))
     }
+
+    <AdBanner ad={getAd('mudanzas')} />
 
     <section class="section">
       <div class="section__head">
@@ -215,6 +219,7 @@ const lanesBottom = ['donaciones', 'renta-articulos'].map(lane);
 <script>
   import { milesBetween } from '../data/pueblos';
   import { location, onChange } from '../scripts/store';
+  import { placeAd } from '../scripts/ads';
 
   // Ordena "Selecciones de hoy" por cercanía al pueblo elegido.
   const grid = document.getElementById('picks');
@@ -226,6 +231,7 @@ const lanesBottom = ['donaciones', 'renta-articulos'].map(lane);
       .map((c) => ({ c, d: milesBetween(town, c.dataset.town ?? '') }))
       .sort((a, b) => a.d - b.d)
       .forEach(({ c }) => grid.appendChild(c));
+    placeAd(grid);
   }
   sortByDistance();
   onChange(sortByDistance);
